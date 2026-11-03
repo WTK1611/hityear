@@ -503,8 +503,8 @@
             ? el("div", { class: "platz bot" }, avatarEl({ avatar: b.avatar, farbe: "#b48cff" }), el("span", { class: "platz-name", text: b.name }))
             : el("div", { class: "platz frei" }, el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: "frei" }));
         })),
-        // ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit (Spieler-Ansicht im Rahmen)
-        messen || spieler.length >= 6 ? null
+        // „Online spielen“ ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit (bei „Party vor Ort“ ist es der Hauptscreen)
+        messen || spieler.length >= 6 || $("#wiedergabe").value !== "alle" ? null
           : el("button", { type: "button", class: "zweit hier-mitspielen", text: "🎮 Auf diesem Gerät mitspielen", onclick: mitspielen }),
       );
     }
