@@ -226,9 +226,10 @@
       );
       // „Ich bin fertig“ wirkt nur auf dem Hauptbildschirm (grüner Rahmen + Wackeln), hier nur der Knopftext
       $("#bereit").textContent = ich.bereit ? "✓ Fertig – warte auf den Start" : "✅ Ich bin fertig";
-      // der Gastgeber wartet auf niemanden: er startet selbst
+      // der Gastgeber wartet auf niemanden: er startet selbst, „Zurück“ führt ihn in die Einrichtung
       $("#bereit").classList.toggle("versteckt", z.host);
-      $("#host-knoepfe").classList.toggle("versteckt", !z.host);
+      $("#host-starten").classList.toggle("versteckt", !z.host);
+      document.querySelector(".zurueck")?.setAttribute("href", z.host ? "/host.html" : "/");
       return;
     }
     if (z.phase === "ende") {

@@ -1638,7 +1638,7 @@ main:not(.breit) > #spiel:has(#raten-felder:not(.versteckt)) > .einordnen { orde
 .platz-raster > .platz.wackeln { animation: bereit-wackeln 0.7s ease-in-out; }
 @keyframes bereit-wackeln { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(-4deg) scale(1.04); } 35% { transform: rotate(4deg) scale(1.04); } 55% { transform: rotate(-3deg); } 75% { transform: rotate(2deg); } }
 @media (prefers-reduced-motion: reduce) { .platz-raster > .platz.wackeln { animation: none; } }
-.bereit-knopf { width: 100%; margin-top: 14px; }
+.bereit-knopf, .host-starten { width: 100%; margin-top: 14px; }
 /* EQ nicht unter dem Logo-Band anstoßen: oben mehr Luft */
 main:not(.breit) > #spiel.nur-eq > .box:first-child { padding-top: 16px; }
 /* … und bleibt beim Scrollen direkt unter dem EQ stehen */
@@ -1803,5 +1803,3 @@ html.sparsam .platte.laeuft { scale: none; translate: none; }
 html.sparsam .equalizer { contain: layout paint; }
 
 button.hier-mitspielen { display: block; margin: 14px auto 0; }
-.host-knoepfe { display: grid; gap: 10px; margin-top: 14px; }
-.host-knoepfe .knopf { text-align: center; }
