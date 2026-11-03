@@ -1371,7 +1371,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tv.matches) {
       const u = unterkante();
       if (!u) return;
-      ziel = Math.min(1, Math.max(0.5, (zoom * (innerHeight - FUSS)) / u));
+      ziel = Math.min(1, Math.max(0.35, (zoom * (innerHeight - FUSS)) / u)); // 0.35: 6 volle Zeitstrahle (20 Karten) auch bei 960×540 CSS-Pixeln
     }
     if (Math.abs(ziel - zoom) < 0.01) return;
     zoom = ziel;
