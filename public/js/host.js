@@ -503,6 +503,9 @@
             ? el("div", { class: "platz bot" }, avatarEl({ avatar: b.avatar, farbe: "#b48cff" }), el("span", { class: "platz-name", text: b.name }))
             : el("div", { class: "platz frei" }, el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: "frei" }));
         })),
+        // ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit (Spieler-Ansicht im Rahmen)
+        messen || spieler.length >= 6 ? null
+          : el("button", { type: "button", class: "zweit hier-mitspielen", text: "🎮 Auf diesem Gerät mitspielen", onclick: mitspielen }),
       );
     }
     return inhalt;
@@ -950,6 +953,13 @@
       konfetti(260);
       setTimeout(() => konfetti(200), 900);
     }
+  }
+
+  // ---------- Selbst mitspielen ----------
+  // Wer kein zweites Gerät hat, spielt hier mit: Wechsel zur Spieler-Seite (Name, Avatar). Dort erkennt sie den
+  // Gastgeber an seiner Host-Sitzung und zeigt ihm „Spiel starten“ und am Ende Revanche bzw. neues Spiel.
+  function mitspielen() {
+    if (zustand) location.assign(`/spielen.html?raum=${encodeURIComponent(zustand.code)}`);
   }
 
   // ---------- Knöpfe ----------

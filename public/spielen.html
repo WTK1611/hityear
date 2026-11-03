@@ -42,6 +42,11 @@
     <p class="leise">Warte hier auf deine Mitspieler!</p>
     <div class="spielerliste" id="w-spieler"></div>
     <button id="bereit" class="gross bereit-knopf">✅ Ich bin fertig</button>
+    <!-- nur für den Gastgeber, der auf diesem Gerät mitspielt -->
+    <div class="host-knoepfe versteckt" id="host-knoepfe">
+      <button type="button" id="host-starten" class="gross">Spiel starten ✨</button>
+      <a class="knopf zweit" href="/host.html">⚙️ Einstellungen</a>
+    </div>
   </section>
 
   <section id="spiel" class="versteckt">
@@ -90,6 +95,8 @@
     <button type="button" class="zweit versteckt" id="listen-wechsel">🏅 Bestenliste</button>
     <div class="ende-knoepfe versteckt" id="ende-knoepfe">
       <button type="button" id="nochmal">🔁 Noch mal spielen</button>
+      <a class="knopf zweit host-nur versteckt" href="/host.html?neu=1">Neues Spiel erstellen</a>
+      <a class="knopf zweit host-nur versteckt" href="/host.html">📺 Zum Spielfeld</a>
       <button type="button" class="gefahr" id="verlassen">Spiel verlassen</button>
     </div>
   </section>

@@ -94,11 +94,25 @@
     zurStartseite = setTimeout(() => (location.href = "/"), 5000);
   }
 
+  // Gastgeber spielt auf diesem Gerät mit: mit seiner Host-Sitzung bekommt diese Verbindung auch die Host-Rechte
+  // (Start, Revanche) – die Knöpfe dafür zeigt darstellen(), sobald der Zustand „host“ meldet
+  async function alsHostVerbinden() {
+    let h = null;
+    try { h = JSON.parse(speicher("zs_host") || "null"); } catch { /* kaputter Eintrag */ }
+    if (h?.code !== code) return;
+    try {
+      await socket.anfrage("host:verbinden", h);
+    } catch {
+      /* Host-Sitzung gehört zu einem alten Raum – dann eben nur Spieler */
+    }
+  }
+
   async function wiederBeitreten() {
     const sitzung = speicher(SITZUNG);
     if (!sitzung) return zeigen("#beitreten");
     try {
       await socket.anfrage("spieler:beitreten", { code, sitzung });
+      await alsHostVerbinden();
     } catch (err) {
       // Raum gibt es nicht mehr (geschlossen, während das Handy weg war, oder Server neu gestartet)
       if (/Raum nicht gefunden/.test(err.message)) return spielBeendet();
@@ -129,6 +143,13 @@
   $("#bereit").addEventListener("click", async () => {
     try {
       await socket.anfrage("spieler:bereit", { bereit: !zustand?.spieler.find((p) => p.id === zustand.ich)?.bereit });
+    } catch (err) {
+      fehler(err.message);
+    }
+  });
+  $("#host-starten").addEventListener("click", async () => {
+    try {
+      await socket.anfrage("host:starten");
     } catch (err) {
       fehler(err.message);
     }
@@ -182,6 +203,7 @@
       speicher(SITZUNG, r.sitzung);
       speicher("zs_name", name);
       speicher("zs_avatar", avatar);
+      await alsHostVerbinden();
     } catch (err) {
       fehler(err.message);
     }
@@ -204,6 +226,9 @@
       );
       // „Ich bin fertig“ wirkt nur auf dem Hauptbildschirm (grüner Rahmen + Wackeln), hier nur der Knopftext
       $("#bereit").textContent = ich.bereit ? "✓ Fertig – warte auf den Start" : "✅ Ich bin fertig";
+      // der Gastgeber wartet auf niemanden: er startet selbst
+      $("#bereit").classList.toggle("versteckt", z.host);
+      $("#host-knoepfe").classList.toggle("versteckt", !z.host);
       return;
     }
     if (z.phase === "ende") {
@@ -215,6 +240,7 @@
       ranglisteZeichnen($("#rangliste"), z, ich.id);
       // nach dem Spiel: statt „Zurück“ die beiden Möglichkeiten
       $("#ende-knoepfe").classList.remove("versteckt");
+      for (const k of document.querySelectorAll(".host-nur")) k.classList.toggle("versteckt", !z.host);
       document.querySelector(".zurueck-reihe")?.classList.add("versteckt");
       bestenlisteZeichnen($("#bestenliste"), z.bestenliste, [ich.name]);
       // erst die Runde; die Bestenliste (falls vorhanden) per Knopf
