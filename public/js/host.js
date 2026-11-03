@@ -209,15 +209,58 @@
     `<g transform="rotate(${winkel} 76 92)"><rect x="58" y="${50 + k}" width="30" height="40" rx="4" fill="hsl(${(h + 40 * k) % 360} 85% ${62 + k * 4}%)" stroke="#fff" stroke-width="1.6"/>` +
     `<rect x="62" y="${54 + k}" width="22" height="22" rx="2" fill="#160c26" fill-opacity=".25"/><text x="73" y="${86 + k}" class="karte-jahr">${jahre[k]}</text>` +
     (symbol && k === 2 ? `<text x="73" y="${65 + k}" class="karte-symbol">${symbol}</text>` : "") + "</g>").join("") + "</g>";
-  // Deck-Cover: Plattenhülle (Kartenstil: farbig mit weißem Rand) und eine Schallplatte, die rechts herausschaut
-  const schallplatte = (h) =>
-    `<g class="platte"><circle cx="77" cy="64" r="19" fill="#160c26" stroke="#fff" stroke-width="1.6"/>` +
-    [15.5, 12.5].map((r) => `<circle cx="77" cy="64" r="${r}" class="rille" stroke-width=".8"/>`).join("") +
-    `<path d="M77 49a15 15 0 0 1 13 7.5" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round"/>` +
-    `<circle cx="77" cy="64" r="6.5" fill="hsl(${(h + 40) % 360} 85% 62%)"/><circle cx="77" cy="64" r="1.3" fill="#160c26"/></g>` +
-    `<g transform="rotate(-6 62 66)"><rect x="42" y="46" width="40" height="40" rx="4" fill="hsl(${(h + 80) % 360} 85% 70%)" stroke="#fff" stroke-width="1.6"/>` +
-    `<rect x="47" y="51" width="30" height="30" rx="3" fill="#160c26" fill-opacity=".25"/>` +
-    `<circle cx="62" cy="66" r="9" fill="none" stroke="#fff" stroke-width="2.4"/><circle cx="62" cy="66" r="2.4" fill="#fff"/></g>`;
+  // Deck-Cover: Plattenhülle (Kartenstil: farbig mit weißem Rand) und eine Schallplatte, die rechts herausschaut.
+  // Der Deck-Name gestaltet die Hülle: Land → Flagge als Hintergrund, Thema → Symbol darauf (sonst der Anfangsbuchstabe).
+  const platteSvg = (cx, cy, r, etikett, klasse = "") =>
+    `<g${klasse ? ` class="${klasse}" style="transform-origin:${cx}px ${cy}px"` : ""}><circle cx="${cx}" cy="${cy}" r="${r}" fill="#160c26" stroke="#fff" stroke-width="1.6"/>` +
+    [0.82, 0.66].map((f) => `<circle cx="${cx}" cy="${cy}" r="${r * f}" class="rille" stroke-width=".8"/>`).join("") +
+    `<path d="M${cx} ${cy - r * 0.8}a${r * 0.8} ${r * 0.8} 0 0 1 ${r * 0.69} ${r * 0.4}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round"/>` +
+    `<circle cx="${cx}" cy="${cy}" r="${r * 0.34}" fill="${etikett}"/><circle cx="${cx}" cy="${cy}" r="1.3" fill="#160c26"/></g>`;
+  // Flaggen im 40×40-Feld der Hülle (Streifen quer „q“ oder längs „l“)
+  const FLAGGEN = [
+    [/deutsch|german/i, "q", ["#000", "#dd0000", "#ffce00"]], [/frankreich|france/i, "l", ["#0055a4", "#fff", "#ef4135"]],
+    [/holland|niederland|netherlands/i, "q", ["#ae1c28", "#fff", "#21468b"]], [/ungarn|hungar/i, "q", ["#ce2939", "#fff", "#477050"]],
+    [/kanada|canada/i, "l", ["#d52b1e", "#fff", "#fff", "#d52b1e"]], [/nordeuropa|northern europe|nordic/i, "nord", ["#006aa7", "#fecc00"]], [/mitteleuropa|central europe/i, "eu", ["#003399", "#ffcc00"]],
+  ];
+  function flagge(name) {
+    const f = FLAGGEN.find(([muster]) => muster.test(name));
+    if (!f) return "";
+    const [, art, farben] = f;
+    if (art === "nord") return `<rect width="40" height="40" fill="${farben[0]}"/><rect x="11" width="7" height="40" fill="${farben[1]}"/><rect y="16.5" width="40" height="7" fill="${farben[1]}"/>`;
+    if (art === "eu") return `<rect width="40" height="40" fill="${farben[0]}"/>` +
+      Array.from({ length: 12 }, (_, i) => `<circle cx="${20 + 13 * Math.cos((i * Math.PI) / 6)}" cy="${20 + 13 * Math.sin((i * Math.PI) / 6)}" r="1.7" fill="${farben[1]}"/>`).join("");
+    const n = farben.length, d = 40 / n;
+    return farben.map((c, i) => (art === "q" ? `<rect y="${i * d}" width="40" height="${d + 0.2}" fill="${c}"/>` : `<rect x="${i * d}" width="${d + 0.2}" height="40" fill="${c}"/>`)).join("");
+  }
+  // Themen-Symbole im 24×24-Raster: weiß mit dunklem Rand (lesbar auf jeder Flagge); englische Stichwörter für übersetzte Namen
+  const SYMBOLE = [
+    [/radio/i, `<rect x="2" y="8" width="20" height="14" rx="3"/><path d="M6 8L17 2" fill="none" stroke-width="2"/><circle cx="8" cy="15" r="3.6" fill="#160c26"/><path d="M14 13h5M14 17h5" stroke-width="1.6"/>`],
+    [/rock/i, `<path d="M14 1L4 14h7l-3 9 11-13h-7z"/>`],
+    [/schlager/i, `<rect x="8" y="1" width="8" height="13" rx="4"/><path d="M5 11a7 7 0 0 0 14 0" fill="none" stroke-width="2"/><path d="M12 18v4M8 22h8" fill="none" stroke-width="2"/>`],
+    [/sommer|summer/i, `<path d="M12 1v4M12 19v4M1 12h4M19 12h4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M4.2 19.8L7 17M17 7l2.8-2.8" fill="none" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="5.5"/>`],
+    [/party/i, `<ellipse cx="12" cy="9" rx="7" ry="8"/><path d="M10.5 17h3l-1.5 2z"/><path d="M12 19q-3 2 0 4" fill="none" stroke-width="1.4"/>`],
+    [/bingo/i, `<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5.5" fill="#ff3d9a"/><text x="12" y="14.8" font-size="7.5" font-weight="900" text-anchor="middle" fill="#fff" stroke="none">B</text>`],
+    [/heimlich|liebling|guilty|secret/i, `<path d="M12 21L4 13a4.8 4.8 0 0 1 8-6 4.8 4.8 0 0 1 8 6z"/>`],
+    [/jahrzehnt|decade/i, `<path d="M6 2h12v3l-4.5 7 4.5 7v3H6v-3l4.5-7L6 5z"/><path d="M9 20h6l-3-3z" fill="#ffd93d"/>`],
+    [/jahres|charts|of the year/i, `<rect x="3" y="5" width="18" height="17" rx="3"/><rect x="3" y="5" width="18" height="5" rx="2" fill="#ff3d9a"/><text x="12" y="19.5" font-size="8.5" font-weight="900" text-anchor="middle" fill="#160c26" stroke="none">#1</text>`],
+    [/hits/i, `<path d="M12 1l3.4 7 7.6 1-5.5 5.3 1.4 7.6L12 18.3l-6.9 3.6 1.4-7.6L1 9l7.6-1z"/>`],
+  ];
+  function symbol(name) {
+    const treffer = SYMBOLE.find(([muster]) => muster.test(name));
+    const inhalt = treffer ? treffer[1]
+      : `<text x="12" y="19" font-size="20" font-weight="900" text-anchor="middle">${[...name.trim()][0]?.toUpperCase().replace(/[<&>]/g, "") ?? "♪"}</text>`;
+    return `<g transform="translate(50 54)" fill="#fff" stroke="#160c26" stroke-width="1.3" stroke-linejoin="round" paint-order="stroke fill">${inhalt}</g>`;
+  }
+  const schallplatte = (h, name, nr) => {
+    const flaggeSvg = flagge(name);
+    return platteSvg(77, 66, 19, `hsl(${(h + 40) % 360} 85% 62%)`, "platte") +
+      `<g transform="translate(0 3) rotate(-6 62 66)"><defs><clipPath id="huelle-${nr}"><rect width="40" height="40" rx="4"/></clipPath></defs>` +
+      `<rect x="42" y="46" width="40" height="40" rx="4" fill="hsl(${(h + 80) % 360} 85% 70%)"/>` +
+      (flaggeSvg ? `<g clip-path="url(#huelle-${nr})" transform="translate(42 46)">${flaggeSvg}</g>` : `<rect x="47" y="51" width="30" height="30" rx="3" fill="#160c26" fill-opacity=".2"/>`) +
+      `<rect x="42" y="46" width="40" height="40" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/>` + symbol(name) + "</g>";
+  };
+  // „Alle Songs“: ein ganzer Stapel Schallplatten in Regenbogenfarben statt einer Hülle
+  const plattenStapel = () => platteSvg(52, 72, 15, "#3dd8ff") + platteSvg(64, 60, 16, "#ffd93d") + platteSvg(77, 68, 19, "#ff3d9a", "platte");
   // Titel in Zeilen zu höchstens 12 Zeichen, höchstens vier Zeilen (schon übersetzt, damit der Umbruch passt)
   function titelZeilen(text) {
     const zeilen = [];
@@ -251,7 +294,8 @@
       : `<stop offset="0" stop-color="#ff3d9a"/><stop offset=".35" stop-color="#ffd93d"/><stop offset=".7" stop-color="#3dd8ff"/><stop offset="1" stop-color="#9b5cff"/>`;
     svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${farben}</linearGradient></defs>` +
       `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
-      schallplatte(wert ? h : 300);
+      // Motiv aus dem Originalnamen (die Anzeige ist schon übersetzt)
+      (wert ? schallplatte(h, (bibliothek.listen ?? []).find((l) => l.id === wert)?.name ?? name, nr) : plattenStapel());
     if (wert) svg.append(titelZeilen(t(name).replace(/^(HitYear|Party-Hits)\s+/i, "")));
     else {
       const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -266,7 +310,9 @@
   // Galerie: eine Reihe großer Cover, wischen per Touch oder blättern mit den Pfeilen; merkt sich je Schritt die Position
   const galerieStand = {};
   function galerie(schluessel, messen, karten) {
-    const reihe = el("div", { class: "deck-raster", "data-anzahl": String(Math.min(karten.length, 6)) }, karten);
+    // Jahrzehnte und Genres: halb so große Kacheln in zwei Zeilen (zusammen so hoch wie eine normale Kachel)
+    const zweizeilig = schluessel === "jahrzehnte" || schluessel === "genres";
+    const reihe = el("div", { class: zweizeilig ? "deck-raster zweizeilig" : "deck-raster", "data-anzahl": String(Math.min(karten.length, 6)) }, karten);
     const blaettern = (richtung) => reihe.scrollBy({ left: richtung * reihe.clientWidth * 0.8, behavior: "smooth" });
     const links = el("button", { type: "button", class: "galerie-pfeil links", "aria-label": "Zurück blättern", text: "‹", onclick: () => blaettern(-1) });
     const rechts = el("button", { type: "button", class: "galerie-pfeil rechts", "aria-label": "Weiter blättern", text: "›", onclick: () => blaettern(1) });
@@ -285,6 +331,14 @@
       if (matchMedia("(max-width: 700px)").matches) { reihe.classList.remove("vermessen"); return; }
       const breite = reihe.clientWidth - 8, abstand = parseFloat(getComputedStyle(reihe).columnGap) || 16, n = karten.length;
       if (!breite) return;
+      if (zweizeilig) {
+        // so groß wie eine Kachel bei drei nebeneinander, davon die Hälfte
+        reihe.style.setProperty("--kachel", `${Math.floor((Math.min(300, (breite - 2 * abstand) / 3) - abstand) / 2)}px`);
+        reihe.style.gridTemplateColumns = `repeat(${Math.ceil(n / 2)}, var(--kachel))`;
+        reihe.classList.add("vermessen");
+        pfeile();
+        return;
+      }
       let groesse = Math.min(300, (breite - (n - 1) * abstand) / n);
       if (groesse < 170) {
         for (let ganz = 1; ganz < 20; ganz++) {

@@ -1313,6 +1313,14 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 .deck-raster[data-anzahl="4"] button.deck-knopf { flex-basis: max(170px, min(300px, calc((100% - 48px) / 4))); }
 /* von galerie() berechnet: alle passen nebeneinander, oder rechts bleibt eine Kachel angeschnitten */
 .deck-raster.vermessen button.deck-knopf { flex-basis: var(--kachel); }
+/* Jahrzehnte und Genres: halb so große Kacheln in zwei Zeilen, bei vielen seitlich scrollbar */
+@media (min-width: 701px) {
+  .deck-raster.zweizeilig { display: grid; grid-template-columns: repeat(3, var(--kachel, 142px)); justify-content: safe center; }
+  .deck-raster.zweizeilig > * { margin: 0; }
+  .deck-raster.zweizeilig button.deck-knopf { width: var(--kachel, 142px); }
+  .deck-raster.zweizeilig .deck-name small { padding: 3px 8px; font-size: 0.75rem; }
+  .deck-raster.zweizeilig button.deck-knopf.mehrfach::after { top: 6px; right: 6px; width: 24px; height: 24px; font-size: 0.85rem; }
+}
 .deck-cover .karte-jahr { fill: #160c26; font-size: 8px; font-weight: 900; text-anchor: middle; }
 .deck-cover .karte-symbol { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
 .galerie-hinweis { margin: 10px 0 0; text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--leise); transition: opacity 0.3s; }
