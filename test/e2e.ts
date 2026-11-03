@@ -72,12 +72,14 @@ async function bis<T>(fn: () => T | undefined | null | false, ms = 5000): Promis
 try {
   await warten();
 
-  // Mit Passwortpflicht: ohne Login keine API; Suchmaschinen gesperrt
+  // Mit Passwortpflicht: ohne Login keine API; Startseite indexierbar, Spielräume und API nicht
   assert.equal((await fetch(`${BASIS}/api/bibliothek`)).status, 401);
   assert.equal((await fetch(`${BASIS}/api/login`, { method: "POST", body: '{"passwort":"falsch"}' })).status, 401);
   const robots = await fetch(`${BASIS}/robots.txt`);
-  assert.match(await robots.text(), /Disallow: \//);
-  assert.equal(robots.headers.get("x-robots-tag"), "noindex, nofollow");
+  assert.match(await robots.text(), /Disallow: \/api\//);
+  assert.equal(robots.headers.get("x-robots-tag"), null);
+  assert.equal((await fetch(`${BASIS}/host.html`)).headers.get("x-robots-tag"), "noindex, nofollow");
+  assert.equal((await fetch(`${BASIS}/api/bibliothek`)).headers.get("x-robots-tag"), "noindex, nofollow");
 
   const cookie = await login("zeitstrahl");
   const bib = (await (await fetch(`${BASIS}/api/bibliothek`, { headers: { Cookie: cookie } })).json()) as { mitJahr: number };
@@ -185,7 +187,10 @@ try {
   assert.equal((await post(gastCookie, "/api/admin/decks", { name: "Gast" })).status, 403, "Gast legt keine Decks an");
   const neu = (await (await post(admin, "/api/admin/decks", { name: "Test-Deck" })).json()) as { id: string };
   assert.match(neu.id, /^deck-[a-f0-9]{12}$/);
-  const songs = (await (await fetch(`${BASIS}/api/admin/songs?filter=alle`, { headers: { Cookie: admin } })).json()) as Array<{ id: string }>;
+  // Testmusik liegt als Dateien vor; neue Decks spielen sonst über Streaming
+  assert.equal((await post(admin, `/api/admin/listen/${neu.id}/audio`, { audio: "dateien" })).status, 200);
+  const songs = ((await (await fetch(`${BASIS}/api/admin/songs?filter=alle`, { headers: { Cookie: admin } })).json()) as Array<{ id: string; pfad: string }>)
+    .filter((s) => !s.pfad.startsWith("@apple/"));
   assert.ok(songs.length >= 20);
   assert.equal((await post(admin, `/api/admin/decks/${neu.id}/songs`, { hinzu: songs.slice(0, 5).map((s) => s.id) })).status, 200);
   await post(admin, `/api/admin/decks/${neu.id}/songs`, { weg: [songs[0].id] });
@@ -224,4 +229,6 @@ try {
 } finally {
   server.kill("SIGTERM");
   fs.rmSync(daten, { recursive: true, force: true });
+  // offene Sockets nach einem Fehler sollen den Lauf nicht festhalten
+  process.exit();
 }

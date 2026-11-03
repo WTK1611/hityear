@@ -502,7 +502,6 @@
     const box = el("div", { class: gezeigt === nr ? "schritt" : `schritt rein ${richtung}` }, schrittInhalt(s, liste));
     gezeigt = nr;
     $("#schritt-inhalt").replaceChildren(box);
-    $("#schritt-zurueck").classList.toggle("unsichtbar", schritt === 0);
     const letzter = schritt === liste.length - 1;
     // „Weiter“ nur, wo man mehreres wählen kann (Jahrzehnte/Genres) – sonst geht es mit dem Tipp auf die Antwort weiter
     $("#schritt-weiter").classList.toggle("unsichtbar", letzter || !s.mehrfach);
@@ -538,7 +537,8 @@
     messTimer = setTimeout(hoeheMessen, 200);
   });
   document.fonts?.ready.then(() => gemessen && hoeheMessen());
-  $("#schritt-zurueck").addEventListener("click", () => springen(schritt - 1));
+  // im ersten Schritt zurück zur Startseite
+  $("#schritt-zurueck").addEventListener("click", () => (schritt === 0 ? location.assign("/") : springen(schritt - 1)));
   $("#schritt-weiter").addEventListener("click", () => springen(schritt + 1));
   $("#schritt-weiter").after(startKnopf);
 

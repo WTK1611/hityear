@@ -194,7 +194,6 @@ bereichZeigen();
                         await api(`/api/admin/decks/${l.id}/loeschen`, {});
                         if (offenesDeck === l.id) editorSchliessen();
                         listen();
-                        katalog();
                       },
                     )
                   : null,
@@ -358,7 +357,6 @@ bereichZeigen();
     listen();
   });
   $("#editor-zu").addEventListener("click", editorSchliessen);
-  katalog();
 
   // ---------- Ergebnis-Karten (übernommene Vorschauen) ----------
   const QUELLE = { musicbrainz: "MusicBrainz", tag: "Datei-Tag", liste: "Songliste", charts: "Jahrescharts", manuell: "von dir eingetragen" };

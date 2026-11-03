@@ -1,0 +1,32 @@
+# HitYear – Music Party Game
+
+> HitYear is a free, open-source music party game in the browser. A 30-second song preview plays, and every player places the song by its release year into their own timeline on their phone. The first player to collect enough correctly placed cards wins. No app, no account, no download.
+
+- Play: https://hityear.app
+- How to play and FAQ: https://hityear.app/so-gehts.html
+- Source code: https://github.com/WTK1611/hityear (PolyForm Noncommercial 1.0.0 – free for private, non-commercial use; contributions welcome)
+- Languages: German, English, French, Italian, Spanish, Portuguese (Brazil)
+
+## How it works
+
+1. Open https://hityear.app on a TV, laptop or projector and choose "Create game". The main screen shows a QR code and a four-letter room code.
+2. 1–6 players scan the QR code (or type the code) on their phones.
+3. Each round a song preview plays. Everyone places the song in their own timeline: before, between or after the cards they already have.
+4. Correct placements keep the card. Optional bonus stars for naming title and artist. The first to reach the target (10, 15 or 20 cards) wins.
+
+## Features
+
+- Phones as controllers, one shared main screen as the stage; or every phone plays the music itself for remote play.
+- Game modes: everyone guesses at the same time, or players take turns.
+- Decks by country and theme (e.g. hits of all decades, party hits, rock, schlager), filters by decade and genre.
+- Optional AI bots fill free seats.
+- Song previews and covers are streamed directly from Deezer (Apple Music as a fallback) with a source badge. The server stores no music.
+- Privacy-friendly: no account, no advertising; anonymous usage statistics (self-hosted Matomo) only with consent.
+
+## Facts
+
+- Type: browser game, progressive web app (installable)
+- Price: free
+- Players: 1–6, ages: everyone who knows some songs
+- Use: private, non-commercial (no public performance, e.g. in pubs)
+- Made in Germany by Tobias Kurig; technology: Node.js, TypeScript, Socket.IO, plain JavaScript

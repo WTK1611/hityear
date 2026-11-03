@@ -1,2 +1,29 @@
+# HitYear – Music Party Game (https://hityear.app)
+# Suchmaschinen und KI-Assistenten sind willkommen. Spielräume, Einladungen, Admin und API bleiben außen vor.
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /api/
+Disallow: /s/
+Disallow: /admin.html
+Disallow: /host.html
+Disallow: /spielen.html
+
+# KI-Crawler ausdrücklich erlaubt (gleiche Ausnahmen)
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+Allow: /
+Disallow: /api/
+Disallow: /s/
+Disallow: /admin.html
+Disallow: /host.html
+Disallow: /spielen.html
+
+Sitemap: https://hityear.app/sitemap.xml

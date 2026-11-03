@@ -251,16 +251,25 @@ export { ausDateiname };
 
 interface Kandidat { id: string; woerter: Set<string> }
 
+type Abgleich = { liste: Liste; treffer: Map<number, string>; ids: string[] };
+interface SongIndex { exakt: Map<string, string>; nachTitel: Map<string, Kandidat[]>; aktiv: Set<string>; zeit: number }
+
 /**
- * Abgleich einer Liste mit der Bibliothek. Reihenfolge:
- * 1. Interpret + Titel exakt (normalisiert)
- * 2. gleicher Titel und mindestens ein gemeinsames Interpret-Wort (Sampler, „feat.“, „The …“)
- * 3. dasselbe mit Interpret/Titel aus dem Dateinamen (schlecht getaggte Sampler)
- * Nur Songs aus der Quelle des Decks.
+ * Der Song-Index je Quelle und die Abgleich-Ergebnisse je Deck werden zwischengespeichert: Die Deck-Übersicht
+ * gleicht sonst bei jedem Aufruf alle Decks gegen die ganze Bibliothek ab (Sekunden). Song-Änderungen
+ * kommen spätestens nach INDEX_MS an, Scans und Importe leeren den Speicher sofort (alleAbgleichen).
  */
-export function abgleichen(id: string): { liste: Liste; treffer: Map<number, string>; ids: string[] } | null {
-  const liste = listen.get(id);
-  if (!liste) return null;
+const INDEX_MS = 60_000;
+const indexe = new Map<Audio, SongIndex>();
+const ergebnisse = new Map<string, { liste: Liste; index: SongIndex; ergebnis: Abgleich }>();
+
+export function abgleichVeraltet(): void {
+  indexe.clear();
+}
+
+function indexHolen(audio: Audio): SongIndex {
+  const vorhanden = indexe.get(audio);
+  if (vorhanden && Date.now() - vorhanden.zeit < INDEX_MS) return vorhanden;
   const exakt = new Map<string, string>();
   const nachTitel = new Map<string, Kandidat[]>();
   const merken = (sid: string, interpret: string, titel: string) => {
@@ -272,7 +281,6 @@ export function abgleichen(id: string): { liste: Liste; treffer: Map<number, str
     liste.push({ id: sid, woerter: interpretWoerter(interpret) });
     nachTitel.set(t, liste);
   };
-  const audio = deckAudio(id);
   const filter = audio === "apple" ? `AND pfad LIKE '${APPLE_PRAEFIX}%'` : `AND pfad NOT LIKE '${APPLE_PRAEFIX}%'`;
   const aktiv = new Set<string>();
   const sql = `SELECT id, interpret, titel, pfad FROM songs WHERE ausgeschlossen = 0 ${filter} ORDER BY pfad LIKE '${APPLE_PRAEFIX}%'`;
@@ -282,6 +290,25 @@ export function abgleichen(id: string): { liste: Liste; treffer: Map<number, str
     const d = ausDateiname(s.pfad);
     if (d) merken(s.id, d.interpret, d.titel);
   }
+  const index = { exakt, nachTitel, aktiv, zeit: Date.now() };
+  indexe.set(audio, index);
+  return index;
+}
+
+/**
+ * Abgleich einer Liste mit der Bibliothek. Reihenfolge:
+ * 1. Interpret + Titel exakt (normalisiert)
+ * 2. gleicher Titel und mindestens ein gemeinsames Interpret-Wort (Sampler, „feat.“, „The …“)
+ * 3. dasselbe mit Interpret/Titel aus dem Dateinamen (schlecht getaggte Sampler)
+ * Nur Songs aus der Quelle des Decks.
+ */
+export function abgleichen(id: string): Abgleich | null {
+  const liste = listen.get(id);
+  if (!liste) return null;
+  const index = indexHolen(deckAudio(id));
+  const { exakt, nachTitel, aktiv } = index;
+  const alt = ergebnisse.get(id);
+  if (alt && alt.liste === liste && alt.index === index) return alt.ergebnis;
   const treffer = new Map<number, string>();
   liste.eintraege.forEach((e, i) => {
     // eigenes Deck: fester Song – kommt er nicht aus der Quelle des Decks, denselben Song dort suchen
@@ -300,7 +327,9 @@ export function abgleichen(id: string): { liste: Liste; treffer: Map<number, str
       if (e.jahr) listenJahrMerken(sid, e.jahr);
     }
   });
-  return { liste, treffer, ids: [...new Set(treffer.values())] };
+  const ergebnis = { liste, treffer, ids: [...new Set(treffer.values())] };
+  ergebnisse.set(id, { liste, index, ergebnis });
+  return ergebnis;
 }
 
 const listenJahrSetzen = db.prepare("UPDATE songs SET listen_jahr = ? WHERE id = ? AND (listen_jahr IS NULL OR listen_jahr > ?)");
@@ -362,5 +391,6 @@ export function listenSongIds(id: string): string[] {
 
 /** Beim Start und nach jedem Scan: alle Listen abgleichen, damit Listenjahre gesetzt sind. */
 export function alleAbgleichen(): void {
+  abgleichVeraltet();
   for (const l of listen.keys()) abgleichen(l);
 }

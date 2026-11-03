@@ -13,7 +13,7 @@ import {
   songHolen, statistik, vollerPfad, type SongZeile,
 } from "./bibliothek.ts";
 import {
-  abgleichen, alleAbgleichen, AUDIO, deckAnlegen, deckUebersicht, deckAudioSetzen, deckLoeschen, deckSongs, deckUmbenennen, fehlendeSongs, listeHolen,
+  abgleichen, abgleichVeraltet, alleAbgleichen, AUDIO, deckAnlegen, deckUebersicht, deckAudioSetzen, deckLoeschen, deckSongs, deckUmbenennen, fehlendeSongs, listeHolen,
   listenFuerSong, listenLaden, listenUebersicht, type Audio,
 } from "./listen.ts";
 import { appleErgaenzen, appleStatus, appleUebernehmenNachId, deezerAbgleichen, deezerAbgleichStatus, fehlendeNachladen, vorschauSuchen } from "./apple.ts";
@@ -42,17 +42,23 @@ const MIME: Record<string, string> = {
   ".webmanifest": "application/manifest+json",
   ".woff2": "font/woff2",
   ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
+  ".jpg": "image/jpeg",
 };
 
 // Secure-Cookie nur bei HTTPS – im IP-Betrieb (http://<IP>:3700) würde der Browser
 // ein Secure-Cookie verwerfen und niemand käme über die Anmeldung hinaus.
 const cookieSicher = (req: IncomingMessage) => istHttps(req) || config.basisUrl.startsWith("https://");
 
-function sicherheitsHeader(res: ServerResponse): void {
+// Suchmaschinen und KI-Crawler dürfen Startseite und „So geht's“ lesen; Spielräume, Admin, API und
+// Einladungslinks bleiben außen vor (Rechtsseiten: noindex per Meta-Tag, damit die Anschrift nicht in Suchergebnissen steht)
+const NICHT_INDEXIEREN = /^\/(api\/|s\/|healthz$|admin\.html$|host\.html$|spielen\.html$)/;
+
+function sicherheitsHeader(res: ServerResponse, pfad: string): void {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "same-origin");
   res.setHeader("X-Frame-Options", "DENY");
-  res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  if (NICHT_INDEXIEREN.test(pfad)) res.setHeader("X-Robots-Tag", "noindex, nofollow");
   // Matomo (falls eingerichtet): Skript und Zählaufrufe gehen an die eigene Matomo-Instanz
   const matomo = config.matomoUrl && config.matomoId ? ` ${new URL(config.matomoUrl).origin}` : "";
   res.setHeader(
@@ -463,7 +469,10 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
         if (j !== null && (!Number.isInteger(j) || j < 1900 || j > 2100)) return json(res, 400, { fehler: "Jahr ungültig." });
         db.prepare("UPDATE songs SET manuell_jahr = ? WHERE id = ?").run(j, z.id);
       }
-      if ("ausgeschlossen" in d) db.prepare("UPDATE songs SET ausgeschlossen = ? WHERE id = ?").run(d.ausgeschlossen ? 1 : 0, z.id);
+      if ("ausgeschlossen" in d) {
+        db.prepare("UPDATE songs SET ausgeschlossen = ? WHERE id = ?").run(d.ausgeschlossen ? 1 : 0, z.id);
+        abgleichVeraltet();
+      }
       if ("geschichte" in d) {
         const g = d.geschichte === null ? null : String(d.geschichte).trim().slice(0, 600) || null;
         db.prepare("UPDATE songs SET geschichte = ? WHERE id = ?").run(g, z.id);
@@ -477,8 +486,8 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
 }
 
 const server = http.createServer(async (req, res) => {
-  sicherheitsHeader(res);
   const url = new URL(req.url ?? "/", "http://x");
+  sicherheitsHeader(res, url.pathname);
   try {
     if (url.pathname === "/healthz") return json(res, 200, { ok: true, songs: statistik().songs });
     if (url.pathname.startsWith("/api/")) return await api(req, res, url);

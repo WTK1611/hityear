@@ -1201,6 +1201,7 @@ document.addEventListener("DOMContentLoaded", () => {
     el(
       "div",
       { class: "credits" },
+      el("a", { href: "/so-gehts.html", text: "So geht's" }),
       el("a", { href: "/impressum.html", text: "Impressum" }),
       el("a", { href: "/datenschutz.html", text: "Datenschutz" }),
       el("a", { href: "/nutzungsbedingungen.html", text: "AGB" }),
