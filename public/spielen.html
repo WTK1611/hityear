@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#12101a">
+  <title>HitYear – Mitspielen</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HitYear">
+  <link rel="preload" href="/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main>
+  <div class="marke"><a class="marke-start" href="/" aria-label="Zur Startseite"><div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64"><defs><linearGradient id="logo-verlauf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3d9a"/><stop offset=".3" stop-color="#ff8a3d"/><stop offset=".5" stop-color="#ffd93d"/><stop offset=".7" stop-color="#3dffb0"/><stop offset=".85" stop-color="#3dd8ff"/><stop offset="1" stop-color="#9b5cff"/></linearGradient></defs><circle cx="30" cy="34" r="21" fill="#160c26"/><circle cx="30" cy="34" r="16.5" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="1.2"/><circle cx="30" cy="34" r="12.5" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="1.2"/><path d="M15.5 26a17 17 0 0 1 9-8.5" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/><circle cx="30" cy="34" r="7.5" fill="url(#logo-verlauf)"/><circle cx="30" cy="34" r="2" fill="#160c26"/><path d="M51 6.5l2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z" fill="#fff"/></svg></div><span class="wortmarke" translate="no">Hit<span class="verlaufstext">Year</span></span></a><span class="leise klein" id="status"></span></div>
+  <p class="fehler" id="fehler" role="alert"></p>
+
+  <section id="beitreten" class="box versteckt">
+    <h1>Raum <span id="b-code" class="verlaufstext"></span></h1>
+    <form id="beitreten-form">
+      <div class="feld">
+        <label for="name">Dein Name</label>
+        <input id="name" maxlength="20" autocomplete="nickname" required>
+      </div>
+      <div class="feld">
+        <label>Dein Avatar</label>
+        <div class="avatar-wahl" id="avatar-wahl" role="radiogroup" aria-label="Avatar wählen"></div>
+      </div>
+      <button type="submit">Mitspielen</button>
+    </form>
+  </section>
+
+  <section id="warten" class="box versteckt">
+    <h2>Du bist dabei, <span id="w-name"></span>!</h2>
+    <p class="leise">Warte hier auf deine Mitspieler!</p>
+    <div class="spielerliste" id="w-spieler"></div>
+    <button id="bereit" class="gross bereit-knopf">✅ Ich bin fertig</button>
+  </section>
+
+  <section id="spiel" class="versteckt">
+    <div class="box">
+      <div class="leise klein kopfzeile"><span id="runde"></span> · <span id="wer"></span></div>
+      <div class="weiter-gross handy-uhr versteckt" id="frist" aria-live="off"></div>
+      <div id="audio-box" class="mini-player versteckt">
+        <button id="abspielen" class="rund" aria-label="Abspielen"></button>
+        <div class="zeitleiste"><span id="t-jetzt">0:00</span><div class="leiste"><i id="t-leiste"></i></div><span id="t-ende">0:00</span></div>
+      </div>
+      <div id="eq-handy"></div>
+      <div id="ergebnis" class="versteckt">
+        <div id="e-karte"></div>
+        <div class="urteil" id="e-urteil"></div>
+        <p class="bonus versteckt" id="e-bonus"></p>
+        <p></p>
+        <div id="weiter" class="weiter-gross handy-uhr" aria-live="off"></div>
+      </div>
+      <p class="leise klein" id="anleitung"></p>
+      <p class="leise klein quelle-live" id="quelle-live" aria-live="polite"></p>
+    </div>
+    <h3>Dein Zeitstrahl</h3>
+    <div class="zeitstrahl" id="zeitstrahl"></div>
+    <p></p>
+    <div class="einordnen">
+      <!-- Option „raten“, geführt: 1. Jahr (Lücke) → 2. Interpret → 3. Titel, jeweils bestätigen -->
+      <form id="raten-felder" class="raten-felder versteckt">
+        <p class="klein"><span class="schritt" id="rate-schritt"></span> <strong id="rate-frage"></strong></p>
+        <input id="rate-interpret" placeholder="Interpret oder Band" autocomplete="off" autocapitalize="words" maxlength="120" aria-label="Interpret oder Band raten">
+        <input id="rate-titel" placeholder="Titel des Songs" autocomplete="off" autocapitalize="sentences" maxlength="120" aria-label="Titel raten">
+        <button id="rate-weiter" class="gross"></button>
+      </form>
+      <button id="bestaetigen" class="gross versteckt" disabled>Hier einordnen ✓</button>
+      <!-- nach dem eigenen Tipp: wer von den anderen schon getippt hat -->
+      <div id="tipp-stand" class="tipp-stand versteckt" aria-live="polite"><div class="tipp-avatare"></div><p class="klein tipp-text"></p></div>
+    </div>
+  </section>
+
+  <section id="ende" class="box versteckt">
+    <span class="pokal" aria-hidden="true">🏆</span>
+    <div class="sieger-avatare" id="sieger-avatare"></div>
+    <h1 id="ende-titel" class="verlaufstext"></h1>
+    <p class="leise" id="ende-text"></p>
+    <div class="ende-runde" id="ende-runde"><h2>Beste der Runde</h2><div class="rangliste" id="rangliste"></div></div>
+    <div class="bestenliste versteckt" id="bestenliste"></div>
+    <button type="button" class="zweit versteckt" id="listen-wechsel">🏅 Bestenliste</button>
+    <div class="ende-knoepfe versteckt" id="ende-knoepfe">
+      <button type="button" id="nochmal">🔁 Noch mal spielen</button>
+      <button type="button" class="gefahr" id="verlassen">Spiel verlassen</button>
+    </div>
+  </section>
+</main>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/gemeinsam.js"></script>
+<script src="/js/spielen.js"></script>
+</body>
+</html>

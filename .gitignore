@@ -1,0 +1,12 @@
+node_modules/
+.daten/
+musik/
+abgleich/
+
+# Chartdaten nicht veröffentlichen (liegen nur auf dem Server)
+data/jahrescharts.csv
+
+# lokal, nicht veröffentlichen: Serverdetails, Betriebsnotizen, Editor-Konfiguration mit Passwörtern
+CLAUDE.local.md
+docs/lokal/
+.claude/

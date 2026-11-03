@@ -1,0 +1,91 @@
+# Bereich „party-music“ auf dem Server – eigenständig, getrennt von anderen Diensten:
+# eigenes Verzeichnis (/opt/party-music), eigenes Compose-Projekt, eigener
+# Container, eigenes Netz, eigenes Volume. Der Dienst lauscht auf 127.0.0.1:3700;
+# ohne Domain (IP-Betrieb) setzt ausrollen.sh ZEITSTRAHL_BIND=0.0.0.0 → http://<IP>:3700.
+#
+#   cd /opt/party-music && docker compose up -d --build
+#
+# HTTPS: Sind 80/443 auf dem Server frei, bringt party-music seinen eigenen Caddy mit:
+#   docker compose --profile eigener-proxy up -d --build      (Domain in .env: PARTY_MUSIC_DOMAIN)
+# Belegt bereits ein anderer Dienst 80/443, genügt dort EIN Weiterleitungsblock
+# (deploy/proxy/) für die Subdomain – sonst wird nichts an anderen Bereichen geändert.
+name: party-music
+
+services:
+  party-music:
+    build:
+      context: ./app
+    image: party-music:latest
+    container_name: party-music
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      # 1 nur hinter einem Proxy (X-Forwarded-For); im IP-Betrieb 0, sonst wäre die IP fälschbar
+      ZEITSTRAHL_PROXY: "${ZEITSTRAHL_PROXY:-1}"
+      # Synology-Freigabe „charts“: Jahrescharts (year,pos,artist,title) + Songlisten (artist,title,year)
+      ZEITSTRAHL_CHARTS: /charts
+      ZEITSTRAHL_LISTEN: /charts
+    ports:
+      - "${ZEITSTRAHL_BIND:-127.0.0.1}:${ZEITSTRAHL_PORT:-3700}:3700"
+    volumes:
+      # ./musik und ./charts sind entweder lokale Ordner (rsync) oder die per
+      # auf dem Server eingehängten NAS-Freigaben (rslave: Neu-Einhängen wird sichtbar)
+      - type: bind
+        source: ./musik
+        target: /musik
+        read_only: true
+        bind:
+          propagation: rslave
+      - type: bind
+        source: ./charts
+        target: /charts
+        read_only: true
+        bind:
+          propagation: rslave
+      - party_music_daten:/daten
+    mem_limit: 768m
+    cpus: 1.5
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - party-music
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: party-music-caddy
+    profiles: ["eigener-proxy"]
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      PARTY_MUSIC_DOMAIN: ${PARTY_MUSIC_DOMAIN:-}
+    volumes:
+      - ./app/deploy-caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - party_music_caddy_daten:/data
+      - party_music_caddy_config:/config
+    networks:
+      - party-music
+    depends_on:
+      - party-music
+
+networks:
+  party-music:
+    name: party-music
+
+volumes:
+  party_music_daten:
+  party_music_caddy_daten:
+  party_music_caddy_config:

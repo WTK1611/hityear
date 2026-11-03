@@ -1,0 +1,1751 @@
+/* Eigene Schrift (Nunito, SIL OFL – public/fonts/OFL.txt): TV-Browser wie Hisense/VIDAA haben keine
+   passende Systemschrift und fallen sonst auf eine Monospace-Schrift zurück. */
+@font-face {
+  font-family: "Nunito"; font-style: normal; font-display: swap; font-weight: 200 1000;
+  src: url("/fonts/nunito-latin-ext.woff2") format("woff2-variations"), url("/fonts/nunito-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Nunito"; font-style: normal; font-display: swap; font-weight: 200 1000;
+  src: url("/fonts/nunito-latin.woff2") format("woff2-variations"), url("/fonts/nunito-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+/* Zeitstrahl – buntes, animiertes Design.
+   Alle Bewegungen respektieren prefers-reduced-motion. */
+:root {
+  --bg: #0b0716;
+  --flaeche: rgba(255, 255, 255, 0.06);
+  --flaeche-stark: rgba(255, 255, 255, 0.1);
+  --rand: rgba(255, 255, 255, 0.14);
+  --text: #fbf8ff;
+  --leise: #b9b0d6;
+  --pink: #ff3d9a;
+  --orange: #ff8a3d;
+  --gelb: #ffd93d;
+  --gruen: #3dffb0;
+  --cyan: #3dd8ff;
+  --lila: #9b5cff;
+  --gut: #3dffb0;
+  --schlecht: #ff4d6d;
+  --verlauf: linear-gradient(120deg, var(--pink), var(--orange) 30%, var(--gelb) 50%, var(--gruen) 70%, var(--cyan) 85%, var(--lila));
+  --radius: 22px;
+  --schatten: 0 20px 60px -20px rgba(0, 0, 0, 0.7);
+  --feder: cubic-bezier(0.34, 1.56, 0.64, 1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0; background: transparent; color: var(--text); }
+body {
+  font: 16px/1.5 "Nunito", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Animierter Hintergrund (Farbwolken + Körnung) ---------- */
+.hintergrund {
+  position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+  filter: hue-rotate(var(--stimmung, 0deg)); transition: filter 8s ease-in-out;
+}
+/* im Takt, aber sanft: „scale“ wirkt zusätzlich zur Schwebe-Animation und gleitet langsam nach */
+.wolke.w1, .wolke.w2 { scale: calc(1 + var(--beat, 0) * 0.1); transition: scale 1.2s ease-out; }
+.wolke.w3 { scale: calc(1 + var(--beat, 0) * 0.16); transition: scale 1.6s ease-out; }
+.hintergrund::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, var(--bg) 100%);
+}
+/* Bühnen-Spotlights: Lichtkegel hängen oben und schwenken langsam; im Takt (--beat) etwas heller */
+.spot {
+  position: absolute; top: -12vh; width: 34vmax; height: 135vh; margin-left: -17vmax; transform-origin: 50% 0;
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%); filter: blur(22px); mix-blend-mode: screen;
+  background: linear-gradient(to bottom, var(--spot) 0%, transparent 78%);
+  opacity: calc(0.16 + var(--beat, 0) * 0.22); transition: opacity 0.6s ease-out;
+}
+.spot.s1 { --spot: #ff7ac0; left: 12%; animation: schwenken 13s ease-in-out infinite alternate; }
+.spot.s2 { --spot: #7af0ff; left: 38%; animation: schwenken 17s ease-in-out -6s infinite alternate-reverse; }
+.spot.s3 { --spot: #fff0a0; left: 64%; animation: schwenken 15s ease-in-out -3s infinite alternate; }
+.spot.s4 { --spot: #c49bff; left: 90%; animation: schwenken 19s ease-in-out -9s infinite alternate-reverse; }
+@keyframes schwenken { from { transform: rotate(-28deg); } to { transform: rotate(28deg); } }
+.wolke { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(90px); opacity: 0.5; mix-blend-mode: screen; }
+.wolke.w1 { background: var(--pink); top: -20vmax; left: -15vmax; animation: schweben1 22s ease-in-out infinite alternate; }
+.wolke.w2 { background: var(--cyan); bottom: -25vmax; right: -15vmax; animation: schweben2 26s ease-in-out infinite alternate; }
+.wolke.w3 { background: var(--lila); top: 30%; left: 35%; width: 45vmax; height: 45vmax; opacity: 0.4; animation: schweben3 30s ease-in-out infinite alternate; }
+.wolke.w4 { background: var(--orange); top: 55%; left: -10vmax; width: 35vmax; height: 35vmax; opacity: 0.35; animation: schweben2 34s ease-in-out infinite alternate-reverse; }
+/* Alle Seiten außer dem Hauptbildschirm: ruhender Verlauf statt Wolken und Spots, kein Farbfilter,
+   keine Weichzeichner hinter Karten (backdrop-filter) – schont Akku und Rechenzeit der Handys */
+.hintergrund.ruhig {
+  filter: none; transition: none;
+  background:
+    radial-gradient(60vmax 60vmax at 0% 0%, rgba(255, 61, 154, 0.5), transparent 70%),
+    radial-gradient(65vmax 65vmax at 100% 100%, rgba(61, 216, 255, 0.4), transparent 70%),
+    radial-gradient(45vmax 45vmax at 60% 45%, rgba(155, 92, 255, 0.38), transparent 70%),
+    radial-gradient(35vmax 35vmax at 0% 80%, rgba(255, 138, 61, 0.3), transparent 70%);
+}
+html.schlicht * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+html.schlicht .box { background: rgba(40, 20, 70, 0.72); }
+
+/* Handys (iPhone): Ein über 8 s gleitender Farbfilter über riesigen weichgezeichneten Wolken legte die Seite
+   bei jedem Rundenwechsel 10–17 s lahm (nichts lief mehr, auch keine Verbindung). Deshalb hier: Farbe springt
+   ohne Übergang, und die Wolken sind weiche Verläufe statt teurem blur(). */
+@media (pointer: coarse) {
+  .hintergrund { transition: none; }
+  .wolke { filter: none; opacity: 0.6; }
+  .wolke.w1 { background: radial-gradient(circle closest-side, var(--pink), transparent); }
+  .wolke.w2 { background: radial-gradient(circle closest-side, var(--cyan), transparent); }
+  .wolke.w3 { background: radial-gradient(circle closest-side, var(--lila), transparent); opacity: 0.5; }
+  .wolke.w4 { background: radial-gradient(circle closest-side, var(--orange), transparent); opacity: 0.45; }
+}
+@keyframes schweben1 { to { transform: translate(25vw, 20vh) scale(1.2); } }
+@keyframes schweben2 { to { transform: translate(-20vw, -25vh) scale(1.15); } }
+@keyframes schweben3 { to { transform: translate(-25vw, 15vh) rotate(60deg) scale(0.85); } }
+
+main { max-width: 760px; margin: 0 auto; padding: max(22px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(64px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); position: relative; }
+main.breit { max-width: 1440px; }
+/* Fernseher schneiden oft 2–5 % am Rand ab (Overscan): auf großen Bildschirmen Sicherheitsrand */
+@media (min-width: 1200px) { main.breit { padding-left: 4vw; padding-right: 4vw; padding-top: 4vh; } }
+h1, h2, h3 { line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.02em; }
+h1 { font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 900; }
+h2 { font-size: 1.4rem; font-weight: 800; }
+.verlaufstext {
+  background: var(--verlauf); background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: glanz 6s linear infinite;
+}
+@keyframes glanz { to { background-position: 200% center; } }
+
+/* ---------- Marke ---------- */
+.marke { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+.marke .logo {
+  width: 44px; height: 44px; border-radius: 14px; background: var(--verlauf); background-size: 200% 200%;
+  display: grid; place-items: center; font-weight: 900; font-size: 1.3rem; color: #160c26;
+  box-shadow: 0 8px 30px -6px var(--pink); animation: glanz 5s linear infinite, wippen 3s ease-in-out infinite;
+}
+@keyframes wippen { 50% { transform: rotate(-6deg) scale(1.05); } }
+.marke .logo svg { width: 100%; height: 100%; display: block; }
+/* Wortmarke „HitYear“: „Year“ im Regenbogen-Verlauf */
+.wortmarke { white-space: nowrap; }
+.marke > span:first-of-type:not(#status), .marke-start span { font-weight: 900; font-size: 1.4rem; letter-spacing: -0.02em; }
+.marke a:not(.marke-start) { margin-left: auto; }
+/* Logo + Name führen immer zur Startseite */
+.marke-start { display: flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; border-radius: 16px; }
+.marke-start:hover .logo { animation-duration: 5s, 0.8s; }
+.kopf-link {
+  font-weight: 800; font-size: 0.9rem; color: var(--text); text-decoration: none; padding: 8px 14px; border-radius: 999px;
+  background: var(--flaeche-stark); border: 1px solid var(--rand); transition: border-color 0.2s, transform 0.25s var(--feder);
+}
+.kopf-link:hover { border-color: var(--cyan); transform: translateY(-1px); }
+
+.leise { color: var(--leise); }
+.klein { font-size: 0.875rem; }
+.versteckt { display: none !important; }
+a { color: var(--cyan); }
+
+/* ---------- Formulare & Knöpfe ---------- */
+.feld { display: grid; gap: 6px; margin-bottom: 14px; }
+label { font-weight: 700; font-size: 0.9rem; }
+input, select {
+  font: inherit; color: var(--text); background: rgba(0, 0, 0, 0.3); border: 1px solid var(--rand);
+  border-radius: 14px; padding: 13px 16px; width: 100%; transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(61, 216, 255, 0.2); }
+/* gut sichtbarer Fokus – wichtig für die TV-Fernbedienung */
+button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visible, input[type=checkbox]:focus-visible {
+  outline: 4px solid var(--gelb); outline-offset: 4px; box-shadow: 0 0 0 10px rgba(255, 217, 61, 0.18);
+}
+button:focus-visible, .knopf:focus-visible { transform: scale(1.04); }
+#raumcode { font-size: 1.6rem; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; text-align: center; }
+
+button, .knopf {
+  font: inherit; font-weight: 800; cursor: pointer; border: 0; border-radius: 999px;
+  padding: 14px 26px; min-height: 52px; color: #160c26; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--verlauf); background-size: 200% auto;
+  box-shadow: 0 10px 30px -10px var(--pink);
+  transition: transform 0.25s var(--feder), background-position 0.6s, box-shadow 0.25s, opacity 0.2s;
+}
+button:hover:not(:disabled), .knopf:hover { background-position: 100% center; transform: translateY(-2px) scale(1.02); box-shadow: 0 14px 40px -10px var(--cyan); }
+button:active:not(:disabled) { transform: scale(0.96); }
+button.zweit, .knopf.zweit { background: var(--flaeche-stark); color: var(--text); border: 1px solid var(--rand); box-shadow: none; }
+button.zweit:hover:not(:disabled) { background: rgba(255, 255, 255, 0.16); }
+button.gefahr { background: transparent; color: var(--schlecht); border: 1px solid var(--schlecht); box-shadow: none; }
+button:disabled { opacity: 0.35; cursor: not-allowed; filter: grayscale(0.6); }
+button.gross { font-size: 1.15rem; min-height: 60px; padding: 16px 34px; }
+
+.reihe { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.reihe > * { flex: 1 1 auto; }
+#abmelden { flex: 0 0 auto; }
+
+/* ---------- Glas-Boxen ---------- */
+.box {
+  background: var(--flaeche); border: 1px solid var(--rand); border-radius: var(--radius); padding: 22px;
+  margin-bottom: 18px; backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: var(--schatten);
+  animation: einblenden 0.6s var(--feder) both;
+}
+.box:nth-child(2) { animation-delay: 0.08s; }
+.box:nth-child(3) { animation-delay: 0.16s; }
+@keyframes einblenden { from { opacity: 0; transform: translateY(24px) scale(0.97); } }
+.fehler { color: var(--schlecht); font-weight: 700; min-height: 1.4em; margin: 0 0 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: var(--flaeche-stark); font-weight: 800; font-size: 0.9rem; flex: none !important; }
+.punkt { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex: none; box-shadow: 0 0 12px currentColor; }
+
+/* ---------- Startseite ---------- */
+.held { text-align: center; padding: 18px 0 30px; }
+.held p { font-size: 1.1rem; max-width: 520px; margin: 0 auto; }
+.held h1 { margin-top: 0; margin-bottom: 26px; } /* Überschrift über der Kartenreihe */
+.held .platten { display: flex; justify-content: center; gap: 10px; gap: clamp(5px, 1.5vw, 10px); margin: 0 0 22px; }
+.held .platten span {
+  width: 54px; height: 72px; width: clamp(34px, 9vw, 54px); height: clamp(46px, 12vw, 72px); border-radius: 12px; font-size: clamp(0.8rem, 3vw, 1rem); display: grid; place-items: center; font-weight: 900; color: #160c26;
+  animation: tanzen 2.4s ease-in-out infinite; box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.6);
+}
+.held .platten span:nth-child(1) { background: #b48cff; }
+.held .platten span:nth-child(2) { background: var(--pink); animation-delay: 0.15s; }
+.held .platten span:nth-child(3) { background: var(--orange); animation-delay: 0.3s; }
+.held .platten span:nth-child(4) { background: var(--gelb); animation-delay: 0.45s; }
+.held .platten span:nth-child(5) { background: var(--gruen); animation-delay: 0.6s; }
+.held .platten span:nth-child(6) { background: var(--cyan); animation-delay: 0.75s; }
+.held .platten span:nth-child(7) { background: #4db8ff; animation-delay: 0.9s; }
+.held .platten span:nth-child(8) { background: #ff8fd0; animation-delay: 1.05s; }
+@keyframes tanzen { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-14px) rotate(4deg); } }
+/* fliegendes Cover zwischen den Jahrzehnt-Karten (start.js); „translate“ wirkt zusätzlich zum Tanzen */
+/* Zeitstrahl auf der Startseite (start.js): Cover reihen sich zwischen die Jahrzehnt-Karten ein; --b = Kartenbreite */
+.held .platten { position: relative; }
+/* mit Covern darf die Reihe breiter sein als die Spalte (bis 1100 px), und unten ist Platz für die Titelzeile */
+.held .platten.mit-covern { width: min(1100px, calc(100vw - 32px)); margin-left: calc(50% - min(550px, 50vw - 16px)); margin-bottom: 48px; }
+.held .platten.mit-covern > span { transition: width 0.5s var(--feder), height 0.5s var(--feder), font-size 0.5s; }
+.held .platten.mit-covern > span:not(.flug-titel) { width: var(--b); height: calc(var(--b) * 4 / 3); font-size: min(1rem, calc(var(--b) * 0.3)); }
+.held .platten > span.flug-cover {
+  position: relative; flex: none; align-self: center; z-index: 2; pointer-events: none; animation: none; background: none; box-shadow: none;
+  border-radius: 8px; overflow: visible;
+}
+.held .platten.mit-covern > .flug-cover { width: 0; height: var(--b); }
+.held .platten.mit-covern > .flug-cover.offen { width: var(--b); }
+.held .platten > .flug-cover img {
+  position: absolute; left: 50%; top: 0; width: var(--b); height: var(--b); margin-left: calc(var(--b) / -2); border-radius: 6px; object-fit: cover; display: block;
+  box-shadow: 0 0 0 2px #fff, 0 10px 22px -6px rgba(0, 0, 0, 0.7);
+}
+.held .platten > .flug-cover b {
+  position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); font-size: min(0.72rem, calc(var(--b) * 0.24)); font-weight: 900;
+  color: #160c26; background: var(--gelb); padding: 0 5px; border-radius: 999px; line-height: 1.35; white-space: nowrap;
+}
+.held .platten > .flug-titel { display: none; } /* nur noch Anker am Ende der Reihe, keine Titel */
+
+/* ---------- Karten (Farbe nach Jahrzehnt über --farbton) ---------- */
+.karte {
+  --farbton: 280;
+  position: relative; border-radius: 16px; padding: 12px 16px;
+  display: grid; grid-template-columns: auto 1fr; gap: 0 14px; align-items: center;
+  background: linear-gradient(135deg, hsl(var(--farbton) 90% 60% / 0.28), hsl(calc(var(--farbton) + 40) 90% 55% / 0.12));
+  border: 1px solid hsl(var(--farbton) 90% 70% / 0.45);
+  box-shadow: 0 10px 30px -14px hsl(var(--farbton) 90% 50%);
+  animation: karteRein 0.5s var(--feder) both;
+}
+@keyframes karteRein { from { opacity: 0; transform: translateX(-20px) scale(0.9); } }
+.karte .jahr {
+  grid-row: span 2; font-size: 1.8rem; font-weight: 900; font-variant-numeric: tabular-nums;
+  color: hsl(var(--farbton) 100% 75%); text-shadow: 0 0 18px hsl(var(--farbton) 100% 60% / 0.6);
+}
+.karte .titel { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.karte .interpret { color: var(--leise); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.karte.neu { animation: karteNeu 0.9s var(--feder) both; }
+.karte:has(.karte-cover) { grid-template-columns: auto 1fr auto; }
+.karte-cover {
+  grid-column: 3; grid-row: 1 / span 2; width: 46px; height: 46px; border-radius: 8px; object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.karte-cover.leer { display: grid; place-items: center; font-size: 1.3rem; color: #160c26; background: hsl(var(--farbton) 90% 65%); }
+@keyframes karteNeu {
+  0% { opacity: 0; transform: scale(0.4) rotate(-8deg); }
+  60% { transform: scale(1.06) rotate(2deg); }
+}
+
+/* Zeitstrahl am Handy: Linie mit Karten und Lücken */
+.zeitstrahl { display: grid; gap: 8px; position: relative; padding-left: 18px; }
+.zeitstrahl::before {
+  content: ""; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 4px; border-radius: 4px;
+  background: var(--verlauf); background-size: 100% 300%; animation: fliessen 6s linear infinite;
+}
+@keyframes fliessen { to { background-position: 0 300%; } }
+.luecke {
+  min-height: 46px; border: 2px dashed var(--rand); background: transparent; color: var(--leise);
+  border-radius: 14px; font-weight: 700; padding: 8px; box-shadow: none; transition: all 0.25s var(--feder);
+}
+.luecke:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); background: rgba(61, 216, 255, 0.08); transform: scale(1.02); }
+.luecke.gewaehlt {
+  border-style: solid; border-color: transparent; color: #160c26; background: var(--verlauf); background-size: 200% auto;
+  animation: glanz 3s linear infinite, pochen 1.2s ease-in-out infinite; transform: scale(1.03);
+}
+/* getippte Lücke: bleibt bis zur Auflösung rot blinkend stehen (nur Opacity – billig auf Handys) */
+.luecke.getippt {
+  display: grid; place-items: center; text-align: center; border-style: solid; border-color: #ff3d5a; color: #fff;
+  background: rgba(255, 61, 90, 0.28); animation: tipp-blinken 1s ease-in-out infinite;
+}
+@keyframes tipp-blinken { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .luecke.getippt { animation: none; } }
+@keyframes pochen { 50% { box-shadow: 0 0 0 8px rgba(255, 61, 154, 0.18); } }
+
+/* ---------- Schallplatte + Equalizer ---------- */
+.platte {
+  width: min(220px, 55vw); aspect-ratio: 1; margin: 18px auto; border-radius: 50%; position: relative;
+  background:
+    radial-gradient(circle, #160c26 0 6%, transparent 6.5%),
+    radial-gradient(circle, transparent 0 17%, rgba(255, 255, 255, 0) 17%),
+    conic-gradient(from 0deg, var(--pink), var(--orange), var(--gelb), var(--gruen), var(--cyan), var(--lila), var(--pink));
+  box-shadow: 0 0 0 10px #120a20, 0 0 0 11px var(--rand), 0 30px 80px -20px var(--pink);
+  animation: drehen 3s linear infinite; animation-play-state: paused;
+}
+.platte::before {
+  content: ""; position: absolute; inset: 22%; border-radius: 50%;
+  background: repeating-radial-gradient(circle, rgba(0, 0, 0, 0.35) 0 1px, transparent 1px 5px), #1a1030;
+}
+.platte::after {
+  content: ""; position: absolute; inset: 44%; border-radius: 50%; background: var(--verlauf); box-shadow: 0 0 0 4px #160c26;
+}
+.platte.laeuft { animation-play-state: running; }
+/* Bass lässt die Platte pumpen und vibrieren (eigene Eigenschaften, damit die Drehung bleibt) */
+.platte.laeuft { scale: calc(1 + var(--beat, 0) * 0.06); translate: calc(var(--zx, 0) * 1px) calc(var(--zy, 0) * 1px); }
+@media (prefers-reduced-motion: reduce) { .platte.laeuft { scale: none; translate: none; } }
+@keyframes drehen { to { transform: rotate(360deg); } }
+/* Hauptbildschirm: Platte dreht per Skript (bremst ab, läuft an) und ist der Play/Pause-Knopf */
+.platte.handgedreht { animation: none; cursor: pointer; transition: box-shadow 0.2s; }
+.platte.handgedreht:hover, .platte.handgedreht:focus-visible { box-shadow: 0 0 0 10px #120a20, 0 0 0 12px var(--cyan), 0 30px 80px -20px var(--pink); outline: none; }
+.platte.handgedreht.gesperrt { cursor: default; }
+.platte.handgedreht.gesperrt:hover { box-shadow: 0 0 0 10px #120a20, 0 0 0 11px var(--rand), 0 30px 80px -20px var(--pink); }
+.equalizer { display: flex; justify-content: center; align-items: flex-end; gap: 4px; height: 72px; width: clamp(160px, 100%, 440px); margin: 6px auto 14px; overflow: hidden; }
+.equalizer i { flex: 1 1 0; min-width: 3px; max-width: 14px; height: 20%; border-radius: 4px; background: var(--verlauf); background-size: 100% 400%; animation-delay: calc(var(--i, 0) * -0.9s); }
+.equalizer.laeuft i { animation: balken 0.9s ease-in-out infinite alternate; }
+.equalizer i:nth-child(2n) { animation-duration: 0.7s !important; background-position: 0 30%; }
+.equalizer i:nth-child(3n) { animation-duration: 1.1s !important; background-position: 0 60%; }
+.equalizer i:nth-child(5n) { animation-duration: 0.6s !important; background-position: 0 90%; }
+@keyframes balken { from { height: 12%; } to { height: 100%; } }
+/* echt = misst den eigenen Ton; läuft die Musik woanders (takt), tanzt er trotzdem im Takt */
+.equalizer.echt:not(.takt) i { animation: none !important; transition: height 0.08s linear; }
+.equalizer.takt i, .equalizer.simuliert i { animation: none !important; transition: height 0.12s ease-out; } /* Höhe setzt taktSimulieren() */
+.equalizer.versteckt { display: none; }
+.equalizer[role="button"] { cursor: pointer; border-radius: 10px; }
+.equalizer[role="button"]:focus-visible { outline: 2px solid var(--cyan); outline-offset: 6px; }
+/* Stile (Klick wechselt): Spiegel wächst aus der Mitte, Punkte springen, Neon leuchtet */
+.equalizer.eq-spiegel { align-items: center; }
+.equalizer.eq-punkte i { background: none; position: relative; }
+.equalizer.eq-punkte i::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; aspect-ratio: 1; border-radius: 50%;
+  background: var(--verlauf); background-size: 100% 400%; background-position: inherit; box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+.equalizer.eq-neon { gap: 3px; align-items: center; filter: drop-shadow(0 0 6px var(--pink)) drop-shadow(0 0 12px var(--cyan)); }
+.equalizer.eq-neon i { max-width: 3px; }
+/* LED: Balken in Segmente zerlegt wie am Verstärker */
+.equalizer.eq-led i { border-radius: 1px; -webkit-mask: repeating-linear-gradient(to top, #000 0 5px, transparent 5px 8px); mask: repeating-linear-gradient(to top, #000 0 5px, transparent 5px 8px); background: linear-gradient(to top, #3dffb0 0 55%, #ffd93d 55% 80%, #ff3d6e 80%); background-size: 100% 72px; background-position: bottom; }
+/* Regenbogen: jede Säule eine eigene Farbe, runde Kappen */
+.equalizer.eq-regenbogen i { border-radius: 999px; background: hsl(calc(var(--i, 0) * 300) 95% 62%); box-shadow: 0 0 12px hsl(calc(var(--i, 0) * 300) 95% 62% / 0.6); }
+/* Berge: lückenlose Fläche mit weichen Gipfeln */
+.equalizer.eq-berge { gap: 0; }
+.equalizer.eq-berge i { max-width: 22px; border-radius: 50% 50% 0 0 / 22px 22px 0 0; opacity: 0.9; }
+/* Pixel: Retro-Raster aus Quadraten */
+/* Retro: LED-Segmente grün → gelb → rot mit fallenden Spitzen (--sp: Spitze relativ zur Balkenhöhe) */
+.equalizer.eq-retro { gap: 3px; }
+.equalizer.eq-retro i {
+  position: relative; border-radius: 1px; overflow: visible;
+  background: repeating-linear-gradient(to top, transparent 0 5px, rgba(11, 7, 22, 0.85) 5px 7px), linear-gradient(to top, #3dffb0 0 50%, #ffd93d 50% 78%, #ff3d6e 78%);
+  background-size: 100% 100%, 100% var(--eq-hoehe, 72px); background-position: bottom; background-repeat: no-repeat;
+}
+.equalizer.eq-retro i::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 3px; bottom: calc(var(--sp, 1) * 100% + 2px);
+  border-radius: 1px; background: #fff; box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
+.steuerung .equalizer.eq-retro { --eq-hoehe: clamp(64px, 9vh, 96px); }
+.equalizer.eq-pixel { gap: 3px; }
+.equalizer.eq-pixel i { border-radius: 0; -webkit-mask: repeating-linear-gradient(to top, #000 0 8px, transparent 8px 11px); mask: repeating-linear-gradient(to top, #000 0 8px, transparent 8px 11px); background: hsl(calc(180 + var(--i, 0) * 140) 90% 60%); }
+/* im Takt: --beat (0…1) kommt vom echten Equalizer (Bass) */
+.platte.laeuft { filter: drop-shadow(0 0 calc(var(--beat, 0) * 46px) rgba(255, 61, 154, 0.75)); }
+.mini-strahl.denkt h3 .avatar { transform: scale(calc(1 + var(--beat, 0) * 0.22)) rotate(calc(var(--beat, 0) * -8deg)); transition: transform 0.08s linear; }
+/* Tipp abgegeben: leuchtender Rahmen (verrät nicht, wohin) */
+.mini-strahl.eingeloggt { border-color: transparent; box-shadow: 0 0 0 2px var(--gruen), 0 0 calc(18px + var(--beat, 0) * 16px) -4px var(--gruen); }
+.mini-strahl.eingeloggt.raet { box-shadow: 0 0 0 2px var(--gelb), 0 0 calc(18px + var(--beat, 0) * 16px) -4px var(--gelb); }
+/* Auflösung: Ergebnis steht im Spieler-Rahmen */
+.mini-strahl.ergebnis-gut { border-color: transparent; box-shadow: 0 0 0 2px var(--gut), 0 0 24px -6px var(--gut); }
+.mini-strahl.ergebnis-schlecht { border-color: transparent; box-shadow: 0 0 0 2px var(--schlecht), 0 0 24px -8px var(--schlecht); }
+.ergebnis-banner {
+  position: relative; display: flex; align-items: center; gap: 10px; margin: 8px 0 10px; padding: 7px 14px;
+  border-radius: 12px; font-size: 1.05rem; font-weight: 700; color: #120a1f;
+}
+.ergebnis-banner b { font-weight: 900; font-size: 1.15rem; }
+.ergebnis-banner.gut { background: linear-gradient(90deg, var(--gut), #b4ff6a); box-shadow: 0 6px 22px -6px var(--gut); }
+.ergebnis-banner.schlecht { background: var(--schlecht); color: #fff; }
+.ergebnis-banner.neu { animation: aufploppen 0.55s var(--feder) both; }
+.ergebnis-banner.gut.neu b { display: inline-block; animation: sternDreh 0.8s 0.25s var(--feder) both; }
+.ergebnis-banner .sterne { position: absolute; left: 34px; top: 50%; pointer-events: none; }
+.ergebnis-banner .sterne i {
+  position: absolute; left: 0; top: 0; font-style: normal; font-size: 1.2rem; color: var(--gelb);
+  text-shadow: 0 0 10px var(--gelb); opacity: 0;
+  animation: sternFlug 1.1s var(--d, 0s) cubic-bezier(.2,.8,.3,1) forwards;
+}
+.ergebnis-banner .sterne i:nth-child(3n) { color: #fff; font-size: 0.9rem; }
+@keyframes sternFlug {
+  0% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--w)) translateX(0) scale(0.3); }
+  60% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--w)) translateX(70px) scale(1.1) rotate(180deg); }
+}
+.mini-strahl.eben-fertig { animation: hupfen 0.8s var(--feder); }
+.mini-strahl.eben-fertig .tipp-status { animation: aufploppen 0.5s var(--feder) both; }
+.luecke.frisch { animation: aufploppen 0.45s var(--feder); }
+.bonus:not(.versteckt) { animation: aufploppen 0.6s 0.9s var(--feder) both; }
+.eingabe .stern { display: inline-block; animation: sternDreh 0.9s 0.6s var(--feder) both; }
+@keyframes sternDreh { from { transform: scale(0) rotate(-200deg); opacity: 0; } }
+
+/* ---------- Host-Bildschirm ---------- */
+.host-raster { display: grid; grid-template-columns: minmax(280px, 400px) 1fr; gap: 26px; align-items: start; }
+@media (max-width: 880px) { .host-raster { grid-template-columns: 1fr; } }
+.qr {
+  background: #fff; border-radius: var(--radius); padding: 16px; position: relative;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08), 0 30px 80px -20px var(--cyan);
+  animation: einblenden 0.7s var(--feder) both;
+}
+.qr::before {
+  content: ""; position: absolute; inset: -4px; border-radius: calc(var(--radius) + 4px); z-index: -1;
+  background: var(--verlauf); background-size: 300% 300%; animation: glanz 4s linear infinite; filter: blur(14px); opacity: 0.8;
+}
+.qr img { width: 100%; display: block; }
+.code { font-size: clamp(3rem, 8vw, 4.6rem); font-weight: 900; letter-spacing: 0.18em; text-align: center; margin-top: 10px; }
+.spielerliste { display: grid; gap: 10px; }
+.spielerzeile {
+  display: flex; align-items: center; gap: 12px; background: var(--flaeche-stark); border: 1px solid var(--rand);
+  border-radius: 16px; padding: 10px 14px; animation: plopp 0.5s var(--feder) both;
+}
+@keyframes plopp { from { opacity: 0; transform: scale(0.6); } }
+.spielerzeile .name { font-weight: 800; flex: 1; font-size: 1.05rem; }
+.spielerzeile select { width: auto; padding: 8px 10px; }
+.spielerzeile button { min-height: 38px; padding: 6px 12px; }
+.offline { opacity: 0.45; }
+.buehne { text-align: center; padding: 28px 16px; }
+.buehne .wer { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; }
+.aufloesung { display: grid; grid-template-columns: 200px 1fr; gap: 26px; align-items: center; text-align: left; max-width: 760px; margin: 0 auto; perspective: 1200px; }
+.aufloesung > div:first-child { animation: umdrehen 0.9s var(--feder) both; transform-style: preserve-3d; }
+@keyframes umdrehen { from { transform: rotateY(180deg) scale(0.7); opacity: 0; } }
+.aufloesung img, .aufloesung .platzhalter {
+  width: 200px; height: 200px; border-radius: 20px; object-fit: cover; display: grid; place-items: center; font-size: 4rem;
+  background: var(--verlauf); background-size: 200% 200%; animation: glanz 5s linear infinite; color: #160c26;
+  box-shadow: 0 30px 70px -20px var(--pink);
+}
+.aufloesung .grosses-jahr {
+  font-size: clamp(4rem, 12vw, 7rem); font-weight: 900; line-height: 0.95; font-variant-numeric: tabular-nums;
+  background: var(--verlauf); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: glanz 4s linear infinite, aufploppen 0.7s var(--feder) both;
+}
+@keyframes aufploppen { from { transform: scale(0.3); opacity: 0; } }
+.aufloesung .songtitel { font-size: 1.8rem; font-weight: 900; }
+@media (max-width: 560px) { .aufloesung { grid-template-columns: 1fr; text-align: center; justify-items: center; } }
+.urteil { font-size: 1.5rem; font-weight: 900; margin-top: 10px; animation: aufploppen 0.6s 0.3s var(--feder) both; }
+.urteil.gut { color: var(--gut); text-shadow: 0 0 24px rgba(61, 255, 176, 0.6); }
+.urteil.schlecht { color: var(--schlecht); animation: aufploppen 0.6s 0.3s var(--feder) both, wackeln 0.5s 0.9s; }
+@keyframes wackeln { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+
+.alle-zeitstrahle { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .alle-zeitstrahle { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .alle-zeitstrahle { grid-template-columns: 1fr; } }
+.mini-strahl.frei {
+  display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 96px;
+  background: transparent; border: 2px dashed var(--rand); color: var(--leise); font-weight: 700;
+}
+.frei-plus { font-size: 1.6rem; line-height: 1; animation: pulsieren 2.4s ease-in-out infinite; }
+.mini-strahl {
+  background: var(--flaeche); border: 1px solid var(--rand); border-radius: var(--radius); padding: 14px;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: transform 0.4s var(--feder), box-shadow 0.4s;
+}
+.mini-strahl.aktiv { border-color: transparent; transform: translateY(-4px); box-shadow: 0 0 0 2px var(--gelb), 0 20px 50px -15px var(--gelb); }
+.mini-strahl h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 1.1rem; }
+.mini-strahl h3 .tipp-status, .mini-strahl h3 .zahl { white-space: nowrap; }
+.mini-strahl h3 .zahl { margin-left: auto; font-weight: 900; color: var(--gelb); }
+.zahl-teil { position: relative; display: inline-block; }
+.zahl-teil .wert { display: inline-block; }
+.zahl-teil.plus .wert { animation: zahlHupf 0.9s var(--feder) both; }
+.zahl-teil.sterne.plus .wert { animation: zahlHupf 0.9s var(--feder) both, sternGlanz 1.4s ease-out; }
+.zahl-teil .plus-eins {
+  position: absolute; right: 0; top: -2px; font-size: 0.95rem; font-weight: 900; pointer-events: none;
+  color: var(--gut); text-shadow: 0 0 10px currentColor; animation: plusSteigen 1.4s ease-out forwards;
+}
+.zahl-teil.sterne .plus-eins { color: var(--gelb); }
+@keyframes zahlHupf { 0% { transform: scale(1); } 30% { transform: scale(1.6) rotate(-6deg); } 60% { transform: scale(0.9); } 100% { transform: scale(1); } }
+@keyframes sternGlanz { 0%, 100% { filter: none; } 30% { filter: drop-shadow(0 0 10px var(--gelb)) brightness(1.5); } }
+@keyframes plusSteigen { 0% { opacity: 0; transform: translateY(6px) scale(0.6); } 20% { opacity: 1; transform: translateY(-14px) scale(1.15); } 100% { opacity: 0; transform: translateY(-38px) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .zahl-teil .plus-eins, .zahl-teil.plus .wert { animation: none; } .zahl-teil .plus-eins { display: none; } }
+.tipp-status {
+  font-size: 0.8rem; font-weight: 700; padding: 2px 9px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1); color: var(--leise);
+}
+.tipp-status:not(.fertig) { animation: pulsieren 1.6s ease-in-out infinite; }
+.tipp-status.fertig { background: rgba(60, 220, 140, 0.22); color: #7dffb8; }
+.tipp-status.raet { background: rgba(255, 200, 61, 0.2); color: var(--gelb); }
+.bonus-treffer {
+  margin-top: 10px; padding: 6px 12px; border-radius: 12px; font-weight: 900; color: #160c26; width: fit-content;
+  background: linear-gradient(90deg, var(--gelb), var(--orange)); animation: sternDreh 0.9s 0.8s var(--feder) both;
+}
+@keyframes pulsieren { 50% { opacity: 0.5; } }
+.fortschritt { height: 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.08); overflow: hidden; margin-bottom: 10px; }
+.fortschritt i { display: block; height: 100%; border-radius: 8px; background: var(--verlauf); background-size: 300% auto; transition: width 0.8s var(--feder); }
+.mini-strahl li.tipp { outline: 2px solid currentColor; outline-offset: 1px; animation: aufploppen 0.6s var(--feder) both; }
+.mini-strahl li.tipp.gut { background: rgba(61, 255, 176, 0.25); color: #3dffb0; }
+.mini-strahl li.tipp.schlecht { background: rgba(255, 61, 110, 0.22); color: #ff6b8e; }
+.mini-strahl ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 5px; }
+.mini-strahl li {
+  --farbton: 280; border-radius: 8px; padding: 3px 8px; font-size: 0.85rem; font-weight: 800; font-variant-numeric: tabular-nums;
+  background: hsl(var(--farbton) 90% 60% / 0.25); color: hsl(var(--farbton) 100% 82%); animation: plopp 0.4s var(--feder) both;
+}
+
+.rangliste { display: grid; gap: 10px; max-width: 560px; margin: 0 auto; }
+.rangliste .platz {
+  display: flex; gap: 12px; align-items: center; background: var(--flaeche-stark); border-radius: 18px; padding: 14px 18px;
+  font-size: 1.1rem; animation: einblenden 0.6s var(--feder) both;
+}
+.rangliste .platz:nth-child(2) { animation-delay: 0.1s; }
+.rangliste .platz:nth-child(3) { animation-delay: 0.2s; }
+.rangliste .platz:nth-child(n + 4) { animation-delay: 0.3s; }
+.rangliste .platz.sieg { background: var(--verlauf); background-size: 200% auto; color: #160c26; animation: einblenden 0.6s var(--feder) both, glanz 4s linear infinite; }
+.rangliste .platz.sieg .leise { color: #2a1840; }
+.bestenliste { max-width: 560px; margin: 28px auto 0; text-align: left; display: grid; gap: 8px; }
+.bestenliste h2 { margin: 0; text-align: center; }
+.bestenliste > p { margin: 0 0 4px; text-align: center; }
+.besten-zeile {
+  display: grid; grid-template-columns: 2.4em 1fr auto auto; gap: 12px; align-items: center;
+  padding: 10px 16px; border-radius: 16px; background: var(--flaeche-stark); border: 1px solid var(--rand);
+  animation: einblenden 0.6s var(--feder) both;
+}
+.besten-zeile:nth-of-type(2) { animation-delay: 0.45s; }
+.besten-zeile:nth-of-type(3) { animation-delay: 0.55s; }
+.besten-zeile:nth-of-type(4) { animation-delay: 0.65s; }
+.besten-zeile:nth-of-type(n + 5) { animation-delay: 0.75s; }
+.besten-zeile.unser { border-color: var(--pink); box-shadow: 0 0 0 1px var(--pink), 0 10px 30px -12px var(--pink); }
+.besten-platz { font-size: 1.3rem; text-align: center; }
+.besten-name { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.besten-punkte { font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.pokal { font-size: 5rem; display: block; animation: hupfen 1.4s var(--feder) infinite; }
+@keyframes hupfen { 0%, 100% { transform: translateY(0) rotate(0); } 40% { transform: translateY(-20px) rotate(-8deg); } }
+
+.einstellungen-raster { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+@media (max-width: 560px) { .einstellungen-raster { grid-template-columns: 1fr; } }
+.jahrzehnte { display: flex; flex-wrap: wrap; gap: 8px; }
+.jahrzehnte label {
+  --farbton: 280; font-weight: 700; display: inline-flex; gap: 6px; align-items: center; cursor: pointer;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid hsl(var(--farbton) 90% 70% / 0.5);
+  background: hsl(var(--farbton) 90% 60% / 0.12); transition: all 0.2s var(--feder);
+}
+.jahrzehnte label:has(input:checked) { background: hsl(var(--farbton) 90% 60%); color: #160c26; transform: scale(1.05); }
+.jahrzehnte label:has(input:checked) .leise { color: #2a1840; }
+.jahrzehnte input { width: auto; accent-color: hsl(var(--farbton) 90% 50%); }
+.ziel-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ziel-chips button.ziel-chip {
+  min-height: 46px; min-width: 52px; padding: 8px 14px; font-size: 1.05rem; font-weight: 900; box-shadow: none;
+  color: var(--text); background: hsl(var(--farbton) 90% 60% / 0.14); border: 1px solid hsl(var(--farbton) 90% 70% / 0.5);
+  transition: transform 0.25s var(--feder), background 0.2s, color 0.2s;
+}
+.ziel-chips button.ziel-chip:hover:not(:disabled) { background: hsl(var(--farbton) 90% 60% / 0.3); box-shadow: none; }
+.ziel-chips button.ziel-chip[aria-checked="true"] { background: hsl(var(--farbton) 90% 60%); color: #160c26; transform: scale(1.12) rotate(-4deg); }
+.schalter { display: flex; align-items: center; gap: 12px; margin: 12px 0 4px; cursor: pointer; font-weight: 400; }
+.schalter input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.schalter-bahn { flex: none; position: relative; width: 50px; height: 28px; border-radius: 99px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.22); transition: background .25s; }
+.schalter-bahn::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); transition: transform .3s cubic-bezier(.5,1.6,.4,1); }
+.schalter input:checked + .schalter-bahn { background: linear-gradient(90deg, #ff4fa3, #ffb347); border-color: transparent; }
+.schalter input:checked + .schalter-bahn::after { transform: translateX(22px); }
+.schalter input:focus-visible + .schalter-bahn { outline: 2px solid #fff; outline-offset: 2px; }
+.bot-marke { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; vertical-align: middle; background: rgba(155, 92, 255, 0.25); color: #d9c4ff; white-space: nowrap; }
+.bot-marke.leicht { background: rgba(61, 255, 176, 0.18); color: #9dffd6; }
+.bot-marke.profi { background: rgba(255, 61, 154, 0.22); color: #ffb3d6; }
+.zurueck-reihe { display: flex; justify-content: flex-end; margin-top: 22px; }
+/* Zurück-Knopf: wie die Knöpfe der Startseite, der Verlauf wandert langsam */
+.knopf.zurueck { animation: glanz 6s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .knopf.zurueck, .spot { animation: none; } }
+.start-reihe { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.check { display: flex; gap: 8px; align-items: center; font-weight: 600; }
+.check input { width: auto; accent-color: var(--pink); }
+
+/* ---------- Konfetti ---------- */
+canvas.konfetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 50; }
+
+/* ---------- Admin ---------- */
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th, td { text-align: left; padding: 10px 6px; border-bottom: 1px solid var(--rand); vertical-align: top; }
+td input { width: 96px; padding: 6px 8px; }
+td button { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; }
+.tabelle-scroll { overflow-x: auto; }
+progress { width: 100%; height: 10px; accent-color: var(--pink); }
+
+/* ---------- Decks ---------- */
+.deck-editor { margin-top: 18px; padding: 16px; border-radius: 18px; background: var(--flaeche); border: 1px solid var(--rand); }
+.deck-spalten { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .deck-spalten { grid-template-columns: 1fr; } }
+.deck-spalten h4 { margin: 6px 0 8px; }
+.song-liste { list-style: none; margin: 8px 0 0; padding: 0; max-height: 420px; overflow-y: auto; }
+.song-liste li { display: flex; gap: 10px; align-items: center; padding: 8px 4px; border-bottom: 1px solid var(--rand); }
+.song-liste li > span { flex: 1; min-width: 0; }
+.song-liste li button { min-height: 32px; padding: 4px 12px; font-size: 0.85rem; flex: none; }
+.art-chip { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--flaeche-stark); border: 1px solid var(--rand); margin-left: 6px; }
+.tabelle-deck { display: flex; gap: 6px; margin-top: 6px; }
+.tabelle-deck select { width: auto; max-width: 160px; padding: 4px 8px; font-size: 0.85rem; }
+.upload .aktionen select.deck-wahl, .tabelle-deck select { min-height: 34px; }
+button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; margin-top: 8px; }
+
+/* ---------- Ergebnis-Karten (übernommene Vorschauen) ---------- */
+.uploads { display: grid; gap: 12px; margin-top: 12px; }
+.upload {
+  display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 16px; border-radius: 18px;
+  background: var(--flaeche); border: 1px solid var(--rand);
+}
+.upload.fehlt { border-color: var(--schlecht); }
+.upload .cover {
+  width: 120px; height: 120px; border-radius: 14px; object-fit: cover; background: var(--verlauf); background-size: 300% auto;
+  display: grid; place-items: center; color: #160c26; font-weight: 900; font-size: 1.4rem;
+}
+.upload h3 { margin: 0; font-size: 1.05rem; }
+.upload .zeile { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.upload .marke-chip {
+  font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--flaeche-stark); border: 1px solid var(--rand);
+}
+.upload .marke-chip.gut { border-color: var(--gut); color: var(--gut); }
+.upload .marke-chip.warn { border-color: var(--gelb); color: var(--gelb); }
+.upload .jahr-rechts { flex: 0 0 auto; text-align: right; }
+.upload .jahr-gross { font-size: 1.6rem; font-weight: 900; line-height: 1; }
+.upload .steckbrief { display: grid; grid-template-columns: minmax(200px, 1fr) 1.4fr; gap: 6px 22px; margin: 10px 0 4px; }
+.upload .steckbrief dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 0; font-size: 0.9rem; }
+.upload .steckbrief dt { color: var(--leise); font-weight: 700; }
+.upload .steckbrief dd { margin: 0; overflow-wrap: anywhere; }
+.upload .steckbrief h4 { margin: 0 0 4px; font-size: 0.9rem; color: var(--leise); }
+.upload .fakten-liste { margin: 0; padding-left: 18px; font-size: 0.9rem; display: grid; gap: 3px; }
+@media (max-width: 640px) { .upload .steckbrief { grid-template-columns: 1fr; } }
+.upload .aktionen { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+.upload .aktionen input { width: 110px; padding: 6px 10px; }
+.upload .aktionen select.deck-wahl { width: auto; max-width: 200px; padding: 6px 10px; }
+.upload .aktionen button { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; }
+@media (max-width: 480px) { .upload { grid-template-columns: 64px 1fr; } .upload .cover { width: 64px; height: 64px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  .platte { animation: none; }
+  .platte.laeuft { filter: none; }
+  .wolke { scale: 1 !important; }
+  .spot { display: none; }
+  .mini-strahl.denkt h3 .avatar { transform: none; }
+}
+
+/* ---------- „Jetzt läuft“ – Player im Stil moderner Musik-Apps ---------- */
+.jetzt-laeuft { position: relative; border-radius: 28px; overflow: hidden; margin-bottom: 22px; isolation: isolate; box-shadow: var(--schatten); }
+.ambient {
+  position: absolute; inset: -60px; z-index: -1; background-size: cover; background-position: center;
+  filter: blur(60px) saturate(1.8) brightness(0.55); transform: scale(1.2); transition: background-image 0.8s, opacity 0.8s;
+}
+.ambient.geheim {
+  background-image: conic-gradient(from 0deg, var(--pink), var(--orange), var(--gelb), var(--gruen), var(--cyan), var(--lila), var(--pink)) !important;
+  animation: drehen 18s linear infinite; filter: blur(80px) saturate(1.4) brightness(0.45);
+}
+.jetzt-laeuft::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(11, 7, 22, 0.1), rgba(11, 7, 22, 0.75)); }
+.player { display: grid; grid-template-columns: minmax(220px, 380px) 1fr; grid-template-columns: minmax(0, min(380px, 40vw)) 1fr; /* Cover höchstens 40 % der Breite (Tablet) */ gap: clamp(20px, 4vw, 48px); align-items: start; padding: clamp(20px, 4vw, 44px); }
+/* Cover bleibt oben stehen, auch wenn der Text daneben lang wird */
+.player > .cover-gross { position: sticky; top: 20px; }
+@media (max-width: 760px) { .player { grid-template-columns: 1fr; text-align: center; justify-items: center; } .player > .cover-gross { position: relative; top: auto; } }
+.cover-gross {
+  width: 100%; max-width: 380px; aspect-ratio: 1; border-radius: 18px; position: relative; display: grid; place-items: center;
+  background: rgba(0, 0, 0, 0.35); box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  perspective: 1200px;
+}
+.cover-gross img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; animation: umdrehen 0.9s var(--feder) both; }
+.cover-gross .platte { width: 78%; margin: 0; }
+/* Auflösung: Platte → Cover wie eine umgedrehte Karte (vorne Platte, hinten Cover) */
+/* Cover umdrehen: fünf Varianten, sanfte Kurve ohne Nachfedern, nur transform (läuft auf der GPU) */
+.wende {
+  position: relative; width: 100%; height: 100%; transform-style: preserve-3d; will-change: transform;
+  animation: wenden 1.1s cubic-bezier(0.45, 0.05, 0.25, 1) both;
+}
+.wende > .seite { position: absolute; inset: 0; display: grid; place-items: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.wende > .hinten { transform: rotateY(180deg); }
+/* während der Drehung steht die Platte still und leuchtet nicht – Filter in 3D kosten viel */
+.wende > .vorne .platte { animation-play-state: paused; filter: none; }
+.wende-x { animation-name: wenden-x; }
+.wende-x > .hinten, .wende-salto > .hinten, .wende-pfanne > .hinten { transform: rotateX(180deg); }
+/* Pfannkuchen: hochwerfen und dabei wenden */
+.wende-pfanne { animation-name: wenden-pfanne; animation-duration: 1.25s; }
+@keyframes wenden-pfanne {
+  0% { transform: translateY(0) rotateX(0deg); }
+  20% { transform: translateY(4%) rotateX(0deg) scale(0.97); }
+  60% { transform: translateY(-22%) rotateX(150deg) scale(1.04); }
+  100% { transform: translateY(0) rotateX(180deg); }
+}
+/* eineinhalb Umdrehungen */
+.wende-doppel { animation-name: wenden-doppel; animation-duration: 1.6s; }
+@keyframes wenden-doppel {
+  0% { transform: rotateY(0deg); }
+  60% { transform: rotateY(450deg) scale(1.08); }
+  100% { transform: rotateY(540deg); }
+}
+/* erst ungeduldig wackeln, dann wenden */
+.wende-wackel { animation-name: wenden-wackel; animation-duration: 1.6s; }
+@keyframes wenden-wackel {
+  0%, 40% { transform: rotate(0deg) rotateY(0deg); }
+  8% { transform: rotate(-7deg); }
+  16% { transform: rotate(7deg); }
+  24% { transform: rotate(-5deg); }
+  32% { transform: rotate(3deg); }
+  100% { transform: rotate(0deg) rotateY(180deg); }
+}
+/* flache Varianten: keine Drehung der Karte, Vorder- und Rückseite bewegen sich einzeln */
+.wende.flach { animation: none; transform: none; will-change: auto; }
+.wende.flach > .hinten { transform: none; }
+.wende.flach > .seite { animation-duration: 1.1s; animation-timing-function: cubic-bezier(0.45, 0.05, 0.25, 1); animation-fill-mode: both; }
+.auf-iris > .vorne { animation-name: platte-weg; }
+.auf-iris > .hinten { animation-name: iris-auf; }
+@keyframes iris-auf { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(75% at 50% 50%); } }
+.auf-vorhang > .vorne { animation-name: platte-weg; }
+.auf-vorhang > .hinten { animation-name: vorhang-auf; }
+@keyframes vorhang-auf { from { clip-path: inset(0 50% 0 50%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes platte-weg { from { transform: scale(1) rotate(0deg); opacity: 1; } to { transform: scale(0.6) rotate(200deg); opacity: 0; } }
+/* die Platte rollt nach rechts aus dem Bild, das Cover gleitet von links nach */
+.auf-rollen > .vorne { animation-name: platte-rollt; animation-duration: 1.2s; }
+.auf-rollen > .hinten { animation-name: cover-gleitet; animation-duration: 1.2s; }
+@keyframes platte-rollt { from { transform: translateX(0) rotate(0deg); opacity: 1; } 70% { opacity: 1; } to { transform: translateX(130%) rotate(540deg); opacity: 0; } }
+@keyframes cover-gleitet { 0%, 25% { transform: translateX(-60%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+/* die Platte wirbelt klein, das Cover springt heraus */
+.auf-zoom > .vorne { animation-name: platte-wirbelt; }
+.auf-zoom > .hinten { animation-name: cover-springt; animation-timing-function: cubic-bezier(0.3, 1.5, 0.5, 1); }
+@keyframes platte-wirbelt { from { transform: scale(1) rotate(0deg); opacity: 1; } 60% { opacity: 1; } to { transform: scale(0) rotate(720deg); opacity: 0; } }
+@keyframes cover-springt { 0%, 35% { transform: scale(0.2) rotate(-25deg); opacity: 0; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+.wende-wirbel { animation-name: wenden-wirbel; animation-duration: 1.4s; }
+.wende-diagonal { animation-name: wenden-diagonal; }
+.wende-diagonal > .hinten { transform: rotate3d(1, 1, 0, 180deg); }
+.wende-salto { animation-name: wenden-salto; animation-duration: 1.2s; }
+@keyframes wenden-x {
+  0% { transform: rotateX(0deg); }
+  50% { transform: rotateX(90deg) scale(1.06); }
+  100% { transform: rotateX(180deg); }
+}
+@keyframes wenden-wirbel {
+  0% { transform: rotateY(0deg) scale(1); }
+  50% { transform: rotateY(270deg) scale(0.82); }
+  100% { transform: rotateY(540deg) scale(1); }
+}
+@keyframes wenden-diagonal {
+  0% { transform: rotate3d(1, 1, 0, 0deg); }
+  50% { transform: rotate3d(1, 1, 0, 90deg) scale(1.05); }
+  100% { transform: rotate3d(1, 1, 0, 180deg); }
+}
+@keyframes wenden-salto {
+  0% { transform: translateY(0) rotateX(0deg); }
+  45% { transform: translateY(-14%) rotateX(-100deg) scale(0.92); }
+  100% { transform: translateY(0) rotateX(-180deg); }
+}
+.wende > .hinten > img { animation: none; }
+.wende > .hinten > .platzhalter-gross { animation: glanz 5s linear infinite; }
+@keyframes wenden {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(90deg) scale(1.06); }
+  100% { transform: rotateY(180deg); }
+}
+.cover-gross .platzhalter-gross { width: 100%; height: 100%; border-radius: 18px; display: grid; place-items: center; font-size: 6rem; color: #160c26; background: var(--verlauf); background-size: 200% 200%; animation: umdrehen 0.9s var(--feder) both, glanz 5s linear infinite; }
+.player-info { min-width: 0; width: 100%; }
+/* Hauptbildschirm: Karte beim Abspielen und bei der Auflösung genau so hoch wie das Cover.
+   Zu viel Text wird per --fit (host.js) kleiner; die Geschichte fällt notfalls weg. */
+@media (min-width: 761px) {
+  .player { align-items: stretch; }
+  .player > .player-info { height: 0; min-height: 100%; overflow: hidden; display: flex; flex-direction: column; }
+  .player > .player-info > * { flex: none; }
+}
+.kicker { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.8rem; font-weight: 800; color: var(--leise); margin-bottom: 10px; }
+.titel-gross { font-size: calc(clamp(2rem, 5vw, 3.6rem) * var(--fit, 1)); font-weight: 900; line-height: 1.02; margin: 0 0 6px; overflow-wrap: anywhere; }
+.interpret-gross { font-size: calc(clamp(1.1rem, 2.4vw, 1.6rem) * var(--fit, 1)); font-weight: 700; color: #e9e2ff; opacity: 0.85; margin-bottom: 6px; }
+.jahr-gross {
+  font-size: calc(clamp(3.4rem, 9vw, 6rem) * var(--fit, 1)); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; margin: 6px 0;
+  background: var(--verlauf); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: glanz 4s linear infinite, aufploppen 0.7s var(--feder) both;
+}
+.zeitleiste { display: grid; grid-template-columns: 3.2em 1fr 3.2em; gap: 12px; align-items: center; margin: 22px 0 18px; font-size: 0.85rem; font-variant-numeric: tabular-nums; color: var(--leise); }
+.zeitleiste span:last-child { text-align: right; }
+.leiste { height: 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.18); overflow: hidden; position: relative; }
+.leiste i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 6px; background: var(--verlauf); background-size: 300% auto; animation: glanz 4s linear infinite; }
+.leiste i { transition: width 0.25s linear; will-change: width; } /* glättet auch, wenn nur „timeupdate“ kommt */
+.steuerung { display: flex; align-items: center; gap: 18px; }
+@media (max-width: 760px) { .steuerung { justify-content: center; } }
+.symbol { width: 1em; height: 1em; display: block; margin: auto; }
+.countdown-zahl.los .symbol { width: 0.8em; height: 0.8em; }
+.steuerung button.rund { width: 76px; height: 76px; min-height: 76px; padding: 0; border-radius: 50%; font-size: 1.8rem; flex: none; }
+.steuerung button.rund-klein { width: 52px; height: 52px; min-height: 52px; padding: 0; border-radius: 50%; font-size: 1.2rem; flex: none; }
+/* feste Box für alle Stile: nie breiter als die Zeitleiste, nie zu klein */
+#eq-platz { flex: 1 1 auto; min-width: 0; display: flex; }
+/* Hauptbildschirm: Equalizer so breit wie die Zeitleiste darüber (Play-Knopf ist die Platte) */
+.steuerung .equalizer { margin: 0; flex: none; box-sizing: border-box; width: 100%; max-width: none; height: 88px; height: clamp(64px, 9vh, 96px); justify-content: space-between; overflow: hidden; }
+.steuerung .equalizer i { max-width: 18px; }
+.steuerung .equalizer.eq-berge i { max-width: 26px; }
+.mini-player { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 12px; border-radius: 18px; background: rgba(0, 0, 0, 0.25); }
+.mini-player .zeitleiste { margin: 0; flex: 1; grid-template-columns: 2.8em 1fr 2.8em; }
+.mini-player button.rund { width: 60px; height: 60px; min-height: 60px; padding: 0; border-radius: 50%; font-size: 1.4rem; flex: none; }
+
+/* Auflösung: Fakten, Geschichte */
+.fakten { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
+@media (max-width: 760px) { .fakten { justify-content: center; } }
+.fakten span { padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); font-weight: 700; font-size: 0.85rem; animation: plopp 0.5s var(--feder) both; }
+.fakten span:nth-child(2) { animation-delay: 0.1s; }
+.fakten span:nth-child(3) { animation-delay: 0.2s; }
+.geschichte { font-size: calc(1.1rem * var(--fit, 1)); line-height: 1.55; color: #f1ecff; margin: 14px 0 6px; animation: einblenden 0.7s 0.4s var(--feder) both; }
+#weiter-bereich { margin-top: 20px; }
+/* Hauptbildschirm: ein gemeinsamer Platz oben rechts in der Player-Karte für alle Countdowns
+   (Start 3 · 2 · 1, Zeit zum Einordnen, nächster Song) */
+.player { position: relative; }
+.player > .player-info { padding-right: clamp(110px, 13vw, 190px); }
+/* Zeitleiste und Equalizer nutzen die volle Breite (der Countdown steht weiter oben) */
+.player > .player-info > #player-steuerung { margin-right: calc(-1 * clamp(110px, 13vw, 190px)); }
+.uhr-platz {
+  position: absolute; top: clamp(16px, 3vw, 36px); right: clamp(16px, 3vw, 40px);
+  display: grid; justify-items: center; pointer-events: none; min-width: 110px;
+}
+.uhr-platz > * { grid-area: 1 / 1; }
+.uhr-platz #weiter-bereich { margin: 0; }
+.uhr-platz .unter-start { visibility: hidden; }
+.weiter-gross { display: grid; justify-items: center; gap: 2px; pointer-events: none; }
+.weiter-label { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--leise); white-space: nowrap; }
+.weiter-zahl, .uhr-platz .countdown-zahl {
+  font-size: 5rem; font-size: clamp(4rem, 9vw, 8rem); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums;
+  color: #fff; text-shadow: 0 0 24px rgba(255, 93, 115, 0.85), 0 0 60px rgba(255, 179, 71, 0.55), 0 0 110px rgba(180, 140, 255, 0.45);
+}
+.weiter-zahl { animation: weiter-hupf 0.6s cubic-bezier(.3, 1.6, .5, 1) both; }
+.handy-uhr { margin: 10px auto; }
+.handy-uhr .weiter-zahl:not(.klein) { font-size: clamp(3.5rem, 18vw, 6rem); }
+/* nur 5 · 4 · 3 · 2 · 1 · 0 groß, davor eine kleine Zahl */
+.weiter-zahl.klein { font-size: 2rem; font-size: clamp(1.6rem, 2.6vw, 2.4rem); text-shadow: none; opacity: 0.85; animation: none; }
+.weiter-zahl.knapp { color: #ffe066; animation-name: weiter-hupf, weiter-wackeln; animation-duration: 0.6s, 0.5s; animation-delay: 0s, 0.6s; }
+@keyframes weiter-hupf { 0% { transform: scale(1.7) rotate(-8deg); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes weiter-wackeln { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+/* Start-Countdown im Platz: kein Vollbild-Schleier, gleiche Größe wie die anderen */
+.countdown.im-platz { position: static; inset: auto; z-index: auto; background: none; display: grid; justify-items: center; gap: 2px; }
+.uhr-platz .countdown-zahl .symbol { width: 0.8em; height: 0.8em; }
+@media (max-width: 760px) {
+  .player > .player-info { padding-right: 0; }
+  .player > .player-info > #player-steuerung { margin-right: 0; }
+  .uhr-platz { position: static; order: -1; }
+}
+@media (prefers-reduced-motion: reduce) { .weiter-zahl { animation: none; } }
+.weiter-hinweis { margin: 12px 0 0; text-align: center; font-weight: 700; opacity: .8; font-variant-numeric: tabular-nums; }
+#decks-box .reihe > button, .deck-editor .reihe > button { flex: 0 0 auto; }
+#decks-box .reihe > select, #decks-box .reihe > input, .deck-editor .reihe > input { flex: 1 1 260px; }
+
+/* ---------- Startseite: zwei Rahmen – mitspielen / Spiel erstellen ---------- */
+.start-wahl { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+.start-wahl > .box { margin: 0; }
+.start-karte {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
+  transition: transform 0.3s var(--feder), border-color 0.2s;
+}
+.start-karte:hover, .start-karte:focus-within { transform: translateY(-3px) rotate(-0.6deg); border-color: var(--cyan); }
+.start-karte + .start-karte:hover, .start-karte + .start-karte:focus-within { transform: translateY(-3px) rotate(0.6deg); border-color: var(--pink); }
+.start-karte h2 { margin: 0; }
+.start-karte h2 label { font: inherit; color: inherit; margin: 0; text-transform: none; letter-spacing: inherit; }
+.start-karte p { margin: 0; }
+.start-karte .fehler:empty { display: none; }
+.start-karte > button, .start-karte > .knopf { margin-top: auto; width: 100%; justify-content: center; }
+.eingang-symbol { font-size: 2.6rem; line-height: 1; animation: wippen 3s ease-in-out infinite; }
+.start-karte + .start-karte .eingang-symbol { animation-delay: -1.5s; }
+/* Geräte-Symbole: links Handy und Tablet (Mitspielen), rechts Fernseher und Monitor (Spiel erstellen) */
+.eingang-symbol.geraete { color: var(--cyan); height: 2.6rem; }
+.eingang-symbol.geraete svg { height: 100%; width: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(61, 216, 255, 0.45)); }
+.start-karte + .start-karte .eingang-symbol.geraete { color: var(--pink); }
+.start-karte + .start-karte .eingang-symbol.geraete svg { filter: drop-shadow(0 0 10px rgba(255, 61, 154, 0.45)); }
+.code-feld { text-align: center; font-size: 1.6rem; font-weight: 900; letter-spacing: 0.35em; padding: 12px; width: 100%; }
+.code-feld::placeholder { color: var(--leise); opacity: 0.5; }
+@media (max-width: 620px) {
+  .start-wahl { grid-template-columns: 1fr; }
+}
+
+/* Apple-Music-Vorschauen (Admin) */
+.apple-treffer { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
+.apple-treffer li {
+  display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; padding: 10px; border-radius: 14px;
+  background: var(--flaeche); border: 1px solid var(--rand);
+}
+.apple-treffer .cover {
+  width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: var(--verlauf); background-size: 300% auto;
+  display: grid; place-items: center; color: #160c26; font-weight: 900;
+}
+.apple-treffer audio { width: 100%; max-width: 320px; height: 32px; margin-top: 6px; }
+@media (max-width: 560px) {
+  .apple-treffer li { grid-template-columns: 56px 1fr; }
+  .apple-treffer li > button { grid-column: 1 / -1; }
+}
+
+/* Deckliste: vorhandene Songs grün, fehlende gedämpft */
+#fehlend-liste tr.vorhanden td { color: var(--gut); }
+#fehlend-liste tr.vorhanden td.status { font-weight: 700; }
+#fehlend-liste tr.fehlt td { color: var(--leise, rgba(251, 248, 255, 0.6)); }
+#fehlend-liste td.status { white-space: nowrap; }
+
+/* Countdown 3 · 2 · 1 vor dem Ausschnitt */
+.countdown {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; pointer-events: none;
+  background: radial-gradient(circle, rgba(18, 16, 26, 0.55) 0%, rgba(18, 16, 26, 0.15) 60%, transparent 80%);
+}
+.countdown.tippen { pointer-events: auto; background: rgba(18, 16, 26, 0.6); }
+.countdown-zahl {
+  font-size: clamp(7rem, 30vw, 16rem); font-weight: 900; line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(255, 93, 115, 0.9), 0 0 80px rgba(255, 179, 71, 0.6), 0 0 140px rgba(180, 140, 255, 0.5);
+  animation: countdown-puls 0.9s ease-out both;
+}
+.countdown-zahl.los { animation-duration: 0.5s; }
+@keyframes countdown-puls {
+  0% { transform: scale(1.6); opacity: 0; }
+  25% { transform: scale(1); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: scale(0.85); opacity: 0; }
+}
+.countdown-knopf { font-size: 1.4rem; padding: 18px 32px; min-height: 64px; }
+@media (prefers-reduced-motion: reduce) {
+  .countdown-zahl { animation: none; }
+}
+
+/* Auflösung am Handy: Cover, Jahr, Titel, Interpret groß */
+.aufloesung {
+  --farbton: 280;
+  display: grid; justify-items: center; gap: 14px; padding: 18px; border-radius: 20px; text-align: center;
+  background: linear-gradient(160deg, hsl(var(--farbton) 90% 60% / 0.3), hsl(calc(var(--farbton) + 40) 90% 55% / 0.1));
+  border: 1px solid hsl(var(--farbton) 90% 70% / 0.45);
+  box-shadow: 0 14px 40px -16px hsl(var(--farbton) 90% 50%);
+  animation: karteNeu 0.9s var(--feder) both;
+}
+.aufloesung-cover {
+  width: min(240px, 70vw); aspect-ratio: 1; border-radius: 16px; object-fit: cover;
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.7);
+}
+.aufloesung-cover.platzhalter {
+  display: grid; place-items: center; font-size: 4rem; font-weight: 900; color: #160c26;
+  background: linear-gradient(135deg, hsl(var(--farbton) 90% 65%), hsl(calc(var(--farbton) + 50) 90% 60%));
+}
+.aufloesung .jahr {
+  font-size: 3.2rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums;
+  color: hsl(var(--farbton) 100% 75%); text-shadow: 0 0 24px hsl(var(--farbton) 100% 60% / 0.7);
+}
+.aufloesung .titel { font-size: 1.3rem; font-weight: 800; margin-top: 6px; }
+.aufloesung .interpret { color: var(--leise); font-size: 1.05rem; }
+
+/* Zeitlimit */
+.frist-uhr {
+  display: inline-block; margin: 8px 0; padding: 6px 14px; border-radius: 999px; font-weight: 800;
+  background: rgba(255, 255, 255, 0.08); border: 1px solid var(--rand); font-variant-numeric: tabular-nums;
+}
+.frist-uhr.knapp { color: #160c26; background: var(--gelb); border-color: var(--gelb); animation: frist-puls 1s ease-in-out infinite; }
+@keyframes frist-puls { 50% { transform: scale(1.06); } }
+
+/* Verbindung weg: Hinweis oben in der Mitte */
+.verbindung-weg {
+  position: fixed; top: max(12px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 60;
+  padding: 10px 18px; border-radius: 999px; font-weight: 800; color: #160c26; background: var(--gelb);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); animation: frist-puls 1.2s ease-in-out infinite; white-space: nowrap;
+}
+
+/* Passwortpflicht: Abfrage über der Seite */
+.zugang {
+  position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px;
+  background: rgba(12, 6, 24, 0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  transition: opacity 0.35s;
+}
+.zugang.weg { opacity: 0; }
+.zugang-karte { width: min(100%, 380px); text-align: center; margin: 0; display: grid; gap: 10px; }
+.zugang-karte input { font-size: 1.1rem; text-align: center; }
+.zugang-schloss { font-size: 3rem; animation: schloss-wippen 1.6s ease-in-out infinite; }
+@keyframes schloss-wippen { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg) translateY(-4px); } }
+.zugang-karte.wackeln { animation: zugang-wackeln 0.45s; }
+@keyframes zugang-wackeln { 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+.zugang-links a { color: var(--leise); }
+
+/* Credits */
+.credits {
+  position: fixed; right: 12px; bottom: 10px; z-index: 3; display: flex; gap: 10px; align-items: baseline;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; color: var(--leise); opacity: 0.7;
+}
+.credits a { color: inherit; text-decoration: none; }
+.credits a:hover, .credits a:focus-visible { color: var(--text); text-decoration: underline; }
+@media (max-width: 560px) { .credits { gap: 8px; font-size: 0.68rem; } }
+
+/* Rechtstexte */
+.recht article { line-height: 1.6; }
+.recht article h2 { margin-top: 22px; font-size: 1.15rem; }
+.recht article a { color: var(--cyan); }
+.recht article ul { padding-left: 20px; }
+.platzhalter-text { background: var(--gelb); color: #160c26; border-radius: 4px; padding: 0 4px; font-weight: 800; }
+
+
+/* Fakten/Geschichten kommen aus der deutschen Wikipedia bzw. der Bibliothek – in anderen Sprachen ausblenden */
+html:not([lang="de"]) #geschichte { display: none !important; }
+
+/* Sprachumschalter (nur Startseite): verspielte runde Flaggen */
+.sprache { margin-left: auto; position: relative; }
+.flagge {
+  width: 34px; height: 34px; border-radius: 50%; overflow: hidden; display: block; flex: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85), 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+.flagge svg { width: 100%; height: 100%; display: block; }
+.sprache-knopf {
+  all: unset; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 999px;
+  animation: flagge-wackeln 4s ease-in-out infinite;
+}
+.sprache-knopf:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+.sprache-knopf:hover .flagge { transform: rotate(-10deg) scale(1.12); }
+.flagge { transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes flagge-wackeln { 0%, 86%, 100% { transform: rotate(0); } 89% { transform: rotate(-12deg); } 92% { transform: rotate(10deg); } 95% { transform: rotate(-6deg); } }
+.sprache-liste {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 20; display: grid; gap: 6px; padding: 10px;
+  min-width: 210px; border-radius: 20px; background: rgba(28, 18, 48, 0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.12);
+  transform-origin: top right; animation: sprache-auf .28s cubic-bezier(.3, 1.5, .5, 1);
+}
+.sprache-liste[hidden] { display: none; }
+@keyframes sprache-auf { from { opacity: 0; transform: scale(.6) rotate(6deg); } }
+.sprache-liste button {
+  all: unset; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 6px 10px 6px 6px; border-radius: 999px;
+  font-weight: 800; color: var(--text); animation: sprache-hupf .4s cubic-bezier(.3, 1.6, .5, 1) backwards;
+}
+.sprache-liste button:nth-child(2) { animation-delay: .04s; } .sprache-liste button:nth-child(3) { animation-delay: .08s; }
+.sprache-liste button:nth-child(4) { animation-delay: .12s; } .sprache-liste button:nth-child(5) { animation-delay: .16s; }
+.sprache-liste button:nth-child(6) { animation-delay: .2s; }
+@keyframes sprache-hupf { from { opacity: 0; transform: translateX(14px); } }
+.sprache-liste button:hover, .sprache-liste button:focus-visible { background: rgba(255, 255, 255, 0.12); }
+.sprache-liste button:hover .flagge, .sprache-liste button:focus-visible .flagge { transform: rotate(-14deg) scale(1.15); }
+.sprache-liste button[aria-checked="true"] { background: linear-gradient(90deg, rgba(255, 61, 154, 0.35), rgba(255, 179, 71, 0.25)); }
+@media (prefers-reduced-motion: reduce) { .sprache-knopf, .sprache-liste, .sprache-liste button { animation: none; } }
+
+/* Hauptscreen: Eingaben aller Mitspieler in der Auflösung */
+.eingaben { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.eingaben:empty { display: none; }
+.eingabe {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-weight: 700;
+  background: rgba(255, 255, 255, 0.07); border: 1px solid var(--rand); animation: aufploppen 0.5s 0.5s var(--feder) both;
+}
+.eingabe .punkt { width: 10px; height: 10px; border-radius: 50%; }
+.eingabe .zeitraum { color: var(--leise); font-weight: 600; font-variant-numeric: tabular-nums; }
+.eingabe.gut { border-color: var(--gut); }
+.eingabe.gut .marke { color: var(--gut); }
+.eingabe.schlecht { border-color: var(--schlecht); }
+.eingabe.schlecht .marke { color: var(--schlecht); }
+
+/* zweiter Klick zur Bestätigung */
+button.nachfrage, .knopf.zurueck.nachfrage { background: var(--schlecht) !important; color: #fff !important; border-color: var(--schlecht) !important; }
+
+/* QR-Code im laufenden Spiel: oben rechts zum späteren Einsteigen */
+#spiel { position: relative; }
+/* steht neben der Player-Karte (nicht darüber): Karte rückt dafür nach links */
+.qr-klein {
+  position: absolute; top: 0; right: 0; z-index: 6; display: grid; justify-items: center; gap: 4px;
+  padding: 8px; border-radius: 14px; background: #fff; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+.qr-klein img { width: 96px; height: 96px; display: block; }
+.qr-klein span { font-size: 0.7rem; font-weight: 800; color: #160c26; }
+.qr-klein .qr-code-text { font-size: 1.15rem; font-weight: 900; letter-spacing: 0.2em; color: #160c26; margin-right: -0.2em; }
+.marke-start.nachfrage span { color: var(--pink); }
+#spiel > .jetzt-laeuft { margin-right: 132px; }
+main.mit-qr { position: relative; min-height: 100dvh; display: flex; flex-direction: column; }
+/* Startseite: Titel und die beiden Rahmen senkrecht mittig im freien Platz unter dem Kopf */
+main.mit-qr #menue { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 6vh; }
+.qr-start { position: fixed; top: max(12px, 2.5vh); right: max(16px, 2.5vw); }
+@media (max-width: 1100px) { .qr-start { display: none; } }
+/* Lobby: QR wie auf der Startseite oben rechts; auf schmalen Bildschirmen im Fluss, weil man ohne ihn nicht beitreten kann */
+.qr-lobby { position: fixed; top: max(12px, 2.5vh); right: max(16px, 2.5vw); }
+#lobby { grid-template-columns: 1fr; }
+@media (min-width: 1101px) { #lobby { margin-top: 72px; } }
+@media (max-width: 1100px) { .qr-klein.qr-lobby { display: grid; position: static; width: max-content; margin-bottom: 14px; } }
+@media (max-width: 700px) { .qr-klein { display: none; } #spiel > .jetzt-laeuft { margin-right: 0; } }
+
+/* Bestätigen immer erreichbar: klebt unten am Bildschirm, auch bei langem Zeitstrahl */
+.einordnen { position: sticky; bottom: max(14px, env(safe-area-inset-bottom)); z-index: 4; display: grid; gap: 8px; }
+#bestaetigen { width: 100%; box-shadow: 0 14px 40px -8px rgba(0, 0, 0, 0.8); }
+/* Option „raten“: Interpret und Titel für Zusatzpunkte */
+.raten-felder {
+  display: grid; gap: 8px; padding: 12px; border-radius: 16px; border: 1px solid var(--rand);
+  background: rgba(18, 12, 34, 0.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.raten-felder p { margin: 0; }
+.raten-felder.versteckt, .raten-felder .versteckt, .bonus.versteckt { display: none; }
+.raten-felder .schritt { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--leise); margin-right: 6px; }
+.raten-felder #rate-weiter { width: 100%; }
+.raten-felder input { animation: aufploppen 0.4s var(--feder); }
+.bonus { margin: 8px 0 0; font-weight: 800; }
+.eingabe .stern { font-weight: 900; color: var(--gelb); }
+
+/* Musik-Avatare */
+.avatar {
+  display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%; flex: none;
+  font-size: 1.1em; line-height: 1; background: rgba(255, 255, 255, 0.1); box-shadow: 0 0 0 2px var(--ring), 0 0 14px -2px var(--ring);
+}
+.avatar.gross { font-size: 1.8em; }
+.avatar-wahl { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; }
+.avatar-knopf {
+  aspect-ratio: 1; width: 100%; min-width: 0; padding: 0; font-size: 1.6rem; border-radius: 14px; background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--rand); box-shadow: none; transition: transform 0.15s;
+}
+.avatar-knopf[aria-checked="true"] { background: rgba(255, 255, 255, 0.22); border-color: #fff; transform: scale(1.1); }
+@media (max-width: 560px) { .avatar-wahl { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.sieger-avatare { display: flex; justify-content: center; gap: 14px; margin: 6px 0; font-size: 1.6rem; }
+.sieger-avatare .avatar { animation: aufploppen 0.6s 0.3s var(--feder) both; }
+
+/* Admin: Reiter Musik / Decks */
+.reiter { display: flex; gap: 8px; margin: 4px 0 18px; flex-wrap: wrap; }
+.reiter a {
+  padding: 10px 18px; border-radius: 999px; font-weight: 800; text-decoration: none; color: var(--text, #fff);
+  background: rgba(255, 255, 255, 0.07); border: 1px solid var(--rand);
+}
+.reiter a[aria-current="true"] { background: var(--verlauf); color: #160c26; border-color: transparent; }
+
+
+/* ---------- Startsong: gemeinsame Startkarte zu Beginn (ohne Blur – läuft auch auf Handys flüssig) ---------- */
+.startsong {
+  position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; padding: 16px;
+  background: radial-gradient(circle at 50% 40%, hsl(var(--farbton, 280) 70% 30% / 0.92), rgba(18, 12, 30, 0.94) 70%);
+  animation: startsong-rein 0.5s ease-out both; transition: opacity 0.5s;
+}
+.startsong.weg { opacity: 0; }
+.startsong-karte { display: grid; justify-items: center; gap: 6px; text-align: center; max-width: 520px; }
+.startsong-kicker { font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; }
+.startsong-cover {
+  width: min(56vw, 34vh, 280px); aspect-ratio: 1; object-fit: cover; border-radius: 18px; margin: 8px 0 4px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); animation: startsong-wippen 1.2s ease-in-out infinite alternate;
+}
+div.startsong-cover { display: grid; place-items: center; font-size: 5rem; color: #160c26; background: linear-gradient(135deg, hsl(var(--farbton) 90% 60%), hsl(calc(var(--farbton) + 60) 90% 50%)); }
+.startsong-jahr {
+  font-size: clamp(4rem, 18vw, 9rem); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; color: #fff;
+  text-shadow: 0 0 30px hsl(var(--farbton, 280) 90% 60% / 0.9), 0 0 80px rgba(255, 179, 71, 0.5);
+}
+.startsong-titel { font-size: clamp(1.4rem, 5vw, 2.2rem); font-weight: 800; }
+.startsong-interpret { font-size: clamp(1.1rem, 4vw, 1.5rem); opacity: 0.85; }
+@keyframes startsong-rein { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+@keyframes startsong-wippen { from { transform: rotate(-2deg) scale(1); } to { transform: rotate(2deg) scale(1.03); } }
+@media (prefers-reduced-motion: reduce) { .startsong, .startsong-cover { animation: none; } }
+
+/* Quelle der Hörprobe (Apple Music/Deezer verlangen einen Hinweis mit Link) */
+.quelle { margin-top: 10px; }
+.quelle:empty { display: none; }
+.quelle-live:empty { display: none; }
+.quelle-hinweis { display: block; margin-bottom: 6px; color: var(--leise); font-size: 0.8rem; font-weight: 600; }
+.quelle-badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px 6px 10px; border-radius: 999px;
+  color: #fff; font-weight: 800; font-size: 0.85rem; text-decoration: none; white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); animation: plopp 0.5s var(--feder) 0.3s both;
+}
+.quelle-badge::before { content: "▶"; font-size: 0.7em; }
+.quelle-badge.apple { background: linear-gradient(135deg, #e0183a, #c2185b); }
+.quelle-badge.deezer { background: linear-gradient(135deg, #8f1fff, #6b1fd1); }
+a.quelle-badge:hover, a.quelle-badge:focus-visible { filter: brightness(1.12); }
+
+/* Startseite: Einstellungen für den Admin */
+.einstellungen-zeile { display: flex; justify-content: center; margin: 18px 0 0; }
+.einstellungen-zeile .knopf { width: auto; }
+
+/* ---------- Lobby: geführte Einrichtung (host.js) ---------- */
+.lobby-spalte { display: grid; gap: 18px; }
+.unsichtbar { visibility: hidden; }
+.assistent h2 { margin: 0; }
+.assistent-frage { font-size: clamp(1.3rem, 4.5vw, 1.8rem); margin: 18px 0 16px; }
+.schritt.rein { animation: schritt-rein 0.4s var(--feder); }
+.schritt.rein.zurueck { animation-name: schritt-rein-zurueck; }
+.schritt.raus { animation: schritt-raus 0.26s ease-in forwards; }
+@keyframes schritt-rein { from { opacity: 0; transform: translateX(60px); } }
+@keyframes schritt-rein-zurueck { from { opacity: 0; transform: translateX(-60px); } }
+@keyframes schritt-raus { to { opacity: 0; transform: translateX(-60px); } }
+button.wahl-knopf.tipp { animation: tipp 0.38s var(--feder); }
+@keyframes tipp { 40% { transform: scale(0.94); } 75% { transform: scale(1.04); } }
+.schritt h4 { margin: 16px 0 8px; }
+.wahl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; }
+.wahl.wahl-zahlen { grid-template-columns: repeat(3, 1fr); }
+button.wahl-knopf {
+  --farbton: 280; display: flex; align-items: center; gap: 14px; text-align: left; min-height: 72px; padding: 14px 18px;
+  font-weight: 800; font-size: 1.05rem; line-height: 1.25; color: var(--text); box-shadow: none; border-radius: 18px;
+  background: hsl(var(--farbton) 90% 60% / 0.12); border: 2px solid hsl(var(--farbton) 90% 70% / 0.35);
+}
+button.wahl-knopf:hover:not(:disabled) { background: hsl(var(--farbton) 90% 60% / 0.26); box-shadow: none; }
+button.wahl-knopf[aria-pressed="true"] { background: hsl(var(--farbton) 90% 62%); border-color: transparent; color: #160c26; transform: scale(1.03); }
+.wahl-symbol { font-size: 1.8rem; flex: none; }
+.wahl-zahlen button.wahl-knopf { flex-direction: column; justify-content: center; gap: 2px; text-align: center; font-size: 1.6rem; font-weight: 900; }
+.wahl-zahlen .wahl-symbol { font-size: 1.2rem; }
+.assistent-fuss { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; }
+.assistent-fuss button { min-width: 120px; }
+  display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; text-align: left; padding: 10px 14px; min-height: 0; border-radius: 14px;
+  background: var(--flaeche-stark); border: 1px solid var(--rand); color: var(--text); box-shadow: none; font-weight: 700;
+}
+.verfuegbar { margin: 12px 0; }
+.spielerzeile button.toleranz-knopf { min-width: 92px; }
+@media (max-width: 560px) {
+  .assistent-fuss button { min-width: 0; padding: 10px 16px; }
+  button.wahl-knopf { min-height: 64px; }
+}
+@media (prefers-reduced-motion: reduce) { .schritt.rein, .schritt.raus, button.wahl-knopf.tipp { animation: none; } }
+/* Knöpfe mit Bild (z. B. „Wo läuft die Musik?“): Bild oben, Titel und Erklärung darunter */
+button.wahl-knopf.mit-bild { flex-direction: column; align-items: stretch; text-align: center; gap: 10px; padding: 18px 18px 16px; }
+.wahl-text { display: grid; gap: 4px; }
+.wahl-text small { font-size: 0.85rem; font-weight: 600; opacity: 0.8; line-height: 1.35; }
+.wahl-bild { width: 100%; max-width: 260px; height: auto; margin: 0 auto; color: hsl(var(--farbton) 90% 75%); }
+button.wahl-knopf[aria-pressed="true"] .wahl-bild { color: #160c26; }
+.wahl-bild .linie { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.wahl-bild .linie.duenn { stroke-width: 2; }
+.wahl-bild .fuellung { fill: currentColor; }
+.wahl-bild .welle { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; animation: welle 1.6s ease-in-out infinite; }
+.wahl-bild .verbindung { fill: none; stroke: currentColor; stroke-width: 2; stroke-dasharray: 3 5; opacity: 0.6; animation: verbindung 1.2s linear infinite; }
+@keyframes welle { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes verbindung { to { stroke-dashoffset: -16; } }
+@media (prefers-reduced-motion: reduce) { .wahl-bild .welle, .wahl-bild .verbindung { animation: none; } }
+@media (max-width: 560px) { .wahl-bild { max-width: 170px; } }
+.wahl-bild .matt { opacity: 0.35; }
+.wahl-bild .zahl { fill: currentColor; font-size: 15px; font-weight: 900; text-anchor: middle; }
+.wahl-bild .fortschritt { transform-origin: 22px 82px; animation: vorschau 4s linear infinite; }
+@keyframes vorschau { from { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) { .wahl-bild .fortschritt { animation: none; } }
+.schritt-messen { position: absolute; left: 0; top: 0; visibility: hidden; pointer-events: none; }
+.assistent { position: relative; overflow: hidden; }
+/* mehr Luft im Einrichten-Rahmen; die gewählte Karte wächst nicht mehr über den Rand, sie bekommt einen Ring */
+.assistent { padding: clamp(20px, 3vw, 36px); }
+.assistent .wahl { gap: clamp(14px, 2vw, 24px); padding: 4px; }
+button.wahl-knopf[aria-pressed="true"] { transform: none; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85), 0 14px 34px -12px hsl(var(--farbton) 90% 50%); }
+button.wahl-knopf.mit-bild { padding: 24px 26px 22px; gap: 14px; }
+.assistent-frage { margin: 22px 0 22px; }
+.assistent-fuss { margin-top: 28px; }
+/* kompakter: kleinere Bilder, knappere Übersicht – der Rahmen richtet sich nach dem höchsten Schritt */
+.assistent-frage { margin: 12px 0 18px; }
+.wahl-bild { max-width: 190px; }
+button.wahl-knopf.mit-bild { padding: 16px 22px 16px; gap: 10px; }
+.verfuegbar { margin: 8px 0; }
+.frage-zeile { display: flex; align-items: center; justify-content: space-between; gap: 6px 20px; flex-wrap: wrap; }
+.frage-notiz { text-align: right; }
+.frage-notiz p { margin: 0; line-height: 1.35; }
+.assistent-fuss { margin-top: 18px; }
+/* Zahlen-Schritt mit Bild: Zahl groß als Titel */
+.wahl-zahlen button.wahl-knopf.mit-bild .wahl-text > span { font-size: 1.8rem; font-weight: 900; }
+.wahl-zahlen button.wahl-knopf.mit-bild .wahl-text small { font-size: 0.85rem; font-weight: 600; }
+/* Deck-Auswahl: Cover-Raster; am Handy eine Reihe zum Wischen */
+button.deck-knopf {
+  display: grid; gap: 8px; align-content: start; padding: 8px 8px 10px; min-height: 0; border-radius: 16px; text-align: center;
+  background: var(--flaeche); border: 2px solid transparent; color: var(--text); box-shadow: none; font-weight: 800;
+}
+button.deck-knopf:hover:not(:disabled) { background: var(--flaeche-stark); box-shadow: none; }
+button.deck-knopf[aria-pressed="true"] { border-color: #fff; background: rgba(255, 255, 255, 0.16); box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7); }
+button.deck-knopf.tipp { animation: tipp 0.38s var(--feder); }
+.deck-cover { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.6); }
+.deck-cover .rille { fill: none; stroke: #fff; stroke-opacity: 0.14; }
+.deck-cover .deck-marke { fill: #fff; font-size: 9px; font-weight: 900; letter-spacing: 0.02em; opacity: 0.9; }
+.deck-cover .deck-titel { fill: #fff; font-size: 11px; font-weight: 900; }
+.deck-name { font-size: 0.78rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* Deck-Galerie */
+.galerie { position: relative; }
+.deck-raster {
+  display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 4px; padding: 6px 4px 10px;
+  scrollbar-width: none; overscroll-behavior-x: contain;
+}
+.deck-raster::-webkit-scrollbar { display: none; }
+.deck-raster button.deck-knopf { flex: 0 0 clamp(150px, 17vw, 196px); scroll-snap-align: start; }
+.deck-raster .deck-name { font-size: 0.9rem; }
+button.galerie-pfeil {
+  position: absolute; top: calc(42% - 24px); z-index: 2; width: 48px; height: 48px; min-height: 0; padding: 0; border-radius: 50%;
+  font-size: 1.7rem; line-height: 1; background: rgba(22, 12, 38, 0.85); color: #fff; border: 1px solid var(--rand); box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.7);
+  transition: opacity 0.2s, transform 0.2s var(--feder);
+}
+button.galerie-pfeil:hover:not(:disabled) { background: rgba(22, 12, 38, 0.95); box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.7); transform: scale(1.08); }
+button.galerie-pfeil.links { left: -12px; }
+button.galerie-pfeil.rechts { right: -12px; }
+button.galerie-pfeil:disabled { opacity: 0; pointer-events: none; }
+/* Mehrfachauswahl in der Galerie: Haken oben rechts am gewählten Cover */
+button.deck-knopf.mehrfach { position: relative; }
+button.deck-knopf.mehrfach::after {
+  content: "✓"; position: absolute; top: 2px; right: 2px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: #fff; color: #160c26; font-weight: 900; font-size: 1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transform: scale(0); transition: transform 0.25s var(--feder);
+}
+button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
+.deck-cover .filter-gross { fill: #fff; font-size: 24px; font-weight: 900; }
+.deck-name small { display: block; font-size: 0.75rem; font-weight: 600; }
+/* Galerie-Kacheln: groß und quadratisch, das Cover füllt die ganze Kachel (Name steht schon auf dem Cover), Songzahl als Plakette */
+.deck-raster button.deck-knopf {
+  flex: 0 0 clamp(210px, 25vw, 300px); aspect-ratio: 1; display: block; position: relative; padding: 0; overflow: hidden; border-width: 3px;
+}
+.deck-raster button.deck-knopf .deck-cover { width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
+.deck-raster .deck-name { position: absolute; left: 7%; bottom: 7%; display: block; overflow: visible; }
+.deck-raster .deck-name > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.deck-raster .deck-name small {
+  color: #fff; background: rgba(22, 12, 38, 0.78); padding: 4px 10px; border-radius: 999px; font-size: 0.85rem; font-weight: 800; white-space: nowrap;
+}
+.deck-raster button.deck-knopf.mehrfach::after { top: 10px; right: 10px; }
+/* Einzelauswahl: keine Vorauswahl hervorheben – ein Tipp wählt und führt gleich weiter (Mehrfachauswahl behält den Haken) */
+.deck-raster button.deck-knopf:not(.mehrfach)[aria-pressed="true"] { border-color: transparent; background: var(--flaeche); box-shadow: none; }
+.galerie button.galerie-pfeil { top: calc(50% - 40px); }
+/* wenige Kacheln (z. B. Kartenzahl) mittig, bei Überlauf trotzdem ab dem Anfang scrollbar */
+.deck-raster > :first-child { margin-left: auto; }
+.deck-raster > :last-child { margin-right: auto; }
+.deck-cover .zahl-gross { font-size: 32px; }
+/* Antwort-Kacheln der Einrichtung: Strichbilder weiß, Erklärung als Band unten im Cover */
+.kachel-bild { color: #fff; overflow: visible; }
+.kachel-bild .linie { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.kachel-bild .linie.duenn { stroke-width: 3; }
+.kachel-bild .fuellung { fill: currentColor; }
+.kachel-bild .welle { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; animation: welle 1.6s ease-in-out infinite; }
+.kachel-bild .verbindung { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-dasharray: 3 5; opacity: 0.7; animation: verbindung 1.2s linear infinite; }
+.kachel-bild .matt { opacity: 0.4; }
+.deck-cover .kachel-gross { font-size: 26px; }
+.deck-cover .kachel-unter { font-size: 9.5px; }
+/* wenige Kacheln teilen sich die Breite, bleiben aber quadratisch und nicht kleiner als 170px */
+.deck-raster[data-anzahl="2"] button.deck-knopf { flex-basis: max(170px, min(300px, calc((100% - 16px) / 2))); }
+.deck-raster[data-anzahl="3"] button.deck-knopf { flex-basis: max(170px, min(300px, calc((100% - 32px) / 3))); }
+.deck-raster[data-anzahl="4"] button.deck-knopf { flex-basis: max(170px, min(300px, calc((100% - 48px) / 4))); }
+/* von galerie() berechnet: alle passen nebeneinander, oder rechts bleibt eine Kachel angeschnitten */
+.deck-raster.vermessen button.deck-knopf { flex-basis: var(--kachel); }
+.deck-cover .karte-jahr { fill: #160c26; font-size: 8px; font-weight: 900; text-anchor: middle; }
+.galerie-hinweis { margin: 10px 0 0; text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--leise); transition: opacity 0.3s; }
+.galerie-hinweis.aus { opacity: 0; }
+.galerie-hand { display: inline-block; margin-right: 8px; animation: wischen 1.6s ease-in-out infinite; }
+@keyframes wischen { 0%, 100% { transform: translateX(-8px); } 50% { transform: translateX(8px); } }
+@media (prefers-reduced-motion: reduce) { .galerie-hand { animation: none; } }
+/* Alle Frageseiten gleich: die Antwortkästen füllen den (auf die höchste Frage gemessenen) Rahmen aus */
+#schritt-inhalt { display: flex; flex-direction: column; }
+#schritt-inhalt > .schritt { flex: 1; display: flex; flex-direction: column; }
+#schritt-inhalt > .schritt > .wahl { flex: 1; }
+#schritt-inhalt button.wahl-knopf.mit-bild { justify-content: center; }
+.schritt-messen > .schritt { display: flex; flex-direction: column; } /* gleich wie oben messen (Ränder fallen im Flex nicht zusammen) */
+/* Handy: Kästen untereinander – nicht auf die Höhe der längsten Frage strecken */
+@media (max-width: 640px) {
+  #schritt-inhalt > .schritt > .wahl { flex: none; }
+}
+/* letzte Seite: die sechs Plätze */
+.platz-raster { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(10px, 1.6vw, 18px); margin-bottom: 18px; }
+.platz-raster > .platz { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 120px; padding: 14px 10px;
+  border-radius: 18px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.18); text-align: center; }
+.platz-raster > .platz .avatar { width: 56px; height: 56px; font-size: 2rem; }
+.platz-symbol { font-size: 2.2rem; line-height: 56px; height: 56px; }
+.platz-name { font-weight: 800; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.platz-raster > .platz.bot { background: rgba(155, 92, 255, 0.22); border-color: rgba(155, 92, 255, 0.5); }
+.platz-raster > .platz.frei { background: none; border-style: dashed; opacity: 0.55; }
+.platz-raster > .platz.offline { opacity: 0.5; }
+@media (max-width: 560px) { .platz-raster { grid-template-columns: repeat(2, 1fr); } .platz-raster > .platz { min-height: 96px; } }
+.platz-raster > .platz { position: relative; }
+button.platz-weg { position: absolute; top: 6px; right: 6px; min-width: 0; padding: 4px 9px; font-size: 0.8rem; }
+.assistent-fuss { min-height: 60px; } /* so hoch wie „Spiel starten“ – der Rahmen springt auf der letzten Seite nicht */
+/* Hauptbildschirm groß und quer: --skala (host.js) verkleinert Cover-Karte und Zeitstrahle, bis nichts mehr scrollt */
+@media (min-width: 1024px) and (orientation: landscape) {
+  #spiel .player {
+    grid-template-columns: minmax(0, calc(min(380px, 40vw) * var(--skala, 1))) 1fr;
+    padding: calc(clamp(20px, 4vw, 44px) * var(--skala, 1));
+  }
+  #spiel .cover-gross { max-width: calc(380px * var(--skala, 1)); }
+  #spiel > .jetzt-laeuft { margin-bottom: calc(22px * var(--skala, 1)); }
+  #spiel .alle-zeitstrahle { gap: calc(16px * var(--skala, 1)); }
+  #spiel .mini-strahl { padding: max(8px, calc(14px * var(--skala, 1))); }
+  #spiel .mini-strahl h3 { font-size: max(0.95rem, calc(1.1rem * var(--skala, 1))); }
+  #spiel .mini-strahl li { font-size: max(0.78rem, calc(0.85rem * var(--skala, 1))); padding: 2px 7px; }
+}
+@media (min-width: 1024px) and (orientation: landscape) {
+  main.breit:has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) { padding-bottom: 36px; }
+  main.breit:has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke { margin-bottom: 12px; }
+  main.breit:has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .fehler:empty { display: none; }
+  #spiel .mini-strahl ol { gap: 4px; }
+  #spiel .mini-strahl li { padding: 1px 6px; }
+}
+/* Startkarte: Jahrzehnt-Karten über dem Cover; das Cover fliegt hinein (gemeinsam.js startkarteEinreihen) */
+.startsong-buehne { position: relative; display: grid; place-items: center; }
+.startsong-reihe {
+  --b: clamp(30px, min(7vw, 9vh), 64px);
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max-content; max-width: 96vw;
+  display: flex; align-items: center; justify-content: center; gap: clamp(4px, 1vw, 10px); pointer-events: none;
+  opacity: 0; transition: opacity 0.35s;
+}
+.startsong-reihe.sichtbar { opacity: 1; }
+.startsong-reihe > span:not(.startsong-platz) {
+  flex: none; width: var(--b); height: calc(var(--b) * 4 / 3); border-radius: 10px; display: grid; place-items: center;
+  font-weight: 900; font-size: calc(var(--b) * 0.32); color: #160c26; background: hsl(var(--farbton) 90% 66%);
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.6); animation: tanzen 2.4s ease-in-out infinite;
+}
+.startsong-platz { position: relative; flex: none; width: 0; height: var(--b); transition: width 0.5s var(--feder); z-index: 2; }
+.startsong-platz.offen { width: calc(var(--b) * 1.15); }
+.startsong-platz.sofort { transition: none; }
+.startsong-platz > img, .startsong-platz > i {
+  position: absolute; left: 50%; top: 0; width: calc(var(--b) * 1.15); height: calc(var(--b) * 1.15); margin-left: calc(var(--b) * -0.575); margin-top: calc(var(--b) * -0.075);
+  border-radius: 8px; object-fit: cover; display: grid; place-items: center; font-style: normal; box-shadow: 0 0 0 2px #fff, 0 10px 22px -6px rgba(0, 0, 0, 0.7);
+}
+.startsong-platz > b {
+  position: absolute; left: 50%; bottom: calc(var(--b) * -0.25); transform: translateX(-50%); font-size: calc(var(--b) * 0.24); font-weight: 900;
+  color: #160c26; background: var(--gelb); padding: 0 6px; border-radius: 999px; line-height: 1.35; white-space: nowrap;
+}
+/* Zeitstrahl-Karten mit Mini-Cover über dem Jahr (Hauptbildschirm) */
+#spiel .mini-strahl li.mit-cover { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 4px 2px; }
+#spiel .mini-strahl li.mit-cover .mini-cover {
+  --mc: max(28px, calc(40px * var(--skala, 1)));
+  width: var(--mc); height: var(--mc); border-radius: 5px; object-fit: cover; display: block; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+/* Hauptbildschirm: der Equalizer füllt den freien Platz bis zur Unterkante der Player-Karte */
+@media (min-width: 761px) {
+  .player > .player-info > #player-steuerung { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+  #player-steuerung > .steuerung { flex: 1 1 auto; min-height: 64px; align-items: stretch; }
+  #player-steuerung > .steuerung > .equalizer { height: auto; min-height: 64px; max-height: 260px; align-self: flex-end; height: 100%; }
+  #player-steuerung > .steuerung > .equalizer.eq-retro { --eq-hoehe: 100%; }
+}
+#spiel.ohne-cover .mini-strahl li.mit-cover .mini-cover { display: none; }
+#spiel.ohne-cover .mini-strahl li.mit-cover { padding: 1px 6px; }
+@media (min-width: 761px) {
+  #player-steuerung > .steuerung, #player-steuerung > .steuerung > .equalizer { min-height: 36px; }
+}
+
+/* zusammengefasste Karten im Zeitstrahl (host.js zeitstrahlBuendeln): Cover-Stapel mit Jahresspanne */
+#spiel .mini-strahl li.stapel { position: relative; }
+#spiel .mini-strahl li.stapel .stapel-bilder { position: relative; display: block; width: max(28px, calc(40px * var(--skala, 1))); height: max(28px, calc(40px * var(--skala, 1))); }
+#spiel .mini-strahl li.stapel .stapel-bilder img { position: absolute; inset: 0; }
+#spiel .mini-strahl li.stapel .stapel-bilder img:nth-last-child(2) { transform: translate(-3px, -2px) rotate(-6deg); }
+#spiel .mini-strahl li.stapel .stapel-bilder img:nth-last-child(3) { transform: translate(3px, -3px) rotate(7deg); }
+#spiel .mini-strahl li.stapel .stapel-zahl {
+  position: absolute; top: -6px; right: -6px; font-size: 0.65rem; font-weight: 900; line-height: 1; padding: 2px 4px; border-radius: 999px;
+  background: var(--gelb); color: #160c26; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+#spiel.ohne-cover .mini-strahl li.stapel .stapel-bilder { display: none; }
+
+/* Startseite Handy: die Reihe mit Covern ragt links und rechts aus dem Bild, statt die Karten zu verkleinern */
+@media (max-width: 760px) {
+  .held { overflow-x: clip; }
+  .held .platten.mit-covern { width: auto; margin-left: 0; margin-right: 0; flex-wrap: nowrap; }
+  .held .platten.mit-covern > span:not(.flug-titel) { flex-shrink: 0; }
+}
+
+/* Endseite: links die Besten der Runde, rechts die Bestenliste; auf großen Screens ohne Scrollen */
+.ende-runde h2 { margin: 0 0 10px; }
+@media (min-width: 1024px) {
+  .ende-spalten:has(> .bestenliste:not(.versteckt)) { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; max-width: 1180px; margin: 0 auto; }
+  .ende-spalten .rangliste, .ende-spalten .bestenliste { max-width: none; margin: 0; }
+  #ende .buehne { padding: 18px 28px; }
+  #ende .pokal { font-size: 3.4rem; line-height: 1; }
+  #ende #sieger { margin: 4px 0 16px; font-size: clamp(1.8rem, 3.4vw, 2.8rem); }
+  #ende .rangliste { gap: 8px; }
+  #ende .rangliste .platz { padding-top: 8px; padding-bottom: 8px; }
+  #ende .reihe { margin-top: 16px; }
+  #ende > .buehne > p:empty { display: none; }
+}
+@media (min-width: 1024px) {
+  /* Pokal, Sieger-Avatar und Siegertext in einer Zeile */
+  #ende .ende-kopf { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 14px; }
+  #ende .ende-kopf .sieger-avatare { margin: 0; }
+  #ende .ende-kopf #sieger { margin: 0; }
+}
+@media (min-width: 1024px) and (max-height: 820px) {
+  #ende .rangliste .platz { padding-top: 5px; padding-bottom: 5px; }
+  #ende .rangliste .platz .avatar { width: 32px; height: 32px; font-size: 1.1rem; }
+  #ende .bestenliste { gap: 6px; }
+}
+
+/* Digitale Sanduhr am rechten Rand unter dem QR-Code statt Zahlen-Countdown (Hauptbildschirm): LED-Punktmatrix wie der EQ */
+.sanduhr {
+  position: absolute; top: 186px; right: 0; width: 112px; z-index: 6; display: grid; justify-items: center; gap: 10px; pointer-events: none;
+  text-align: center;
+}
+.led-matrix { display: grid; grid-template-columns: repeat(9, 8px); gap: 3px; padding: 10px; border-radius: 14px; background: rgba(10, 6, 20, 0.55); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.led-matrix i { width: 8px; height: 8px; border-radius: 2px; background: rgba(255, 255, 255, 0.07); transition: background 0.2s, box-shadow 0.2s; }
+.led-matrix i.aus-form { background: none; }
+.led-matrix i.an { background: hsl(var(--farbton) 95% 62%); box-shadow: 0 0 6px hsl(var(--farbton) 95% 60% / 0.9); }
+.sanduhr .weiter-label { white-space: normal; line-height: 1.3; }
+.sanduhr.knapp .led-matrix { animation: sanduhr-wackeln 0.5s ease-in-out infinite; }
+.sanduhr.knapp .led-matrix i.an { background: #ff5d73; box-shadow: 0 0 8px rgba(255, 93, 115, 0.95); }
+@keyframes sanduhr-wackeln { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+@media (prefers-reduced-motion: reduce) { .sanduhr.knapp .led-matrix { animation: none; } .led-matrix i { transition: none; } }
+/* mit Sanduhr keine Zahlen mehr in der Player-Karte (der Start-Countdown 3 · 2 · 1 bleibt) */
+@media (min-width: 701px) {
+  #spiel #frist, #spiel #weiter-bereich, #spiel .countdown.im-platz { display: none; }
+  /* der Platz rechts in der Player-Karte wird für keinen Countdown mehr gebraucht */
+  #spiel .player > .player-info { padding-right: 0; }
+  #spiel .player > .player-info > #player-steuerung { margin-right: 0; }
+}
+@media (max-width: 700px) { .sanduhr { display: none; } }
+/* Sanduhr anklickbar: wechselt zum Zahlen-Countdown, dessen Zahlen zum Ende hin wachsen (--wachsen 0 → 1) */
+.sanduhr { pointer-events: auto; cursor: pointer; }
+.sanduhr .uhr-zahl { display: none; }
+.sanduhr.zahlen .led-matrix { display: none; }
+.sanduhr.zahlen .uhr-zahl {
+  display: block; min-height: 130px; display: grid; place-items: center; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums;
+  font-size: calc(2.2rem + var(--wachsen, 0) * 4.4rem); color: #fff; transition: font-size 0.45s cubic-bezier(.3, 1.6, .5, 1);
+  text-shadow: 0 0 24px rgba(255, 93, 115, 0.85), 0 0 60px rgba(255, 179, 71, 0.55), 0 0 110px rgba(180, 140, 255, 0.45);
+}
+.sanduhr.zahlen.knapp .uhr-zahl { color: #ffe066; }
+/* Vor dem Songstart: der Fortschrittsbalken lädt sich bis zur Startzeit auf (host.js leisteAufladen) */
+.leiste .aufladen {
+  position: absolute; inset: 0; border-radius: 6px; clip-path: inset(0 100% 0 0 round 6px); pointer-events: none;
+  background:
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 12px),
+    linear-gradient(90deg, #ff5d73, #ffb347, #ffe066, #3dffb0, #3ddcff, #b48cff, #ff5d9e);
+  background-size: 17px 100%, 100% 100%;
+  animation: aufladen-streifen 0.6s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(255, 179, 71, 0.7));
+}
+@keyframes aufladen-streifen { to { background-position: 17px 0, 0 0; } }
+.leiste.laedt { height: 10px; transition: height 0.25s; overflow: visible; }
+@media (prefers-reduced-motion: reduce) { .leiste .aufladen { animation: none; } }
+/* Handy-Endseite: eigene Zeile hervorheben, Knopf zum Wechseln zwischen Runde und Bestenliste */
+#ende .rangliste .platz.ich:not(.sieg) { box-shadow: inset 0 0 0 2px var(--gelb); }
+#ende #listen-wechsel { margin-top: 16px; width: 100%; }
+/* Endseite: beide Listen mit gleich hohen Zeilen und gleichem Abstand; der Erklärtext der Bestenliste wandert unter die Liste,
+   damit die Zeilen links und rechts auf derselben Höhe beginnen */
+@media (min-width: 1024px) {
+  #ende .ende-spalten .rangliste, #ende .ende-spalten .bestenliste { gap: 8px; }
+  #ende .ende-spalten .rangliste .platz, #ende .ende-spalten .besten-zeile { box-sizing: border-box; height: 50px; padding-top: 0; padding-bottom: 0; border: 1px solid var(--rand); }
+  #ende .ende-spalten .bestenliste > h2 { margin: 0 0 2px; }
+  #ende .ende-spalten .bestenliste > p { order: 99; margin: 4px 0 0; }
+  #ende .ende-runde h2 { margin-bottom: 10px; }
+}
+@media (min-width: 1024px) and (max-height: 820px) {
+  #ende .ende-spalten .rangliste .platz, #ende .ende-spalten .besten-zeile { height: 44px; }
+  #ende .ende-spalten .rangliste, #ende .ende-spalten .bestenliste { gap: 6px; }
+}
+/* Handy-Endseite: Pokal, Sieger-Avatar und Siegertext mittig */
+section#ende.box { text-align: center; }
+section#ende.box .pokal { margin: 0 auto; }
+section#ende.box .rangliste .platz { text-align: left; }
+.ende-knoepfe { display: grid; gap: 10px; margin-top: 16px; }
+.ende-knoepfe button { width: 100%; }
+/* Handy: „Hier einordnen“ (und die Rate-Felder) stehen fest am unteren Bildschirmrand; die Seite bekommt unten so viel Platz */
+#spiel .einordnen:has(> :not(.versteckt)) {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; margin: 0 auto; max-width: 760px;
+  padding: 28px 16px max(14px, env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, rgba(18, 16, 26, 0.94) 38%);
+}
+#spiel:has(.einordnen > :not(.versteckt)) { padding-bottom: 110px; }
+#spiel:has(#raten-felder:not(.versteckt)) { padding-bottom: 240px; }
+/* Handy im Spiel: der obere Rahmen (Runde, Zeit, EQ) bleibt beim Scrollen am oberen Rand stehen */
+#spiel > .box:first-child {
+  position: sticky; top: calc(max(12px, env(safe-area-inset-top)) + 54px); z-index: 15;
+  background: linear-gradient(var(--flaeche), var(--flaeche)), #1a1129;
+}
+/* Handy im Spiel: Runde und „Alle sind dran!“ in einer Zeile */
+.kopfzeile { font-weight: 700; }
+/* … und das Logo bleibt darüber stehen (nur Handy-Seite, nicht der Hauptbildschirm main.breit) */
+main:not(.breit):has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke {
+  position: sticky; top: 0; z-index: 16; margin-top: -12px; margin-bottom: 14px; padding: max(12px, env(safe-area-inset-top)) 0 10px;
+}
+main:not(.breit):has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke::before {
+  content: ""; position: absolute; inset: 0 -16px -12px; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, #140e22 78%, rgba(20, 14, 34, 0));
+}
+/* Handy: Countdowns oben rechts neben dem Logo */
+.marke-uhr { margin-left: auto; display: grid; justify-items: end; text-align: right; }
+.marke-uhr > * { grid-area: 1 / 1; }
+.marke-uhr .handy-uhr { margin: 0; gap: 0; justify-items: end; }
+.marke-uhr .weiter-label { font-size: 0.6rem; letter-spacing: 0.12em; }
+.marke-uhr .weiter-zahl, .marke-uhr .handy-uhr .weiter-zahl:not(.klein), .marke-uhr .weiter-zahl.klein { font-size: 1.7rem; line-height: 1.05; opacity: 1; }
+.marke-uhr .weiter-zahl.knapp { color: #ffe066; }
+/* Handy-Endseite: weniger Abstand unter dem Logo und im Kopf der Siegerkarte */
+main:not(.breit):has(> #ende:not(.versteckt)) > .marke { margin-bottom: 10px; }
+section#ende.box { padding-top: 14px; }
+section#ende.box .pokal { font-size: 3.4rem; line-height: 1; }
+section#ende.box .sieger-avatare { margin: 4px 0; }
+section#ende.box #ende-titel { margin: 6px 0 4px; }
+section#ende.box #ende-text { margin: 0 0 12px; }
+main:not(.breit) > .fehler:empty { display: none; }
+#spiel.nur-eq > .box:first-child > .kopfzeile, #spiel.nur-eq #anleitung { display: none; }
+/* Handy im Spiel: obere Box ohne Rahmen, geht nahtlos ins Logo-Band über */
+main:not(.breit) > #spiel > .box:first-child {
+  border-color: transparent; border-radius: 0; box-shadow: none;
+  margin-inline: -16px; padding: 4px 16px 16px;
+  background: linear-gradient(180deg, #140e22 75%, rgba(20, 14, 34, 0));
+}
+#spiel.nur-ergebnis > .box:first-child > .kopfzeile, #spiel.nur-ergebnis #anleitung,
+main:not(.breit) > #spiel.nur-ergebnis > :not(.box:first-child) { display: none; }
+main:not(.breit) > #spiel #e-urteil, main:not(.breit) > #spiel #e-bonus { text-align: center; }
+main:not(.breit) > #spiel #e-urteil { margin-top: 26px; }
+/* Handy: kein großer Countdown in der Mitte – er steht oben neben dem Logo („Tippen zum Abspielen“ bleibt) */
+body:has(> main:not(.breit) > #spiel:not(.versteckt)) > .countdown:not(.tippen) { display: none; }
+/* Handy nach dem Tipp: unten, wer schon getippt hat */
+.tipp-stand { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.tipp-avatare { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 12px; }
+.tipp-avatar { display: grid; justify-items: center; gap: 4px; width: 54px; opacity: 0.35; filter: grayscale(0.85); transition: opacity 0.3s, filter 0.3s; }
+.tipp-bild { position: relative; display: grid; }
+.tipp-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.7rem; font-weight: 700; }
+.tipp-avatar.fertig { opacity: 1; filter: none; }
+.tipp-avatar.fertig .tipp-name { color: #3dffb0; }
+.tipp-avatar.fertig .tipp-bild::after {
+  content: "✓"; position: absolute; right: -5px; bottom: -5px; width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 0.75rem; font-weight: 900; color: #10241b; background: #3dffb0;
+  box-shadow: 0 0 0 2px #140e22;
+}
+.tipp-avatar.neu .tipp-bild { animation: tipp-pop 0.7s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.tipp-avatar.neu .tipp-bild > * { box-shadow: 0 0 0 3px #3dffb0, 0 0 22px rgba(61, 255, 176, 0.7); }
+@keyframes tipp-pop { 0% { transform: scale(0.6); } 55% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.tipp-text { margin: 0; font-weight: 800; font-size: 0.95rem; color: var(--leise, #b9b0d6); }
+.tipp-text.frisch { color: #3dffb0; animation: tipp-pop 0.5s ease-out; }
+@media (prefers-reduced-motion: reduce) { .tipp-avatar.neu .tipp-bild, .tipp-text.frisch { animation: none; } }
+/* Handy-Endseite: alle Zeilen gleich hoch – oben der Name, darunter die Statistik, beides einzeilig;
+   oben neben dem Logo kein Countdown mehr */
+main:not(.breit) > #ende .rangliste .platz {
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr); grid-template-rows: auto auto; align-content: center;
+  column-gap: 12px; row-gap: 1px; height: 62px; padding: 0 16px; font-size: 1rem;
+}
+main:not(.breit) > #ende .rangliste .platz > strong, main:not(.breit) > #ende .rangliste .platz > :nth-child(2) { grid-row: 1 / 3; align-self: center; }
+main:not(.breit) > #ende .rangliste .platz > :nth-child(n + 3) { grid-column: 3; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+main:not(.breit) > #ende .rangliste .platz > :nth-child(3) { font-weight: 800; line-height: 1.2; }
+main:not(.breit) > #ende .rangliste .platz > :nth-child(4) { font-size: 0.75rem; line-height: 1.2; }
+main:not(.breit):has(> #ende:not(.versteckt)) .marke-uhr { display: none; }
+/* Handy: kein Mini-Player (Play-Knopf, Fortschritt) – der Song startet von selbst, blockiert der Browser, kommt „Tippen zum Abspielen“ */
+main:not(.breit) > #spiel #audio-box { display: none; }
+/* Handy: Raten von Interpret/Titel steht mittig unter dem Zeitstrahl, nicht am unteren Rand */
+#spiel .einordnen:has(> #raten-felder:not(.versteckt)) { position: static; max-width: none; margin-top: 18px; padding: 0; background: none; }
+#spiel:has(#raten-felder:not(.versteckt)) { padding-bottom: 24px; }
+/* … der Weiter-Knopf des Ratens bleibt aber unten am Rand fixiert, wie „Hier einordnen“ */
+main:not(.breit) > #spiel #raten-felder #rate-weiter {
+  position: fixed; left: 16px; right: 16px; bottom: max(14px, env(safe-area-inset-bottom)); z-index: 20;
+  width: auto; max-width: 728px; margin: 0 auto;
+}
+main:not(.breit) > #spiel #raten-felder::after {
+  content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 110px; z-index: 19; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(18, 16, 26, 0.94) 38%);
+}
+#spiel:has(#raten-felder:not(.versteckt)) { padding-bottom: 110px; }
+/* backdrop-filter würde den fixierten Knopf im Formular festhalten – im Fluss braucht es ihn nicht */
+main:not(.breit) > #spiel #raten-felder { backdrop-filter: none; -webkit-backdrop-filter: none; }
+/* Raten-Ergebnis: Künstler und Titel je in einer eigenen Zeile */
+#e-bonus:not(.versteckt) { display: grid; gap: 6px; }
+#e-bonus .bonus-zeile.gut { color: #3dffb0; }
+#e-bonus .bonus-zeile.schlecht { color: var(--leise, #b9b0d6); }
+/* Handy: Eingabestatus der Mitspieler immer unten fixiert – über dem Eingabe-Knopf, ohne Knopf ganz unten */
+main:not(.breit) > #spiel #tipp-stand {
+  position: fixed; left: 0; right: 0; z-index: 21; max-width: 760px; margin: 0 auto;
+  bottom: 0; padding: 26px 16px max(14px, env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, rgba(18, 16, 26, 0.94) 34%);
+}
+main:not(.breit) > #spiel:has(#bestaetigen:not(.versteckt), #raten-felder:not(.versteckt)) #tipp-stand {
+  bottom: calc(max(14px, env(safe-area-inset-bottom)) + 66px); padding-bottom: 6px;
+  background: linear-gradient(180deg, transparent, rgba(18, 16, 26, 0.94) 34%);
+}
+main:not(.breit) > #spiel:has(#tipp-stand:not(.versteckt)) { padding-bottom: 130px; }
+main:not(.breit) > #spiel:has(#tipp-stand:not(.versteckt)):has(#bestaetigen:not(.versteckt), #raten-felder:not(.versteckt)) { padding-bottom: 200px; }
+/* deckend, damit der Zeitstrahl nicht durchscheint; Status und Knopf bilden einen Block */
+main:not(.breit) > #spiel #tipp-stand,
+main:not(.breit) > #spiel:has(#bestaetigen:not(.versteckt), #raten-felder:not(.versteckt)) #tipp-stand {
+  background: linear-gradient(180deg, rgba(20, 14, 34, 0), #140e22 26px);
+}
+main:not(.breit) > #spiel:has(#tipp-stand:not(.versteckt)) .einordnen:not(:has(> #raten-felder:not(.versteckt))) { background: #140e22; padding-top: 6px; }
+main:not(.breit) > #spiel:has(#tipp-stand:not(.versteckt)) #raten-felder::after { background: #140e22; height: 84px; }
+/* Handy: Raten von Interpret/Titel steht über dem Zeitstrahl, direkt unter dem EQ */
+main:not(.breit) > #spiel:has(#raten-felder:not(.versteckt)) { display: flex; flex-direction: column; }
+main:not(.breit) > #spiel:has(#raten-felder:not(.versteckt)) > .box:first-child { order: -2; }
+main:not(.breit) > #spiel:has(#raten-felder:not(.versteckt)) > .einordnen { order: -1; margin: 0 0 18px; }
+/* Lobby: „Ich bin fertig“ – nur der Hauptbildschirm zeigt es: grüner Rahmen + Wackeln */
+.platz-raster > .platz.bereit { border-color: #3dffb0; box-shadow: 0 0 0 2px #3dffb0, 0 0 26px rgba(61, 255, 176, 0.45); }
+.platz-raster > .platz.wackeln { animation: bereit-wackeln 0.7s ease-in-out; }
+@keyframes bereit-wackeln { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(-4deg) scale(1.04); } 35% { transform: rotate(4deg) scale(1.04); } 55% { transform: rotate(-3deg); } 75% { transform: rotate(2deg); } }
+@media (prefers-reduced-motion: reduce) { .platz-raster > .platz.wackeln { animation: none; } }
+.bereit-knopf { width: 100%; margin-top: 14px; }
+/* EQ nicht unter dem Logo-Band anstoßen: oben mehr Luft */
+main:not(.breit) > #spiel.nur-eq > .box:first-child { padding-top: 16px; }
+/* … und bleibt beim Scrollen direkt unter dem EQ stehen */
+main:not(.breit) > #spiel:has(#raten-felder:not(.versteckt)) > .einordnen {
+  position: sticky; top: calc(max(12px, env(safe-area-inset-top)) + 54px + var(--box-h, 110px)); z-index: 14;
+}
+/* Handy: keine farbige Zeitachse links neben dem Zeitstrahl */
+main:not(.breit) .zeitstrahl { padding-left: 0; }
+main:not(.breit) .zeitstrahl::before { content: none; }
+/* Texteingabe beim Raten: Formular im Fokus, der Zeitstrahl tritt zurück */
+#spiel:has(#raten-felder:not(.versteckt)) > h3,
+#spiel:has(#raten-felder:not(.versteckt)) > #zeitstrahl { opacity: 0.4; filter: saturate(0.6); transition: opacity 0.3s, filter 0.3s; }
+#raten-felder:not(.versteckt) { border-color: rgba(61, 220, 255, 0.55); box-shadow: 0 0 0 1px rgba(61, 220, 255, 0.35), 0 10px 40px -10px rgba(61, 220, 255, 0.45); }
+#raten-felder input:focus { outline: none; border-color: #3ddcff; box-shadow: 0 0 0 3px rgba(61, 220, 255, 0.35); }
+/* … und der Rahmen blinkt, solange die Eingabe offen ist */
+#raten-felder:not(.versteckt) { animation: rate-blinken 1.1s ease-in-out infinite; }
+@keyframes rate-blinken {
+  0%, 100% { border-color: rgba(61, 220, 255, 0.35); box-shadow: 0 0 0 1px rgba(61, 220, 255, 0.2), 0 10px 40px -10px rgba(61, 220, 255, 0.3); }
+  50% { border-color: #3ddcff; box-shadow: 0 0 0 3px rgba(61, 220, 255, 0.75), 0 10px 46px -6px rgba(61, 220, 255, 0.7); }
+}
+@media (prefers-reduced-motion: reduce) { #raten-felder:not(.versteckt) { animation: none; } }
+/* Schmaler Hauptbildschirm (Handy als Host): nur der Spielcode oben rechts neben dem Logo, ohne QR */
+@media (max-width: 700px) {
+  .qr-klein.qr-lobby {
+    display: grid; position: fixed; top: max(14px, env(safe-area-inset-top)); right: 16px; width: auto; margin: 0;
+    padding: 6px 12px; gap: 0; border-radius: 12px;
+  }
+  .qr-klein.qr-lobby img { display: none; }
+  .qr-klein.qr-lobby span { font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .qr-klein.qr-lobby .qr-code-text { font-size: 1.05rem; }
+}
+/* Schmaler Hauptbildschirm: der Assistent ohne Rahmen – nur Frage und Auswahlknöpfe */
+@media (max-width: 700px) {
+  #assistent.box { background: none; border: 0; box-shadow: none; padding: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+/* Schmaler Hauptbildschirm: auch die Zahlen-Frage („Wie viele Karten zum Sieg?“) untereinander wie die anderen Fragen */
+@media (max-width: 700px) {
+  .wahl.wahl-zahlen { grid-template-columns: 1fr; }
+}
+/* Schmaler Hauptbildschirm: Deck-, Jahrzehnt- und Genre-Auswahl als Liste untereinander statt Karussell – kleines Cover links, Name rechts */
+@media (max-width: 700px) {
+  .deck-raster { flex-direction: column; overflow: visible; scroll-snap-type: none; gap: 10px; padding: 4px; }
+  .deck-raster button.deck-knopf { flex: none; grid-template-columns: 76px 1fr; align-items: center; gap: 14px; padding: 8px 14px 8px 8px; text-align: left; }
+  .deck-raster .deck-name { font-size: 1rem; }
+  .galerie button.galerie-pfeil { display: none; }
+}
+/* Schmaler Hauptbildschirm im Spiel: knapp unter dem Logo, leere Fehlerzeile weg */
+@media (max-width: 700px) {
+  main.breit:has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke { margin-bottom: 12px; }
+  main.breit:has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .fehler:empty { display: none; }
+}
+/* Schmaler Hauptbildschirm: Logo bleibt oben stehen, der Spielcode (ohne QR) auch im Spiel fest oben rechts */
+@media (max-width: 700px) {
+  main.breit:has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke {
+    position: sticky; top: 0; z-index: 16; margin-top: -22px; padding: max(14px, env(safe-area-inset-top)) 0 10px;
+  }
+  main.breit:has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke::before {
+    content: ""; position: absolute; inset: 0 -16px -12px; z-index: -1; pointer-events: none;
+    background: linear-gradient(180deg, #140e22 78%, rgba(20, 14, 34, 0));
+  }
+  #spiel > .qr-klein {
+    display: grid; position: fixed; top: max(14px, env(safe-area-inset-top)); right: 16px; z-index: 17; width: auto; margin: 0;
+    padding: 6px 12px; gap: 0; border-radius: 12px;
+  }
+  #spiel > .qr-klein img { display: none; }
+  #spiel > .qr-klein span { font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  #spiel > .qr-klein .qr-code-text { font-size: 1.05rem; }
+}
+/* Schmaler Hauptbildschirm: alle Countdowns oben neben dem Logo (links vom Spielcode), klein wie auf der Handyseite */
+@media (max-width: 700px) {
+  main.breit .uhr-platz {
+    position: fixed; top: max(16px, env(safe-area-inset-top)); right: 124px; z-index: 17; min-width: 0; justify-items: end; text-align: right;
+  }
+  main.breit .uhr-platz .weiter-gross, main.breit .uhr-platz .countdown.im-platz { gap: 0; justify-items: end; }
+  main.breit .uhr-platz .weiter-label { font-size: 0.6rem; letter-spacing: 0.12em; }
+  main.breit .uhr-platz .weiter-zahl, main.breit .uhr-platz .weiter-zahl.klein, main.breit .uhr-platz .countdown-zahl { font-size: 1.7rem; line-height: 1.05; opacity: 1; }
+}
+@media (max-width: 700px) {
+  /* ohne eigenen Stapelkontext, sonst läge der feste Countdown unter dem Logo-Streifen; der Schein bleibt hinter dem Player */
+  main.breit .jetzt-laeuft { isolation: auto; }
+  main.breit .jetzt-laeuft > .ambient { z-index: 0; }
+}
+/* Ganz unten im Spiel (nur schmaler Hauptbildschirm): QR-Code und Spielcode in einer Zeile */
+.qr-zeile { display: none; }
+@media (max-width: 700px) {
+  .qr-zeile {
+    display: flex; align-items: center; justify-content: center; gap: 24px; margin: 18px 0 8px; padding: 14px 18px;
+    border-radius: 20px; background: #fff; color: #160c26;
+  }
+  .qr-zeile img { width: 96px; height: 96px; display: block; }
+  .qr-zeile div { display: grid; gap: 2px; }
+  .qr-zeile span { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  .qr-zeile .qr-code-text { font-size: 1.6rem; color: #160c26; }
+}
+/* Schmaler Hauptbildschirm: Bestenliste wie auf der Handy-Endseite – oben der Name, darunter die Statistik */
+@media (max-width: 700px) {
+  main.breit > #ende .rangliste .platz {
+    display: grid; grid-template-columns: auto auto minmax(0, 1fr); grid-template-rows: auto auto; align-content: center;
+    column-gap: 12px; row-gap: 1px; height: 62px; padding: 0 16px; font-size: 1rem;
+  }
+  main.breit > #ende .rangliste .platz > strong, main.breit > #ende .rangliste .platz > :nth-child(2) { grid-row: 1 / 3; align-self: center; }
+  main.breit > #ende .rangliste .platz > :nth-child(n + 3) { grid-column: 3; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+  main.breit > #ende .rangliste .platz > :nth-child(3) { font-weight: 800; line-height: 1.2; }
+  main.breit > #ende .rangliste .platz > :nth-child(4) { font-size: 0.75rem; line-height: 1.2; }
+}
+/* Einwilligung Statistik (Matomo): kleiner Kasten unten, bis man sich entschieden hat */
+.statistik-banner {
+  position: fixed; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); z-index: 60; margin: 0 auto; max-width: 560px;
+  display: grid; gap: 12px; padding: 16px 18px; border-radius: 18px; background: #1d1430; border: 1px solid var(--rand);
+  box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.8); font-size: 0.92rem; line-height: 1.4;
+}
+.statistik-banner p { margin: 0; }
+.statistik-banner a { color: var(--cyan, #3dd8ff); }
+.statistik-knoepfe { display: flex; gap: 10px; justify-content: flex-end; }
+.statistik-knoepfe button { min-width: 0; padding: 10px 18px; }
+/* Rechtsseiten: lange Überschriften („Nutzungsbedingungen“) brechen auf dem Handy um statt rauszulaufen */
+.recht article h1 { font-size: clamp(1.6rem, 8vw, 2.4rem); overflow-wrap: break-word; hyphens: auto; }
+/* Rechtsseiten: Fußzeile als feste Leiste mit eigenem Hintergrund – bleibt beim Scrollen lesbar, der Text läuft darunter durch */
+main.recht { padding-bottom: 72px; }
+.github-link {
+  position: fixed; left: 12px; bottom: 8px; z-index: 3; width: 22px; height: 22px;
+  color: var(--leise); opacity: 0.7; transition: opacity .2s, transform .3s cubic-bezier(.3, 1.6, .5, 1);
+}
+.github-link svg { width: 100%; height: 100%; display: block; }
+.github-link:hover, .github-link:focus-visible { opacity: 1; color: var(--text); transform: rotate(-12deg) scale(1.2); }
+main.recht ~ .credits {
+  left: 0; right: 0; bottom: 0; z-index: 30; justify-content: flex-end; opacity: 1;
+  padding: 18px 12px max(10px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(20, 14, 34, 0), #140e22 45%);
+}

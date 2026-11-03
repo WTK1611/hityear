@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#12101a">
+  <title>HitYear – Host</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HitYear">
+  <link rel="preload" href="/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main class="breit">
+  <div class="marke"><a class="marke-start" href="/" aria-label="Zur Startseite"><div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64"><defs><linearGradient id="logo-verlauf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3d9a"/><stop offset=".3" stop-color="#ff8a3d"/><stop offset=".5" stop-color="#ffd93d"/><stop offset=".7" stop-color="#3dffb0"/><stop offset=".85" stop-color="#3dd8ff"/><stop offset="1" stop-color="#9b5cff"/></linearGradient></defs><circle cx="30" cy="34" r="21" fill="#160c26"/><circle cx="30" cy="34" r="16.5" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="1.2"/><circle cx="30" cy="34" r="12.5" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="1.2"/><path d="M15.5 26a17 17 0 0 1 9-8.5" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/><circle cx="30" cy="34" r="7.5" fill="url(#logo-verlauf)"/><circle cx="30" cy="34" r="2" fill="#160c26"/><path d="M51 6.5l2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z" fill="#fff"/></svg></div><span class="wortmarke" translate="no">Hit<span class="verlaufstext">Year</span></span></a><span class="leise klein" id="status"></span></div>
+  <p class="fehler" id="fehler" role="alert"></p>
+
+  <!-- Lobby -->
+  <section id="lobby" class="host-raster versteckt">
+    <div class="qr-klein qr-lobby" title="Scannen und mitspielen"><img id="qr" alt="QR-Code zum Beitreten"><span>Jetzt mitspielen</span><b id="code" class="qr-code-text">····</b></div>
+    <div class="lobby-spalte">
+      <div class="box assistent" id="assistent">
+        <div id="schritt-inhalt" aria-live="polite"></div>
+        <div class="assistent-fuss">
+          <button type="button" class="zweit" id="schritt-zurueck">‹ Zurück</button>
+          <button type="button" id="schritt-weiter">Weiter ›</button>
+        </div>
+      </div>
+      <!-- Quelle der Einstellungen: versteckte Felder, der Assistent oben setzt sie per Knopf -->
+      <div class="versteckt" id="einstellungen-quelle">
+        <select id="ziel"><option selected>10</option><option>15</option><option>20</option></select>
+        <select id="wiedergabe"><option value="host">Party vor Ort (auf dem Hauptbildschirm)</option><option value="alle">Online (auf dem Handy)</option></select>
+        <select id="modus"><option value="alle" selected>alle gleichzeitig</option><option value="einzeln">immer nur ein Spieler</option></select>
+        <select id="warten"><option value="alle">nach Ablauf der Song-Vorschau (30 s)</option><option value="alle5">5 s, nachdem alle geantwortet haben (oder die Zeit um ist)</option><option value="erster">5 s nach der ersten Antwort</option></select>
+        <select id="raten-was"><option value="">nur das Jahr</option><option value="beide">Jahr + Songtitel &amp; Interpret ⭐</option></select>
+        <select id="liste"><option value="">Ganze Bibliothek</option></select>
+        <input type="checkbox" id="auffuellen" checked>
+        <div class="jahrzehnte" id="jahrzehnte" role="group" aria-label="Jahrzehnte"></div>
+        <div class="jahrzehnte" id="genres" role="group" aria-label="Genres"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spiel: „Jetzt läuft“ -->
+  <section id="spiel" class="versteckt">
+    <div class="qr-klein" title="Scannen und mitspielen"><img id="qr-spiel" alt="QR-Code zum Mitspielen"><span>Jetzt mitspielen</span><b id="code-spiel" class="qr-code-text"></b></div>
+    <!-- Sanduhr am Rand statt Zahlen-Countdown: Zeit zum Einordnen bzw. bis zum nächsten Song -->
+    <div class="sanduhr versteckt" id="sanduhr" aria-live="off"></div>
+    <div class="jetzt-laeuft">
+      <div class="ambient geheim" id="ambient"></div>
+      <div class="player">
+        <div class="cover-gross" id="cover-gross"></div>
+        <!-- ein Platz für alle Countdowns (Start, Zeit zum Einordnen, nächster Song) -->
+        <div class="uhr-platz" id="uhr-platz" aria-live="off">
+          <div class="weiter-gross versteckt" id="frist"></div>
+          <div id="weiter-bereich" class="versteckt"><div id="weiter" class="weiter-gross"></div></div>
+        </div>
+        <div class="player-info">
+          <div class="kicker" id="kicker"></div>
+          <h1 class="titel-gross" id="titel-gross"></h1>
+          <div class="interpret-gross" id="interpret-gross"></div>
+          <div class="jahr-gross versteckt" id="jahr-gross"></div>
+          <div class="urteil" id="urteil"></div>
+          <div class="eingaben" id="eingaben"></div>
+          <div class="fakten" id="fakten"></div>
+          <p class="geschichte versteckt" id="geschichte"></p>
+          <div id="player-steuerung">
+            <div class="zeitleiste"><span id="t-jetzt">0:00</span><div class="leiste"><i id="t-leiste"></i></div><span id="t-ende">0:00</span></div>
+            <div class="steuerung">
+              <div id="eq-platz"></div>
+            </div>
+            <p class="leise klein" id="hinweis"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="alle-zeitstrahle" id="zeitstrahle"></div>
+    <!-- nur schmaler Hauptbildschirm: ganz unten QR-Code und Spielcode nebeneinander -->
+    <div class="qr-zeile"><img id="qr-unten" alt="QR-Code zum Mitspielen"><div><span>Jetzt mitspielen</span><b id="code-unten" class="qr-code-text"></b></div></div>
+  </section>
+
+  <!-- Ende -->
+  <section id="ende" class="versteckt">
+    <div class="box buehne">
+      <div class="ende-kopf">
+        <span class="pokal" aria-hidden="true">🏆</span>
+        <div class="sieger-avatare" id="sieger-avatare"></div>
+        <h1 id="sieger" class="verlaufstext"></h1>
+      </div>
+      <div class="ende-spalten">
+        <div class="ende-runde"><h2>Beste der Runde</h2><div class="rangliste" id="rangliste"></div></div>
+        <div class="bestenliste versteckt" id="bestenliste"></div>
+      </div>
+      <p></p>
+      <div class="reihe">
+        <button id="revanche">Revanche (gleiche Runde)</button>
+        <button id="beenden" class="gefahr">Spiel beenden</button>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/gemeinsam.js"></script>
+<script src="/js/host.js"></script>
+</body>
+</html>

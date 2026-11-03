@@ -1,0 +1,15 @@
+# Nur falls 80/443 schon von einem anderen Dienst belegt sind: diesen EINEN Block
+# in dessen Caddyfile einfügen (sonst: docker compose --profile eigener-proxy)., Domain anpassen,
+# dann: caddy reload (bzw. docker exec <caddy> caddy reload --config /etc/caddy/Caddyfile)
+#
+# Läuft Caddy selbst in Docker, statt 127.0.0.1 die Host-Adresse aus Sicht des
+# Containers nutzen (z. B. host.docker.internal mit extra_hosts: host-gateway,
+# oder den Proxy-Container ans Netz „party-music“ hängen: party-music:3700).
+party-music.example.de {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:3700
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+}

@@ -1,0 +1,35 @@
+{
+  "name": "zeitstrahl",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Musik Party-Spiel – Songs hören und im eigenen Zeitstrahl nach Jahr einordnen",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/server.ts",
+    "dev": "node --disable-warning=ExperimentalWarning --watch src/server.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.ts",
+    "test:e2e": "node --disable-warning=ExperimentalWarning test/e2e.ts",
+    "testmusik": "sh test/testmusik.sh",
+    "abgleich": "node --disable-warning=ExperimentalWarning src/abgleich-cli.ts"
+  },
+  "dependencies": {
+    "music-metadata": "^11.7.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@types/qrcode": "^1.5.5",
+    "socket.io-client": "^4.8.1",
+    "typescript": "^5.8.3"
+  },
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WTK1611/hityear.git"
+  }
+}

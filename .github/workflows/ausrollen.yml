@@ -1,0 +1,83 @@
+# Prüft und rollt HitYear auf den eigenen Server aus (Push nach main oder manuell).
+# Secrets: NETCUP_SSH_KEY (eigener Deploy-Schlüssel, nur für diesen Workflow),
+#          NETCUP_KNOWN_HOSTS (gepinnter ED25519-Host-Key des Servers),
+#          DEPLOY_HOST (Adresse des Servers). In Forks läuft nur die Prüfung.
+name: ausrollen
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+  workflow_dispatch:
+
+concurrency:
+  group: ausrollen
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      # Ende-zu-Ende mit echtem Server und Testmusik aus Sinustönen (braucht ffmpeg)
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: npm run test:e2e
+
+  ausrollen:
+    needs: pruefen
+    if: github.repository == 'WTK1611/hityear'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: SSH einrichten
+        env:
+          NETCUP_SSH_KEY: ${{ secrets.NETCUP_SSH_KEY }}
+          NETCUP_KNOWN_HOSTS: ${{ secrets.NETCUP_KNOWN_HOSTS }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$NETCUP_SSH_KEY" > ~/.ssh/netcup
+          chmod 600 ~/.ssh/netcup
+          printf '%s\n' "$NETCUP_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host netcup
+            HostName $DEPLOY_HOST
+            User root
+            IdentityFile ~/.ssh/netcup
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            ServerAliveInterval 30
+          EOF
+          ssh netcup 'echo verbunden'
+
+      - name: Ausrollen
+        run: ZEITSTRAHL_SSH=netcup ./deploy/ausrollen.sh
+
+      - name: Prüfen (auf dem Server)
+        run: |
+          for i in $(seq 1 12); do
+            if ssh netcup 'curl -fsS --max-time 10 http://127.0.0.1:3700/healthz'; then echo; exit 0; fi
+            sleep 5
+          done
+          echo "party-music antwortet nicht" >&2
+          ssh netcup 'docker logs --tail 40 party-music' >&2 || true
+          exit 1
+
+      - name: Schlüssel entfernen
+        if: always()
+        run: rm -f ~/.ssh/netcup

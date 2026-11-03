@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>HitYear – Bibliothek</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HitYear">
+  <link rel="preload" href="/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main class="breit">
+  <div class="marke"><a class="marke-start" href="/" aria-label="Zur Startseite"><div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64"><defs><linearGradient id="logo-verlauf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3d9a"/><stop offset=".3" stop-color="#ff8a3d"/><stop offset=".5" stop-color="#ffd93d"/><stop offset=".7" stop-color="#3dffb0"/><stop offset=".85" stop-color="#3dd8ff"/><stop offset="1" stop-color="#9b5cff"/></linearGradient></defs><circle cx="30" cy="34" r="21" fill="#160c26"/><circle cx="30" cy="34" r="16.5" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="1.2"/><circle cx="30" cy="34" r="12.5" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="1.2"/><path d="M15.5 26a17 17 0 0 1 9-8.5" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/><circle cx="30" cy="34" r="7.5" fill="url(#logo-verlauf)"/><circle cx="30" cy="34" r="2" fill="#160c26"/><path d="M51 6.5l2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z" fill="#fff"/></svg></div></a><span>Bibliothek</span> <a class="leise klein" href="/">← Start</a> <a class="leise klein" href="/" id="abmelden">Abmelden</a></div>
+  <p class="fehler" id="fehler" role="alert"></p>
+
+  <nav class="reiter" aria-label="Bereiche">
+    <a href="#decks" data-reiter="decks">🗂️ Decks</a>
+    <a href="#musik" data-reiter="musik">🎵 Musik &amp; Songs prüfen</a>
+  </nav>
+
+  <div class="box" data-bereich="musik">
+    <h2>Apple-Music-Vorschauen</h2>
+    <p class="leise klein">Songs ohne eigene Datei: Apple stellt zu fast jedem Song einen 30-Sekunden-Ausschnitt bereit (sonst Deezer). Übernommene Vorschauen landen in der Bibliothek. Welche Quelle ein Deck nutzt, stellst du unten bei den Decks ein.</p>
+    <form id="apple-form" class="reihe">
+      <input id="apple-suche" placeholder="Interpret und Titel, z. B. „Nena 99 Luftballons“" maxlength="200" aria-label="Bei Apple Music suchen">
+      <button class="zweit">Suchen</button>
+    </form>
+    <p id="apple-stand" class="leise klein" aria-live="polite"></p>
+    <ul id="apple-treffer" class="apple-treffer"></ul>
+    <h3 id="uploads-titel" class="versteckt">Übernommen</h3>
+    <div id="uploads" class="uploads"></div>
+  </div>
+
+  <div class="box" data-bereich="musik">
+    <h2>Stand</h2>
+    <p id="stand" class="leise"></p>
+    <div class="reihe">
+      <button id="scan" class="zweit">Musikordner neu einlesen</button>
+    </div>
+    <p id="fortschritt" class="leise klein"></p>
+    <progress id="balken" class="versteckt" max="1" value="0"></progress>
+  </div>
+
+  <div class="box" data-bereich="musik">
+    <h2>Songs prüfen</h2>
+    <div class="reihe">
+      <select id="filter">
+        <option value="pruefen">Jahr unsicher (Prüfliste)</option>
+        <option value="ohne">ohne Jahr</option>
+        <option value="alle">alle</option>
+        <option value="aus">ausgeschlossen</option>
+        <option value="apple">30-s-Vorschauen (Apple/Deezer)</option>
+      </select>
+      <input id="suche" placeholder="Titel, Interpret oder Album suchen">
+    </div>
+    <p class="leise klein">Ein eingetragenes Jahr überschreibt alles andere. „Passt“ übernimmt das angezeigte Jahr als bestätigt.</p>
+    <div class="tabelle-scroll">
+      <table>
+        <thead><tr><th>Song</th><th>Tag</th><th>MB</th><th>Charts</th><th>Jahr</th><th>Grund</th><th></th></tr></thead>
+        <tbody id="liste"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="box" id="decks-box" data-bereich="decks">
+    <h2>Decks</h2>
+    <p class="leise klein">Ein Deck legt fest, welche Songs ins Spiel kommen – beim Spielstart wählst du es aus. Playlists von Deezer oder Apple Music werden mit deiner Bibliothek abgeglichen; eigene Decks stellst du aus deinen Songs zusammen.</p>
+    <form id="playlist-neu" class="reihe">
+      <input id="playlist-link" type="url" placeholder="Link einer öffentlichen Playlist von Deezer oder Apple Music" maxlength="500" aria-label="Link zur Playlist">
+      <button class="zweit">Playlist als Deck hinzufügen</button>
+    </form>
+    <form id="deck-neu" class="reihe">
+      <input id="deck-name" placeholder="Name für ein eigenes Deck, z. B. „Party 80er“" maxlength="80" aria-label="Name des neuen Decks">
+      <button class="zweit">Eigenes Deck anlegen</button>
+    </form>
+    <div class="tabelle-scroll">
+      <table>
+        <thead><tr><th>Deck</th><th>Quelle</th><th>Vorhanden</th><th></th></tr></thead>
+        <tbody id="listen"></tbody>
+      </table>
+    </div>
+    <div id="fehlend" class="versteckt">
+      <h3 id="fehlend-titel"></h3>
+      <div class="reihe"><button id="fehlend-apple" class="zweit versteckt">Fehlende online laden</button></div>
+      <div class="tabelle-scroll"><table><thead><tr><th>Interpret</th><th>Titel</th><th>Jahr</th><th>Status</th></tr></thead><tbody id="fehlend-liste"></tbody></table></div>
+    </div>
+    <div id="deck-editor" class="deck-editor versteckt">
+      <div class="reihe">
+        <input id="editor-name" aria-label="Name des Decks" maxlength="80">
+        <button id="editor-umbenennen" class="zweit">Umbenennen</button>
+        <button id="editor-zu" class="zweit">Fertig</button>
+      </div>
+      <h3 id="editor-titel"></h3>
+      <div class="deck-spalten">
+        <div>
+          <h4>Im Deck</h4>
+          <ul id="editor-im-deck" class="song-liste"></ul>
+        </div>
+        <div>
+          <h4>Aus der Bibliothek hinzufügen</h4>
+          <div class="reihe">
+            <input id="editor-suche" placeholder="Titel, Interpret, Album suchen">
+            <select id="editor-jahrzehnt" aria-label="Jahrzehnt">
+              <option value="">alle Jahre</option>
+              <option>1950</option><option>1960</option><option>1970</option><option>1980</option><option>1990</option><option>2000</option><option>2010</option><option>2020</option>
+            </select>
+          </div>
+          <button id="editor-alle" class="zweit klein-knopf">Alle Treffer hinzufügen</button>
+          <ul id="editor-bibliothek" class="song-liste"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+<script src="/js/gemeinsam.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

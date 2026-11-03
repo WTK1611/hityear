@@ -1,0 +1,9 @@
+# Eigener Caddy für den Bereich party-music (nur mit --profile eigener-proxy).
+{$PARTY_MUSIC_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy party-music:3700
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+}
