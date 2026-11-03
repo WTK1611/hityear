@@ -12,7 +12,7 @@
 1. Open https://hityear.app on a TV, laptop or projector and choose "Create game". The main screen shows a QR code and a four-letter room code.
 2. 1–6 players scan the QR code (or type the code) on their phones.
 3. Each round a song preview plays. Everyone places the song in their own timeline: before, between or after the cards they already have.
-4. Correct placements keep the card. Optional bonus stars for naming title and artist. The first to reach the target (10, 15 or 20 cards) wins.
+4. Correct placements keep the card. Optional bonus stars for naming title and artist. The first to reach the target (10, 15 or 20 cards) wins; in a tie, the stars decide.
 
 ## Features
 
