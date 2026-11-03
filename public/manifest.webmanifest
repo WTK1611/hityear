@@ -1,7 +1,7 @@
 {
   "name": "HitYear",
   "short_name": "HitYear",
-  "description": "Songs hören, Jahr erraten, Zeitstrahl bauen – das Musik-Partyspiel von medienguru.de.",
+  "description": "Songs hören, Jahr erraten, Zeitstrahl bauen – das Musik-Partyspiel HitYear.",
   "lang": "de",
   "start_url": "/",
   "scope": "/",

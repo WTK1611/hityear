@@ -11,7 +11,7 @@
 - Music comes as 30-second previews that the browser streams **directly from Deezer** (Apple Music as a fallback) – the server stores no music. Optionally your own collection, from which the server cuts short clips.
 - Interface in 🇩🇪 Deutsch, 🇬🇧 English, 🇫🇷 Français, 🇮🇹 Italiano, 🇪🇸 Español and 🇧🇷 Português (Brasil).
 
-Repo: <https://github.com/WTK1611/hityear> · License: [PolyForm Noncommercial 1.0.0](LICENSE.md) (free to use, modify and share – **not commercially**) · [Contributions welcome](CONTRIBUTING.md)
+Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · License: [PolyForm Noncommercial 1.0.0](LICENSE.md) (free to use, modify and share – **not commercially**) · [Contributions welcome](CONTRIBUTING.md)
 
 ## Screenshots
 

@@ -11,7 +11,7 @@
 - Die Musik kommt als 30-Sekunden-Hörprobe, die der Browser **direkt von Deezer** streamt (Apple Music als Ausweichquelle) – der Server speichert keine Musik. Optional eigene Sammlung, aus der der Server kurze Ausschnitte schneidet.
 - Oberfläche in 🇩🇪 Deutsch, 🇬🇧 English, 🇫🇷 Français, 🇮🇹 Italiano, 🇪🇸 Español und 🇧🇷 Português (Brasil).
 
-Repo: <https://github.com/WTK1611/hityear> · Lizenz: [PolyForm Noncommercial 1.0.0](LICENSE.md) (frei nutzbar, änderbar, weitergebbar – **nicht kommerziell**) · [Mitmachen erwünscht](CONTRIBUTING.md)
+Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · Lizenz: [PolyForm Noncommercial 1.0.0](LICENSE.md) (frei nutzbar, änderbar, weitergebbar – **nicht kommerziell**) · [Mitmachen erwünscht](CONTRIBUTING.md)
 
 ## Bilder
 
