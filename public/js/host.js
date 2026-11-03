@@ -234,7 +234,7 @@
     const blaettern = (richtung) => reihe.scrollBy({ left: richtung * reihe.clientWidth * 0.8, behavior: "smooth" });
     const links = el("button", { type: "button", class: "galerie-pfeil links", "aria-label": "Zurück blättern", text: "‹", onclick: () => blaettern(-1) });
     const rechts = el("button", { type: "button", class: "galerie-pfeil rechts", "aria-label": "Weiter blättern", text: "›", onclick: () => blaettern(1) });
-    // Hinweis unter der Reihe, solange es mehr zu sehen gibt (Platz bleibt immer reserviert, damit nichts springt)
+    // Hinweis, solange es mehr zu sehen gibt – auf breiten Bildschirmen in der Zeile mit Zurück/Weiter (kein eigener Platz)
     const touch = matchMedia("(pointer: coarse)").matches;
     const hinweis = el("p", { class: "galerie-hinweis", "aria-hidden": "true" },
       el("span", { class: "galerie-hand", text: touch ? "👆" : "↔" }), touch ? "Wischen für mehr" : "Scrollen oder Pfeile für mehr");

@@ -585,11 +585,14 @@ function t(text, tiefe = 0) {
     if (zuletzt.get(n) === n.nodeValue) return;
     const p = n.parentNode;
     if (p && (p.nodeName === "SCRIPT" || p.nodeName === "STYLE")) return;
+    // translate="no": bleibt, wie es ist (Wortmarke, fertige Posttexte)
+    if (p?.closest?.('[translate="no"]')) return;
     const neu = t(n.nodeValue);
     zuletzt.set(n, neu);
     if (neu !== n.nodeValue) n.nodeValue = neu;
   };
   const attribute = (e) => {
+    if (e.closest('[translate="no"]')) return;
     for (const a of ATTRIBUTE) {
       const v = e.getAttribute(a);
       if (!v) continue;

@@ -135,7 +135,8 @@ function dateiSenden(req: IncomingMessage, res: ServerResponse, datei: string, t
 }
 
 function statisch(req: IncomingMessage, res: ServerResponse, pfad: string): boolean {
-  const rel = pfad === "/" ? "/index.html" : pfad;
+  // Seiten auch ohne Endung (/marketing → marketing.html)
+  const rel = pfad === "/" ? "/index.html" : /^\/[a-z-]+\/?$/.test(pfad) ? `${pfad.replace(/\/$/, "")}.html` : pfad;
   const datei = path.resolve(config.publicOrdner, "." + decodeURIComponent(rel));
   if (!datei.startsWith(config.publicOrdner + path.sep)) return false;
   if (!fs.existsSync(datei) || !fs.statSync(datei).isFile()) return false;

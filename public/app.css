@@ -186,6 +186,8 @@ button.gross { font-size: 1.15rem; min-height: 60px; padding: 16px 34px; }
 .box:nth-child(3) { animation-delay: 0.16s; }
 @keyframes einblenden { from { opacity: 0; transform: translateY(24px) scale(0.97); } }
 .fehler { color: var(--schlecht); font-weight: 700; min-height: 1.4em; margin: 0 0 8px; }
+/* Hauptbildschirm: ohne Meldung kein Platz zwischen Kopf und Rahmen */
+main.breit > .fehler:empty { min-height: 0; margin: 0; }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: var(--flaeche-stark); font-weight: 800; font-size: 0.9rem; flex: none !important; }
 .punkt { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex: none; box-shadow: 0 0 12px currentColor; }
 
@@ -1042,7 +1044,16 @@ main.mit-qr #menue { flex: 1; display: flex; flex-direction: column; justify-con
 /* Lobby: QR wie auf der Startseite oben rechts; auf schmalen Bildschirmen im Fluss, weil man ohne ihn nicht beitreten kann */
 .qr-lobby { position: fixed; top: max(12px, 2.5vh); right: max(16px, 2.5vw); }
 #lobby { grid-template-columns: 1fr; }
-@media (min-width: 1101px) { #lobby { margin-top: 72px; } }
+/* breite Bildschirme: wie im Spiel – Rahmen direkt unter dem Kopf, QR rechts daneben und oben bündig */
+@media (min-width: 1101px) {
+  #lobby { position: relative; }
+  .qr-klein.qr-lobby { position: absolute; top: 0; right: 0; }
+  #lobby > .lobby-spalte { margin-right: 132px; }
+}
+/* Fernseher quer (eingepasst, auch unter 1100 px Breite): QR neben dem Rahmen statt darüber */
+main.tv-ansicht #lobby { position: relative; }
+main.tv-ansicht .qr-klein.qr-lobby { display: grid; position: absolute; top: 0; right: 0; margin: 0; }
+main.tv-ansicht #lobby > .lobby-spalte { margin-right: 132px; }
 @media (max-width: 1100px) { .qr-klein.qr-lobby { display: grid; position: static; width: max-content; margin-bottom: 14px; } }
 @media (max-width: 700px) { .qr-klein { display: none; } #spiel > .jetzt-laeuft { margin-right: 0; } }
 
@@ -1287,6 +1298,7 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 .deck-cover .karte-jahr { fill: #160c26; font-size: 8px; font-weight: 900; text-anchor: middle; }
 .galerie-hinweis { margin: 10px 0 0; text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--leise); transition: opacity 0.3s; }
 .galerie-hinweis.aus { opacity: 0; }
+@media (min-width: 701px) { .assistent .galerie-hinweis { position: absolute; left: 140px; right: 140px; top: calc(100% + 32px); margin: 0; pointer-events: none; } }
 .galerie-hand { display: inline-block; margin-right: 8px; animation: wischen 1.6s ease-in-out infinite; }
 @keyframes wischen { 0%, 100% { transform: translateX(-8px); } 50% { transform: translateX(8px); } }
 @media (prefers-reduced-motion: reduce) { .galerie-hand { animation: none; } }
@@ -1749,3 +1761,36 @@ main.recht ~ .credits {
   left: 0; right: 0; bottom: 0; z-index: 30; justify-content: flex-end; opacity: 1;
   padding: 18px 12px max(10px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(20, 14, 34, 0), #140e22 45%);
 }
+
+/* ---------- Marketing-Seite ---------- */
+main.recht.marketing { max-width: 1040px; }
+.recht article .mk-bild a.knopf { color: #160c26; text-decoration: none; }
+.mk-sprache { display: flex; gap: 8px; margin: 12px 0 4px; }
+.mk-sprache button.aktiv { background: var(--verlauf, linear-gradient(90deg, #ff3d9a, #ffd93d)); color: #160c26; }
+.mk-bilder { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; align-items: start; }
+.mk-bild { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.mk-bild img { width: 100%; max-height: 360px; object-fit: contain; border-radius: 14px; background: rgba(0, 0, 0, 0.25); }
+.mk-bild figcaption { display: flex; flex-direction: column; gap: 4px; }
+.mk-bild .knopf { align-self: flex-start; margin-top: 4px; }
+.mk-post { margin: 14px 0; padding: 14px 16px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
+.mk-kopf { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mk-kopf h3 { margin: 0; flex: 1; font-size: 1rem; }
+.mk-post p { margin: 6px 0 0; }
+.mk-post pre { margin: 10px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.5; }
+
+/* Fernseher quer: Inhalt wird eingepasst (gemeinsam.js), Platz für die Fußzeile ist dort schon abgezogen */
+main[data-einpassen].tv-ansicht { padding-bottom: 0; }
+
+/* ---------- Sparmodus (Fernseher und alte Geräte, gemeinsam.js) ----------
+   TV-Browser und alte Geräte haben wenig Rechenleistung. Keine Dauer-Animationen, die jedes Bild neu malen (Glanz-Verläufe,
+   Schatten-Puls), kein gedrehter Weichzeichner hinter dem Player. Einmalige Ein-/Ausblendungen bleiben. */
+html.sparsam .verlaufstext, html.sparsam .marke .logo, html.sparsam .zeitstrahl::before, html.sparsam .luecke.gewaehlt,
+html.sparsam .qr::before, html.sparsam .aufloesung img, html.sparsam .aufloesung .platzhalter, html.sparsam .knopf.zurueck,
+html.sparsam .wende > .hinten > .platzhalter-gross, html.sparsam .leiste i, html.sparsam .leiste .aufladen,
+html.sparsam #raten-felder:not(.versteckt) { animation: none; }
+html.sparsam .aufloesung .grosses-jahr, html.sparsam .jahr-gross { animation: aufploppen 0.7s var(--feder) both; }
+html.sparsam .rangliste .platz.sieg { animation: einblenden 0.6s var(--feder) both; }
+html.sparsam .ambient { display: none; }
+html.sparsam .jetzt-laeuft { background: radial-gradient(120% 140% at 15% 20%, rgba(255, 61, 154, 0.35), transparent 60%), radial-gradient(120% 140% at 90% 90%, rgba(61, 216, 255, 0.3), transparent 60%), #1a0f2e; }
+html.sparsam .platte.laeuft { scale: none; translate: none; }
+html.sparsam .equalizer { contain: layout paint; }

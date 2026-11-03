@@ -870,6 +870,11 @@ function konfetti(menge = 140, von = null) {
 // hat iPhones bei jedem Rundenwechsel sekundenlang eingefroren, und TV-Browser haben noch weniger Rechenleistung.
 const fernseher = /SMART-?TV|SmartTV|Tizen|Web0S|webOS|NetCast|VIDAA|Hisense|HbbTV|BRAVIA|PhilipsTV|Android TV|GoogleTV|AFT[A-Z]|CrKey|Roku|AppleTV|TV Safari|\bTV\b/i.test(navigator.userAgent);
 const grosserBildschirm = !fernseher && matchMedia("(min-width: 1024px)").matches && !matchMedia("(pointer: coarse)").matches;
+// Sparmodus (app.css: html.sparsam): keine Dauer-Animationen, die jedes Bild neu malen. Immer auf Fernsehern,
+// sonst nur auf alten Geräten (höchstens 2 Kerne oder 2 GB Speicher) – aktuelle Tablets und Handys behalten alles.
+const altesGeraet = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2;
+const sparsam = fernseher || altesGeraet;
+document.documentElement.classList.toggle("sparsam", sparsam);
 const hauptbildschirm = location.pathname === "/host.html";
 const startseite = location.pathname === "/" || location.pathname === "/index.html";
 const spots = () => ["s1", "s2", "s3", "s4"].map((s) => el("div", { class: `spot ${s}` }));
@@ -905,7 +910,8 @@ function playerBinden(audioEl, teile) {
   };
   const laeuft = (an) => {
     cancelAnimationFrame(bild);
-    bild = an ? requestAnimationFrame(schleife) : 0;
+    // Sparmodus: „timeupdate“ reicht, jedes Bild nachzuziehen kostet dort zu viel
+    bild = an && !sparsam ? requestAnimationFrame(schleife) : 0;
     if (knopf) {
       knopf.replaceChildren(symbol(an ? "pause" : "play"));
       knopf.setAttribute("aria-label", an ? "Pause" : "Abspielen");
@@ -967,9 +973,16 @@ function equalizerEl(audioEl, anzahl = 24) {
   const halten = balken.map(() => 0);
   let bildEq = 0; // läuft schon eine Zeichen-Schleife? (sonst startet jedes „playing“ eine weitere)
   let still = 0; // Bilder in Folge ohne jedes Signal
-  const zeichnen = () => {
+  let zuletztEq = 0;
+  const zeichnen = (t = performance.now()) => {
     bildEq = 0;
     if (!analyse) return;
+    // Sparmodus: höchstens ~12 Bilder pro Sekunde
+    if (sparsam && t - zuletztEq < 80) {
+      if (!audioEl.paused) bildEq = requestAnimationFrame(zeichnen);
+      return;
+    }
+    zuletztEq = t;
     analyse.getByteFrequencyData(daten);
     // kein Signal (Web Audio noch gesperrt oder Quelle ohne Freigabe): Spektrum nachbilden statt flacher Balken
     still = daten.some((d) => d > 0) ? 0 : still + 1;
@@ -991,7 +1004,8 @@ function equalizerEl(audioEl, anzahl = 24) {
       } else if (halten[i] > 0) halten[i]--;
       else spitze[i] = Math.max(hoehe, spitze[i] - 1.2);
       balken[i].style.setProperty("--sp", (spitze[i] / hoehe).toFixed(3));
-      if (i === 2) {
+      // Bass-Puls setzt Variablen an der Wurzel (ganze Seite neu berechnen) – nicht im Sparmodus
+      if (i === 2 && !sparsam) {
         const beat = wert ** 2;
         const wurzel = document.documentElement.style;
         wurzel.setProperty("--beat", beat.toFixed(2));
@@ -1046,7 +1060,7 @@ function taktSimulieren(eq, balken) {
       for (const b of balken) b.style.height = "";
       return;
     }
-    if (t - zuletzt > 70) {
+    if (t - zuletzt > (sparsam ? 120 : 70)) {
       zuletzt = t;
       const schlag = Math.exp(-(t % 500) / 110); // 120 BPM: kurzer Stoß, dann abklingen
       balken.forEach((b, i) => {
@@ -1201,7 +1215,6 @@ document.addEventListener("DOMContentLoaded", () => {
     el(
       "div",
       { class: "credits" },
-      el("a", { href: "/so-gehts.html", text: "So geht's" }),
       el("a", { href: "/impressum.html", text: "Impressum" }),
       el("a", { href: "/datenschutz.html", text: "Datenschutz" }),
       el("a", { href: "/nutzungsbedingungen.html", text: "AGB" }),
@@ -1296,3 +1309,39 @@ setTimeout(() => {
     /* egal */
   }
 }, 3000);
+
+// ---------- Fernseher (Querformat ab 3:2): ganze Ansicht ohne Scrollen ----------
+// Seiten mit <main data-einpassen> werden per CSS-zoom verkleinert, bis der Inhalt in die Fensterhöhe passt.
+// Nicht auf Touch-Geräten (Handy quer) – dort darf gescrollt werden.
+document.addEventListener("DOMContentLoaded", () => {
+  const main = document.querySelector("main[data-einpassen]");
+  if (!main || !("zoom" in main.style)) return;
+  const tv = matchMedia("(min-aspect-ratio: 3/2) and (min-width: 900px) and (not (pointer: coarse))");
+  const FUSS = 30; // Fußzeile (Impressum …) unten frei lassen
+  let zoom = 1;
+  let geplant = 0;
+  // Unterkante des Inhalts = Unterkante von main (im TV-Modus ohne Innenabstand unten, siehe app.css)
+  const unterkante = () => main.getBoundingClientRect().bottom + scrollY;
+  const einpassen = () => {
+    geplant = 0;
+    let ziel = 1;
+    main.classList.toggle("tv-ansicht", tv.matches);
+    if (tv.matches) {
+      const u = unterkante();
+      if (!u) return;
+      ziel = Math.min(1, Math.max(0.5, (zoom * (innerHeight - FUSS)) / u));
+    }
+    if (Math.abs(ziel - zoom) < 0.01) return;
+    zoom = ziel;
+    main.style.zoom = zoom === 1 ? "" : String(zoom);
+    // zoom ändert auch die Breite und damit den Umbruch: noch einmal nachmessen
+    planen();
+  };
+  const planen = () => (geplant ||= requestAnimationFrame(einpassen));
+  addEventListener("resize", planen);
+  tv.addEventListener?.("change", planen);
+  new ResizeObserver(planen).observe(main);
+  new MutationObserver(planen).observe(main, { childList: true, subtree: true });
+  document.fonts?.ready.then(planen);
+  planen();
+});
