@@ -826,44 +826,53 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 #decks-box .reihe > select, #decks-box .reihe > input, .deck-editor .reihe > input { flex: 1 1 260px; }
 
 /* ---------- Startseite: zwei Rahmen – mitspielen / Spiel erstellen ---------- */
-.start-wahl { display: grid; grid-template-columns: repeat(2, minmax(0, 340px)); justify-content: center; gap: 28px; align-items: stretch; }
+.start-wahl { display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); justify-content: center; gap: 24px; align-items: stretch; }
 .start-wahl > .box { margin: 0; }
-/* im Stil der Einrichtungs-Kacheln: Farbverlauf, Aufkleber-Bild, weicher Schatten */
+/* genau wie die Einrichtungs-Kacheln: quadratisch, Farbverlauf, großes Wort, Bild unten rechts, Plakette unten links.
+   Maße in cqw entsprechen den Einheiten der 100er-viewBox der Kacheln */
 .start-wahl > .box.start-karte {
   --farbton: 330;
-  display: flex; flex-direction: column; gap: 12px; text-align: left; color: #fff;
-  border: 0; border-radius: 10%; padding: 20px; aspect-ratio: 1; width: 100%; min-width: 0; /* quadratisch wie die Einrichtungs-Kacheln */
-  background: linear-gradient(145deg, hsl(var(--farbton) 85% 60%), hsl(calc(var(--farbton) + 50) 80% 38%));
+  position: relative; display: block; overflow: hidden; container-type: inline-size;
+  width: 100%; aspect-ratio: 1; padding: 0; margin: 0; border: 0; border-radius: 10%;
+  color: #fff; text-decoration: none; text-align: left;
+  background: linear-gradient(135deg, hsl(var(--farbton) 85% 60%), hsl(calc(var(--farbton) + 50) 80% 38%));
   backdrop-filter: none; -webkit-backdrop-filter: none;
-  box-shadow: 0 22px 40px -14px rgba(0, 0, 0, 0.85), 0 8px 16px -6px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s var(--feder), box-shadow 0.3s;
+  box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.7), 0 4px 10px -4px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s var(--feder), filter 0.2s, box-shadow 0.3s;
 }
 .start-wahl > .box.start-karte + .start-karte { --farbton: 190; }
-.start-karte:hover, .start-karte:focus-within { transform: translateY(-3px) rotate(-0.6deg); box-shadow: 0 28px 48px -14px rgba(0, 0, 0, 0.9), 0 10px 18px -6px rgba(0, 0, 0, 0.5); }
-.start-karte + .start-karte:hover, .start-karte + .start-karte:focus-within { transform: translateY(-3px) rotate(0.6deg); }
-/* Titel links neben dem großen Bild, Erklärung darunter über die ganze Breite */
-.start-kopf { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: auto; }
-.start-kopf > div { display: contents; }
-.start-kopf h2 { grid-column: 1; grid-row: 1; }
-.start-kopf p { grid-column: 1 / -1; grid-row: 2; }
-.start-karte h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 900; line-height: 1.05; }
-.start-karte h2 label { font: inherit; color: inherit; margin: 0; text-transform: none; letter-spacing: inherit; }
-.start-karte p { margin: 0; }
-.start-karte .leise { color: rgba(255, 255, 255, 0.9); font-weight: 600; }
-.start-karte .fehler { color: #fff; background: rgba(22, 12, 38, 0.55); padding: 6px 12px; border-radius: 12px; }
-.start-karte .fehler:empty { display: none; }
-.eingang-symbol { grid-column: 2; grid-row: 1; width: clamp(120px, 42vw, 144px); height: auto; margin: -10px -8px -4px 0; overflow: visible; animation: wippen 3s ease-in-out infinite; }
-.start-karte + .start-karte .eingang-symbol { animation-delay: -1.5s; }
-/* Code-Feld und Knopf dunkel bzw. weiß, damit sie auf dem Verlauf gut lesbar bleiben */
-.start-karte .code-feld { padding: 8px 12px; background: rgba(22, 12, 38, 0.42); border: 2px solid rgba(255, 255, 255, 0.45); color: #fff; }
-.start-karte .code-feld:focus { border-color: #fff; box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25); }
-.start-karte .code-feld::placeholder { color: #fff; opacity: 0.4; }
-.start-karte > button, .start-karte > .knopf {
-  width: 100%; justify-content: center; background: #fff; color: #160c26; box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.7);
+.start-wahl > .start-karte:hover, .start-wahl > .start-karte:focus-within { transform: translateY(-3px); }
+.start-wahl > a.start-karte:focus-visible { outline: none; transform: scale(1.05); filter: brightness(1.12); box-shadow: 0 16px 34px -10px rgba(0, 0, 0, 0.75); }
+.start-karte h2 { margin: 0; font-weight: 900; letter-spacing: 0; }
+.start-karte h2 label { font: inherit; color: inherit; margin: 0; text-transform: none; letter-spacing: inherit; cursor: inherit; }
+.start-gross { position: absolute; left: 8cqw; top: 6.5cqw; font-size: 26cqw; line-height: 1; white-space: nowrap; }
+.start-unter { position: absolute; left: 9cqw; top: 31.5cqw; font-size: 9.5cqw; line-height: 1; white-space: nowrap; }
+.start-fussnote { position: absolute; left: 9cqw; top: 43.5cqw; max-width: 82cqw; margin: 0; font-size: 4.8cqw; font-weight: 700; line-height: 1.2; opacity: 0.9; }
+.start-bild { position: absolute; right: 4cqw; bottom: 8cqw; width: 46cqw; height: auto; overflow: visible; animation: wippen 3s ease-in-out infinite; }
+#beitreten-form .start-bild { width: 38cqw; }
+.start-karte + .start-karte .start-bild { animation-delay: -1.5s; }
+.start-plakette {
+  position: absolute; left: 7cqw; bottom: 7cqw; padding: 1.4cqw 3.4cqw; border-radius: 999px;
+  background: rgba(22, 12, 38, 0.78); font-size: 4.6cqw; font-weight: 800; white-space: nowrap;
 }
-.start-karte > button:hover:not(:disabled), .start-karte > .knopf:hover { background: #fff; box-shadow: 0 14px 24px -10px rgba(0, 0, 0, 0.8); }
-.code-feld { text-align: center; font-size: 1.6rem; font-weight: 900; letter-spacing: 0.35em; padding: 12px; width: 100%; }
-@media (prefers-reduced-motion: reduce) { .eingang-symbol { animation: none; } }
+/* Mitspielen: Code-Feld als dunkle Plakette mit rundem Pfeil-Knopf */
+.code-reihe { position: absolute; left: 7cqw; bottom: 7cqw; display: flex; gap: 2cqw; align-items: center; }
+#beitreten-form .code-feld {
+  width: 38cqw; height: 14cqw; min-height: 0; padding: 0 2cqw; border-radius: 999px; font-size: 7cqw; letter-spacing: 0.25em; text-indent: 0.25em;
+  background: rgba(22, 12, 38, 0.78); border: 2px solid rgba(255, 255, 255, 0.5); color: #fff;
+}
+#beitreten-form .code-feld:focus { border-color: #fff; box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25); }
+.start-karte .code-feld::placeholder { color: #fff; opacity: 0.4; }
+.code-reihe button { width: 14cqw; height: 14cqw; min-height: 0; padding: 0; border-radius: 50%; background: #fff; color: #160c26; box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.6); }
+.code-reihe button:hover:not(:disabled) { background: #fff; box-shadow: 0 8px 18px -6px rgba(0, 0, 0, 0.7); }
+.code-reihe button svg { width: 55%; height: 55%; }
+.start-karte .fehler {
+  position: absolute; left: 7cqw; right: 7cqw; bottom: 24cqw; z-index: 1; margin: 0; min-height: 0; padding: 1.6cqw 3cqw; border-radius: 3cqw;
+  background: rgba(22, 12, 38, 0.88); color: #fff; font-size: 4cqw;
+}
+.start-karte .fehler:empty { display: none; }
+.code-feld { text-align: center; font-weight: 900; }
+@media (prefers-reduced-motion: reduce) { .start-bild { animation: none; } }
 @media (max-width: 620px) {
   .start-wahl { grid-template-columns: minmax(0, 340px); }
 }
@@ -1123,7 +1132,7 @@ main.tv-ansicht #lobby > .lobby-spalte { margin-right: 132px; }
 }
 .startsong.weg { opacity: 0; }
 .startsong-karte { display: grid; justify-items: center; gap: min(6px, 0.8vh); text-align: center; max-width: 520px; }
-.startsong-kicker { font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; }
+.startsong-kicker { font-size: clamp(1.1rem, min(4.4vw, 3.4vh), 1.8rem); font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.9; }
 .startsong-cover {
   width: min(56vw, 28vh, 280px); aspect-ratio: 1; object-fit: cover; border-radius: 18px; margin: min(8px, 1vh) 0 min(4px, 0.5vh);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); animation: startsong-wippen 1.2s ease-in-out infinite alternate;
@@ -1726,11 +1735,12 @@ main:not(.breit) .zeitstrahl::before { content: none; }
 @media (max-width: 700px) {
   .wahl.wahl-zahlen { grid-template-columns: 1fr; }
 }
-/* Schmaler Hauptbildschirm: Deck-, Jahrzehnt- und Genre-Auswahl als Liste untereinander statt Karussell – kleines Cover links, Name rechts */
+/* Schmaler Hauptbildschirm: alle Kacheln auf einen Blick – zwei quadratische Kacheln je Reihe statt Karussell */
 @media (max-width: 700px) {
-  .deck-raster { flex-direction: column; overflow: visible; scroll-snap-type: none; gap: 10px; padding: 4px; }
-  .deck-raster button.deck-knopf { flex: none; grid-template-columns: 76px 1fr; align-items: center; gap: 14px; padding: 8px 14px 8px 8px; text-align: left; }
-  .deck-raster .deck-name { font-size: 1rem; }
+  .deck-raster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; scroll-snap-type: none; gap: 12px; padding: 4px 2px 20px; }
+  .deck-raster > :first-child, .deck-raster > :last-child { margin: 0; }
+  .deck-raster button.deck-knopf, .deck-raster.vermessen button.deck-knopf { flex: none; width: 100%; }
+  .deck-raster .deck-name small { font-size: 0.75rem; padding: 3px 8px; }
   .galerie button.galerie-pfeil { display: none; }
 }
 /* Schmaler Hauptbildschirm im Spiel: knapp unter dem Logo, leere Fehlerzeile weg */

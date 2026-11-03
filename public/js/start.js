@@ -1,5 +1,17 @@
 "use strict";
 
+// große Wörter der Startkacheln notfalls verkleinern, damit lange Übersetzungen nicht über den Rand laufen
+function startTitelEinpassen() {
+  for (const g of document.querySelectorAll(".start-gross")) {
+    g.style.fontSize = "";
+    const platz = g.closest(".start-karte").clientWidth * 0.84;
+    const breite = g.getBoundingClientRect().width;
+    if (breite > platz) g.style.fontSize = `${26 * platz / breite}cqw`;
+  }
+}
+startTitelEinpassen();
+document.fonts?.ready.then(startTitelEinpassen);
+
 (async () => {
   let rolle = await anmeldungPruefen();
   // Einstellungen nur für den Admin; anmelden per Dreifachklick auf die Karten oben
