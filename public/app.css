@@ -1286,6 +1286,12 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 .deck-cover .zahl-gross { font-size: 32px; }
 /* Antwort-Kacheln der Einrichtung: Strichbilder weiß, Erklärung als Band unten im Cover */
 .kachel-bild { color: #fff; overflow: visible; }
+/* Bilder im Stil des Kartenstapels: weiße Flächen werden zu farbigen „Karten“ mit weißem Rand (Farbton wie die oberste Karte) */
+.kachel { container-type: inline-size; }
+.kachel-bild [fill="#fff"]:not(text) {
+  fill: hsl(calc(var(--farbton, 0) + 80) 85% 70%);
+  stroke: #fff; stroke-width: 2.6cqw; stroke-linejoin: round; paint-order: stroke fill; vector-effect: non-scaling-stroke;
+}
 .kachel-bild .linie { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
 .kachel-bild .linie.duenn { stroke-width: 3; }
 .kachel-bild .fuellung { fill: currentColor; }

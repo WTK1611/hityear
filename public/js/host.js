@@ -137,18 +137,19 @@
   const note = (x, y, s = 1, farbe = W) => g(x, y, s,
     `<rect x="17" y="0" width="6" height="36" rx="2" fill="${farbe}"/><ellipse cx="11" cy="37" rx="11" ry="7.5" transform="rotate(-18 11 37)" fill="${farbe}"/>` +
     `<path d="M23 0c12 4 17 12 14 24-2-7-7-11-14-12z" fill="${farbe}"/>`);
-  const mikro = (x, y, s = 1) => g(x, y, s,
-    `<rect x="12" y="0" width="22" height="38" rx="11" fill="${W}"/><path d="M5 28a18 18 0 0 0 36 0" fill="none" stroke="${W}" stroke-width="6" stroke-linecap="round"/>` +
-    `<rect x="20" y="45" width="6" height="12" fill="${W}"/><rect x="9" y="56" width="28" height="6" rx="3" fill="${W}"/>`);
+  const mikro = (x, y, s = 1, farbe = W) => g(x, y, s,
+    `<rect x="12" y="0" width="22" height="38" rx="11" fill="${farbe}"/><path d="M5 28a18 18 0 0 0 36 0" fill="none" stroke="${farbe}" stroke-width="6" stroke-linecap="round"/>` +
+    `<rect x="20" y="45" width="6" height="12" fill="${farbe}"/><rect x="9" y="56" width="28" height="6" rx="3" fill="${farbe}"/>`);
   const stern = (x, y, s = 1) => g(x, y, s, `<path d="M14 0l4.2 8.8 9.8 1.3-7.1 6.8 1.8 9.7L14 21.9l-8.7 4.7 1.8-9.7L0 10.1l9.8-1.3z" fill="${G}" stroke="${D}" stroke-width="1.5" stroke-linejoin="round"/>`);
-  const plus = (x, y) => `<path d="M${x} ${y + 9}h14M${x + 7} ${y + 2}v14" stroke="${W}" stroke-width="4" stroke-linecap="round"/>`;
   const handy = (x, y, s = 1, mitNote = false) => g(x, y, s,
     `<rect width="38" height="64" rx="7" fill="${W}"/><rect x="3" y="8" width="32" height="46" rx="3" fill="${D}"/><rect x="14" y="58" width="10" height="2.5" rx="1" fill="${D}"/>` +
     (mitNote ? note(9, 14, 0.55) : `<rect x="9" y="18" width="20" height="4" rx="2" fill="${W}" opacity=".5"/><rect x="9" y="27" width="20" height="4" rx="2" fill="${W}" opacity=".5"/><rect x="9" y="36" width="12" height="4" rx="2" fill="${W}" opacity=".5"/>`));
   const bogen = (x, y, s = 1, spiegel = false) => g(x, y, s,
     `<path d="M0 6q8 12 0 24M9 0q14 18 0 36" fill="none" stroke="${W}" stroke-width="4" stroke-linecap="round"/>`, spiegel ? ' transform-origin="0 0"' : "");
-  const person = (x, y, s = 1, matt = false) => g(x, y, s,
-    `<circle cx="20" cy="13" r="13" fill="${W}"/><path d="M0 54a20 20 0 0 1 40 0z" fill="${W}"/>`, matt ? ' opacity=".35"' : "");
+  const person = (x, y, s = 1, matt = false, farbe = W) => g(x, y, s,
+    `<circle cx="20" cy="13" r="13" fill="${farbe}"/><path d="M0 54a20 20 0 0 1 40 0z" fill="${farbe}"/>`, matt ? ' opacity=".35"' : "");
+  // weiße Plakette mit dunklem Symbol (Song, Interpret) – wie ein kleines Karten-Cover
+  const plakette = (x, y, inhalt) => g(x, y, 1, `<rect width="50" height="50" rx="9" fill="${W}"/>${inhalt}`);
   const roboter = (x, y, s = 1) => g(x, y, s,
     `<rect x="18" y="4" width="4" height="9" fill="${W}"/><circle cx="20" cy="3" r="3.5" fill="${G}"/><rect x="0" y="12" width="40" height="32" rx="9" fill="${W}"/>` +
     `<circle cx="13" cy="27" r="4.5" fill="${D}"/><circle cx="27" cy="27" r="4.5" fill="${D}"/><rect x="12" y="35" width="16" height="3.5" rx="1.75" fill="${D}"/>`);
@@ -184,7 +185,9 @@
   };
   const BILDER_RATEN = {
     "": karte(76, 20, 1.5),
-    beide: karte(10, 36, 1) + plus(60, 58) + note(80, 30, 1.1) + plus(118, 58) + mikro(136, 24, 1.05) + stern(96, 4, 0.9) + stern(160, 4, 0.9),
+    // Jahreskarte wie beim Klassiker, links davor Song und Interpret als Plaketten mit je einem Bonus-Stern
+    beide: karte(40, 4, 1.5) + plakette(0, 0, note(9, 5, 0.9, D)) + plakette(0, 52, person(3, 9, 0.62, false, D) + mikro(25, 10, 0.5, D)) +
+      stern(36, -8, 0.8) + stern(36, 44, 0.8),
   };
   // sechs Plätze: zwei Menschen, der Rest Bots oder leer
   const PLAETZE = [[32, 14], [82, 14], [132, 14], [32, 74], [82, 74], [132, 74]];
@@ -196,6 +199,9 @@
   const deckAnzahl = (wert) => wert
     ? (bibliothek.listen ?? []).find((l) => l.id === wert)?.treffer ?? 0
     : (bibliothek.jahrzehnte ?? []).reduce((summe, j) => summe + j.anzahl, 0);
+  // Farbtöne aller Kacheln, der Reihe nach: Orange, Pink, Blau, Lila (wie die Kartenzahl-Kacheln)
+  const FARBEN = [10, 330, 190, 265];
+  const farbe = (i) => FARBEN[i % FARBEN.length];
   // aufgefächerter Stapel Song-Karten unten rechts im Cover (statt Schallplatte), Farben passend zum Cover-Farbton
   // etwas größer als gezeichnet, damit er den Platz unter dem Titel nutzt (wie die Bilder der Antwort-Kacheln)
   // „symbol“ (z. B. das Genre-Emoji) steht als Cover auf der obersten Karte
@@ -225,7 +231,7 @@
   }
   // Deck-Cover: Verlauf in der Farbe des Decks, Kartenstapel und der Paketname (ohne Marke davor)
   function deckCover(wert, name, nr) {
-    const h = Math.round(nr * 137.5 + 200) % 360; // goldener Winkel: Nachbarn bekommen deutlich andere Farben
+    const h = farbe(nr);
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
     svg.setAttribute("class", "deck-cover");
@@ -481,7 +487,6 @@
   }
   // Inhalt eines Schritts; beim Messen mit Kopien der Elemente, die es nur einmal gibt
   function schrittInhalt(s, liste, messen = false) {
-    const nr = SCHRITTE.indexOf(s);
     const einmal = (n) => (messen ? n.cloneNode(true) : n);
     const inhalt = [el("h3", { class: "assistent-frage", text: s.frage })];
     if (s.art === "zahl") {
@@ -489,7 +494,7 @@
       const feld = $(s.feld);
       inhalt.push(galerie("zahl", messen, [...feld.options].map((o, i) =>
         el("button", { type: "button", class: "deck-knopf", "aria-pressed": String(feld.value === o.value), title: s.texte[o.value], onclick: (ev) => waehlen(feld, o.value, ev.currentTarget) },
-          filterCover("zahl", o.value, [10, 330, 190][i] ?? i * 80, i), el("span", { class: "deck-name" }, el("span", { text: `${o.value} Karten` }), el("small", { text: s.kurz[o.value] ?? "" }))))));
+          filterCover("zahl", o.value, farbe(i), i), el("span", { class: "deck-name" }, el("span", { text: `${o.value} Karten` }), el("small", { text: s.kurz[o.value] ?? "" }))))));
     } else if (s.art === "deck") {
       const feld = $(s.feld);
       inhalt.push(galerie("deck", messen, [...feld.options].map((o, i) =>
@@ -503,7 +508,7 @@
         feld.dispatchEvent(new Event("change"));
       }
       inhalt.push(galerie(s.feld, messen, [...feld.options].filter((o) => !a?.ohne?.[o.value]).map((o, i) =>
-        kachel(o.text, feld.value === o.value, (nr * 47 + i * 70) % 360, (ev) => waehlen(feld, o.value, ev.currentTarget), s.bilder?.[o.value],
+        kachel(o.text, feld.value === o.value, farbe(i), (ev) => waehlen(feld, o.value, ev.currentTarget), s.bilder?.[o.value],
           a?.texte?.[o.value] ?? s.texte?.[o.value], a?.koepfe?.[o.value] ?? s.koepfe?.[o.value]))));
     } else if (s.art === "jahrzehnte" || s.art === "genres") {
       // Mehrfachauswahl als Galerie: jeder Tipp schaltet ein Cover an/aus, „Weiter“ führt zur nächsten Frage
@@ -523,16 +528,16 @@
               input.dispatchEvent(new Event("change"));
               ev.currentTarget.setAttribute("aria-pressed", String(input.checked));
             },
-          }, filterCover(s.art, text, Number(l.style.getPropertyValue("--farbton")) || i * 50, i), el("span", { class: "deck-name" }, el("span", { text }), el("small", { class: "leise", text: `${anzahl} Songs` })));
+          }, filterCover(s.art, text, farbe(i), i), el("span", { class: "deck-name" }, el("span", { text }), el("small", { class: "leise", text: `${anzahl} Songs` })));
         })),
       );
     } else if (s.art === "bots") {
       const feld = $("#auffuellen");
       const solo = $("#wiedergabe").value === "solo";
       inhalt.push(galerie("bots", messen, [
-        kachel("Ja, auf 6 auffüllen", feld.checked, 270, (ev) => waehlen(feld, true, ev.currentTarget), BILDER_BOTS.ja,
+        kachel("Ja, auf 6 auffüllen", feld.checked, farbe(0), (ev) => waehlen(feld, true, ev.currentTarget), BILDER_BOTS.ja,
           "Freie Plätze übernehmen beim Start Bots – Name und Stärke würfelt die App.", ["Ja", "Bots füllen auf", "Immer 6 Plätze"]),
-        kachel("Nein, nur echte Mitspieler", !feld.checked, 150, (ev) => waehlen(feld, false, ev.currentTarget), BILDER_BOTS.nein,
+        kachel("Nein, nur echte Mitspieler", !feld.checked, farbe(1), (ev) => waehlen(feld, false, ev.currentTarget), BILDER_BOTS.nein,
           solo ? "Du spielst ganz für dich." : "Es spielen nur die, die den QR-Code gescannt haben.", ["Nein", "keine Bots", solo ? "Nur du" : "Nur Menschen"]),
       ]));
     } else if (s.art === "spieler") {
