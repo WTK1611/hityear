@@ -1244,7 +1244,7 @@ button.deck-knopf.tipp { animation: tipp 0.38s var(--feder); }
 /* Deck-Galerie */
 .galerie { position: relative; }
 .deck-raster {
-  display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 4px; padding: 6px 4px 10px;
+  display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 4px; padding: 6px 4px 24px;
   scrollbar-width: none; overscroll-behavior-x: contain;
 }
 .deck-raster::-webkit-scrollbar { display: none; }
@@ -1284,6 +1284,10 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 .deck-raster button.deck-knopf.mehrfach::after { top: 10px; right: 10px; }
 /* Einzelauswahl: keine Vorauswahl hervorheben – ein Tipp wählt und führt gleich weiter (Mehrfachauswahl behält den Haken) */
 .deck-raster button.deck-knopf:not(.mehrfach)[aria-pressed="true"] { border-color: transparent; background: transparent; box-shadow: none; }
+/* alle Kacheln mit weichem Schatten (Platz dafür: unteres Padding der Reihe) */
+.deck-raster button.deck-knopf, .deck-raster button.deck-knopf:hover:not(:disabled), .deck-raster button.deck-knopf:not(.mehrfach)[aria-pressed="true"] {
+  box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.7), 0 4px 10px -4px rgba(0, 0, 0, 0.35);
+}
 /* Fokus (Fernbedienung/Tastatur) ohne gelben Rahmen: Kachel hebt sich und leuchtet auf */
 .deck-raster button.deck-knopf:focus-visible { outline: none; box-shadow: 0 16px 34px -10px rgba(0, 0, 0, 0.75); filter: brightness(1.12); transform: scale(1.05); }
 .galerie button.galerie-pfeil { top: calc(50% - 40px); }

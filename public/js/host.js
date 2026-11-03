@@ -615,7 +615,7 @@
       const box = s.art === "jahrzehnte" ? jzBox : genreBox;
       // Hinweise rechts neben der Frage statt darunter: sonst wäre dieser Schritt der höchste und der Rahmen überall zu hoch
       inhalt[0] = el("div", { class: "frage-zeile" }, inhalt[0],
-        el("div", { class: "frage-notiz" }, el("p", { class: "leise klein", text: "Nichts gewählt = alle." }), einmal(verfuegbarText)));
+        el("div", { class: "frage-notiz" }, el("p", { class: "leise klein", text: s.art === "jahrzehnte" ? "Wähle mindestens ein Jahrzehnt." : "Wähle mindestens ein Genre." }), einmal(verfuegbarText)));
       inhalt.push(
         galerie(s.art, messen, [...box.querySelectorAll("label")].map((l, i) => {
           const input = l.querySelector("input");
@@ -628,6 +628,7 @@
               input.dispatchEvent(new Event("change"));
               ev.currentTarget.setAttribute("aria-pressed", String(input.checked));
               if (input.checked) funken(ev.currentTarget);
+              weiterPruefen(s);
             },
           }, filterCover(s.art, text, farbe(i), i, input.value), el("span", { class: "deck-name" }, el("span", { text }), el("small", { class: "leise", text: `${anzahl} Songs` })));
         })),
@@ -693,6 +694,16 @@
     // letzte Seite: rechts unten „Spiel starten“ statt „Weiter“
     $("#schritt-weiter").classList.toggle("versteckt", letzter);
     startKnopf.classList.toggle("versteckt", !letzter);
+    weiterPruefen(s);
+  }
+  // Jahrzehnte/Genres: weiter erst, wenn mindestens eins gewählt ist und die Auswahl Songs hat
+  function weiterPruefen(s) {
+    const knopf = $("#schritt-weiter");
+    const box = s?.art === "jahrzehnte" ? jzBox : s?.art === "genres" ? genreBox : null;
+    const keins = box && !box.querySelector("input:checked");
+    const leer = box && !keins && zustand?.verfuegbar === 0;
+    knopf.disabled = Boolean(keins || leer);
+    knopf.title = keins ? t(s.art === "jahrzehnte" ? "Wähle mindestens ein Jahrzehnt." : "Wähle mindestens ein Genre.") : leer ? t("Keine Songs passen zur Auswahl.") : "";
   }
   // Der Rahmen bleibt in jedem Schritt gleich hoch: alle Schritte unsichtbar in voller Breite aufbauen, den höchsten nehmen
   let gemessen = false;
