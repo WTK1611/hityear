@@ -197,20 +197,35 @@
     ? (bibliothek.listen ?? []).find((l) => l.id === wert)?.treffer ?? 0
     : (bibliothek.jahrzehnte ?? []).reduce((summe, j) => summe + j.anzahl, 0);
   // aufgefächerter Stapel Song-Karten unten rechts im Cover (statt Schallplatte), Farben passend zum Cover-Farbton
-  const kartenStapel = (h, jahre = ["’80", "’95", "’07"]) => [-16, -6, 4].map((winkel, k) =>
+  // etwas größer als gezeichnet, damit er den Platz unter dem Titel nutzt (wie die Bilder der Antwort-Kacheln)
+  // „symbol“ (z. B. das Genre-Emoji) steht als Cover auf der obersten Karte
+  const kartenStapel = (h, jahre = ["’80", "’95", "’07"], symbol = "") => `<g transform="translate(93 95) scale(1.15) translate(-93 -95)">` + [-16, -6, 4].map((winkel, k) =>
     `<g transform="rotate(${winkel} 76 92)"><rect x="58" y="${50 + k}" width="30" height="40" rx="4" fill="hsl(${(h + 40 * k) % 360} 85% ${62 + k * 4}%)" stroke="#fff" stroke-width="1.6"/>` +
-    `<rect x="62" y="${54 + k}" width="22" height="22" rx="2" fill="#160c26" fill-opacity=".25"/><text x="73" y="${86 + k}" class="karte-jahr">${jahre[k]}</text></g>`).join("");
-  // Deck-Cover: Verlauf in der Farbe des Decks, Kartenstapel, „HitYear“ und der Paketname (ohne Marke davor)
-  function deckCover(wert, name, nr) {
-    const h = Math.round(nr * 137.5 + 200) % 360; // goldener Winkel: Nachbarn bekommen deutlich andere Farben
-    const rest = t(name).replace(/^(HitYear|Party-Hits)\s+/i, ""); // schon übersetzt, damit der Umbruch passt
+    `<rect x="62" y="${54 + k}" width="22" height="22" rx="2" fill="#160c26" fill-opacity=".25"/><text x="73" y="${86 + k}" class="karte-jahr">${jahre[k]}</text>` +
+    (symbol && k === 2 ? `<text x="73" y="${65 + k}" class="karte-symbol">${symbol}</text>` : "") + "</g>").join("") + "</g>";
+  // Titel in Zeilen zu höchstens 12 Zeichen, höchstens vier Zeilen (schon übersetzt, damit der Umbruch passt)
+  function titelZeilen(text) {
     const zeilen = [];
-    for (const wort of rest.split(/\s+/)) {
+    for (const wort of t(text).split(/\s+/)) {
       const letzte = zeilen.at(-1);
       if (letzte && (letzte + " " + wort).length <= 12) zeilen[zeilen.length - 1] = letzte + " " + wort;
       else zeilen.push(wort);
     }
     if (zeilen.length > 4) zeilen.splice(3, zeilen.length, zeilen[3] + " …");
+    const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    titel.setAttribute("class", "deck-titel");
+    zeilen.forEach((z, i) => {
+      const zeile = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      zeile.setAttribute("x", "8");
+      zeile.setAttribute("y", String(22 + i * 12));
+      zeile.textContent = z;
+      titel.append(zeile);
+    });
+    return titel;
+  }
+  // Deck-Cover: Verlauf in der Farbe des Decks, Kartenstapel und der Paketname (ohne Marke davor)
+  function deckCover(wert, name, nr) {
+    const h = Math.round(nr * 137.5 + 200) % 360; // goldener Winkel: Nachbarn bekommen deutlich andere Farben
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
     svg.setAttribute("class", "deck-cover");
@@ -221,24 +236,16 @@
       : `<stop offset="0" stop-color="#ff3d9a"/><stop offset=".35" stop-color="#ffd93d"/><stop offset=".7" stop-color="#3dd8ff"/><stop offset="1" stop-color="#9b5cff"/>`;
     svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${farben}</linearGradient></defs>` +
       `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
-      kartenStapel(wert ? h : 300) +
-      `<text x="8" y="16" class="deck-marke">HitYear</text>`;
-    const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    titel.setAttribute("class", "deck-titel");
-    if (wert) {
-      zeilen.forEach((z, i) => {
-        const t = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-        t.setAttribute("x", "8");
-        t.setAttribute("y", String(33 + i * 12));
-        t.textContent = z;
-        titel.append(t);
-      });
-    } else {
+      kartenStapel(wert ? h : 300);
+    if (wert) svg.append(titelZeilen(t(name).replace(/^(HitYear|Party-Hits)\s+/i, "")));
+    else {
+      const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      titel.setAttribute("class", "deck-titel");
       titel.setAttribute("x", "8");
-      titel.setAttribute("y", "33");
+      titel.setAttribute("y", "22");
       titel.textContent = "Alle Songs";
+      svg.append(titel);
     }
-    svg.append(titel);
     return svg;
   }
   // Galerie: eine Reihe großer Cover, wischen per Touch oder blättern mit den Pfeilen; merkt sich je Schritt die Position
@@ -288,7 +295,7 @@
     });
     return el("div", { class: "galerie" }, links, reihe, rechts, hinweis);
   }
-  // Cover für Jahrzehnte („80er“ groß) und Genres (Symbol groß, Name darunter)
+  // Cover für Jahrzehnte („80er“ groß) und Genres (Name als Titel wie bei den Decks, Symbol auf der obersten Karte)
   function filterCover(art, text, farbton, nr) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
@@ -298,24 +305,27 @@
     const h = Math.round(farbton) % 360;
     // Jahrzehnte: Karten mit Jahren aus diesem Jahrzehnt (z. B. „80er“ → ’81, ’85, ’89)
     const jz = art === "jahrzehnte" ? text.match(/(\d)0(?=\D*$)/)?.[1] : null; // Zehnerstelle, auch bei „2000er“/„2010s“
-    const stapel = kartenStapel(h, jz ? [1, 5, 9].map((e) => `’${jz}${e}`) : undefined);
+    const genre = art === "genres" ? text.match(/^(\S+)\s+(.*)$/u) : null; // „🎸 Rock“ → Symbol und Name
+    const stapel = kartenStapel(h, jz ? [1, 5, 9].map((e) => `’${jz}${e}`) : undefined, genre?.[1]);
     svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 85% 60%)"/><stop offset="1" stop-color="hsl(${(h + 50) % 360} 80% 38%)"/></linearGradient></defs>` +
-      `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` + stapel +
-      `<text x="8" y="16" class="deck-marke">HitYear</text>`;
+      `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` + stapel;
+    if (genre) {
+      svg.append(titelZeilen(genre[2]));
+      return svg;
+    }
     const gross = document.createElementNS("http://www.w3.org/2000/svg", "text");
     gross.setAttribute("x", "8");
-    gross.setAttribute("y", art === "genres" ? "46" : "44");
+    gross.setAttribute("y", "34");
     gross.setAttribute("class", art === "zahl" ? "filter-gross zahl-gross" : "filter-gross");
-    gross.textContent = art === "genres" ? [...text][0] : text;
+    gross.textContent = text;
     svg.append(gross);
-    // darunter „Karten“ bzw. der Genre-Name (das Symbol steht groß darüber)
-    const name = art === "zahl" ? "Karten" : art === "genres" ? [...text].slice(1).join("").trim() : "";
-    if (name) {
+    // darunter „Karten“
+    if (art === "zahl") {
       const unter = document.createElementNS("http://www.w3.org/2000/svg", "text");
       unter.setAttribute("x", "9");
-      unter.setAttribute("y", art === "genres" ? "60" : "56");
+      unter.setAttribute("y", "46");
       unter.setAttribute("class", "deck-titel");
-      unter.textContent = name;
+      unter.textContent = "Karten";
       svg.append(unter);
     }
     return svg;
@@ -335,7 +345,7 @@
     },
     {
       // „Allein üben“ ohne Bots: niemand, mit dem man sich abwechseln könnte
-      nur: () => $("#wiedergabe").value !== "solo" || $("#auffuellen").checked,
+      nur: () => !allein(),
       frage: "Wer ist dran?", feld: "#modus", symbole: { einzeln: "👤", alle: "👥" }, bilder: BILDER_MODUS,
       koepfe: { alle: ["Alle", "gleichzeitig", "Für viele"], einzeln: ["Reihum", "einer ist dran", "Zum Mitfiebern"] },
       texte: {
@@ -347,6 +357,8 @@
       frage: "Wann endet eine Runde?", feld: "#warten", symbole: { alle: "✋", alle5: "⏱️", erster: "⚡" }, bilder: BILDER_WARTEN,
       koepfe: { alle: ["30 s", "nach ganzer Hörprobe", "Zum Mitsingen"], alle5: ["5 s", "nach allen Antworten", "Ausgewogen"], erster: ["5 s", "ab 1. Antwort", "Schnelle Runden"] },
       nur: () => $("#modus").value === "alle",
+      // allein ohne Bots: „ab 1. Antwort“ wäre dasselbe wie „nach allen Antworten“
+      allein: { ohne: { erster: "alle5" }, koepfe: { alle5: ["5 s", "nach deiner Antwort", "Schnelle Runden"] }, texte: { alle5: "Hast du geantwortet, geht es nach 5 Sekunden weiter. Sonst endet die Runde, wenn die Zeit um ist." } },
       texte: {
         alle: "Die Vorschau läuft immer ganz durch – Zeit genug zum Mitsingen und Grübeln.",
         alle5: "Haben alle geantwortet, geht es nach 5 Sekunden weiter. Sonst endet die Runde, wenn die Zeit um ist.",
@@ -372,6 +384,7 @@
     { frage: "Freie Plätze mit KI-Bots füllen?", art: "bots" },
     { frage: "Wer spielt mit?", art: "spieler" },
   ];
+  const allein = () => $("#wiedergabe").value === "solo" && !$("#auffuellen").checked;
   let schritt = 0;
   let gezeigt = null;
   let weiterTimer = 0;
@@ -382,6 +395,23 @@
     const bots = liste.find((s) => s.art === "bots");
     return [liste[0], bots, ...liste.slice(1).filter((s) => s !== bots)];
   };
+  // Bild so groß wie den Kartenstapel der Decks einpassen: unten rechts im freien Platz unter dem Text,
+  // entweder rechts neben der Plakette bis ganz unten oder breiter, dann aber über der Plakette
+  function bildEinpassen(bildSvg, oben) {
+    if (!bildSvg.isConnected) return;
+    const b = bildSvg.firstElementChild.getBBox();
+    if (!b.width || !b.height) return;
+    const rand = 1.5;
+    const w = b.width + 2 * rand, h = b.height + 2 * rand;
+    const neben = Math.min(43 / w, (96 - oben) / h);
+    const ueber = Math.min(62 / w, (83 - oben) / h);
+    const s = Math.max(neben, ueber), unten = neben >= ueber ? 96 : 83;
+    bildSvg.setAttribute("viewBox", `${b.x - rand} ${b.y - rand} ${w} ${h}`);
+    bildSvg.setAttribute("width", String(w * s));
+    bildSvg.setAttribute("height", String(h * s));
+    bildSvg.setAttribute("x", String(96 - w * s));
+    bildSvg.setAttribute("y", String(unten - h * s));
+  }
   // Antwort als quadratische Cover-Kachel im Stil der Kartenzahl: Stichwort groß, eine Zeile darunter, Bild unten rechts,
   // kurze Einordnung als Plakette unten links; der lange Erklärtext steht im Tooltip
   function kachel(text, an, farbton, onclick, bild, erklaerung, [gross, unter, kurz, fussnote] = [text, "", ""]) {
@@ -394,10 +424,11 @@
     const id = `kachel-verlauf-${h}-${Math.random().toString(36).slice(2, 7)}`;
     svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 85% 60%)"/><stop offset="1" stop-color="hsl(${(h + 50) % 360} 80% 38%)"/></linearGradient></defs>` +
       `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
-      `<text x="8" y="16" class="deck-marke">HitYear</text>` +
       // mit Fußnote: Bild etwas kleiner und tiefer, damit die Zeile darüber frei bleibt
-      (bild ? (fussnote ? `<svg viewBox="0 0 200 134" x="50" y="61" width="46" height="31" class="kachel-bild">${bild}</svg>`
-        : `<svg viewBox="0 0 200 134" x="44" y="56" width="54" height="36" class="kachel-bild">${bild}</svg>`) : "");
+      (bild ? (fussnote ? `<svg viewBox="0 0 200 134" x="50" y="61" width="46" height="31" class="kachel-bild"><g>${bild}</g></svg>`
+        : `<svg viewBox="0 0 200 134" x="44" y="56" width="54" height="36" class="kachel-bild"><g>${bild}</g></svg>`) : "");
+    const bildSvg = svg.querySelector(".kachel-bild");
+    if (bildSvg) requestAnimationFrame(() => requestAnimationFrame(() => bildEinpassen(bildSvg, fussnote ? 51 : 45)));
     // Zeile anlegen und, sobald sie (übersetzt) im Bild ist, notfalls verkleinern, damit lange Wörter nicht über den Rand laufen
     const zeile = (inhalt, x, y, klasse) => {
       const z = document.createElementNS(ns, "text");
@@ -410,9 +441,9 @@
         if (breite > platz) z.style.fontSize = `${parseFloat(getComputedStyle(z).fontSize) * platz / breite}px`;
       }));
     };
-    zeile(gross, "8", "40", "filter-gross kachel-gross");
-    if (unter) zeile(unter, "9", "51", "deck-titel kachel-unter");
-    if (fussnote) zeile(fussnote, "9", "58", "deck-titel kachel-fussnote");
+    zeile(gross, "8", "30", "filter-gross kachel-gross");
+    if (unter) zeile(unter, "9", "41", "deck-titel kachel-unter");
+    if (fussnote) zeile(fussnote, "9", "48", "deck-titel kachel-fussnote");
     const k = el("button", { type: "button", class: "deck-knopf kachel", "aria-pressed": String(an), title: erklaerung || "", onclick },
       svg, el("span", { class: "deck-name" }, el("span", { text }), kurz ? el("small", { text: kurz }) : null));
     k.style.setProperty("--farbton", String(h));
@@ -466,8 +497,14 @@
           deckCover(o.value, o.text, i), el("span", { class: "deck-name" }, el("span", { text: o.text }), el("small", { class: "leise", text: `${deckAnzahl(o.value)} Songs` }))))));
     } else if (s.feld) {
       const feld = $(s.feld);
-      inhalt.push(galerie(s.feld, messen, [...feld.options].map((o, i) =>
-        kachel(o.text, feld.value === o.value, (nr * 47 + i * 70) % 360, (ev) => waehlen(feld, o.value, ev.currentTarget), s.bilder?.[o.value], s.texte?.[o.value], s.koepfe?.[o.value]))));
+      const a = allein() ? s.allein : null;
+      if (a?.ohne?.[feld.value] && !messen) {
+        feld.value = a.ohne[feld.value];
+        feld.dispatchEvent(new Event("change"));
+      }
+      inhalt.push(galerie(s.feld, messen, [...feld.options].filter((o) => !a?.ohne?.[o.value]).map((o, i) =>
+        kachel(o.text, feld.value === o.value, (nr * 47 + i * 70) % 360, (ev) => waehlen(feld, o.value, ev.currentTarget), s.bilder?.[o.value],
+          a?.texte?.[o.value] ?? s.texte?.[o.value], a?.koepfe?.[o.value] ?? s.koepfe?.[o.value]))));
     } else if (s.art === "jahrzehnte" || s.art === "genres") {
       // Mehrfachauswahl als Galerie: jeder Tipp schaltet ein Cover an/aus, „Weiter“ führt zur nächsten Frage
       const box = s.art === "jahrzehnte" ? jzBox : genreBox;

@@ -1231,7 +1231,6 @@ button.deck-knopf[aria-pressed="true"] { border-color: #fff; background: rgba(25
 button.deck-knopf.tipp { animation: tipp 0.38s var(--feder); }
 .deck-cover { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.6); }
 .deck-cover .rille { fill: none; stroke: #fff; stroke-opacity: 0.14; }
-.deck-cover .deck-marke { fill: #fff; font-size: 9px; font-weight: 900; letter-spacing: 0.02em; opacity: 0.9; }
 .deck-cover .deck-titel { fill: #fff; font-size: 11px; font-weight: 900; }
 .deck-cover .kachel-fussnote { font-size: 4.8px; font-weight: 700; opacity: 0.9; }
 .deck-name { font-size: 0.78rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -1302,6 +1301,7 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 /* von galerie() berechnet: alle passen nebeneinander, oder rechts bleibt eine Kachel angeschnitten */
 .deck-raster.vermessen button.deck-knopf { flex-basis: var(--kachel); }
 .deck-cover .karte-jahr { fill: #160c26; font-size: 8px; font-weight: 900; text-anchor: middle; }
+.deck-cover .karte-symbol { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
 .galerie-hinweis { margin: 10px 0 0; text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--leise); transition: opacity 0.3s; }
 .galerie-hinweis.aus { opacity: 0; }
 @media (min-width: 701px) { .assistent .galerie-hinweis { position: absolute; left: 140px; right: 140px; top: calc(100% + 32px); margin: 0; pointer-events: none; } }
