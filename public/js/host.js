@@ -333,6 +333,8 @@
       },
     },
     {
+      // „Allein üben“ ohne Bots: niemand, mit dem man sich abwechseln könnte
+      nur: () => $("#wiedergabe").value !== "solo" || $("#auffuellen").checked,
       frage: "Wer ist dran?", feld: "#modus", symbole: { einzeln: "👤", alle: "👥" }, bilder: BILDER_MODUS,
       koepfe: { alle: ["Alle", "gleichzeitig", "Für viele"], einzeln: ["Reihum", "einer ist dran", "Zum Mitfiebern"] },
       texte: {
@@ -372,7 +374,13 @@
   let schritt = 0;
   let gezeigt = null;
   let weiterTimer = 0;
-  const sichtbareSchritte = () => SCHRITTE.filter((s) => !s.nur || s.nur());
+  // „Allein üben“: die Bot-Frage kommt gleich nach „Wo läuft die Musik?“ – davon hängt ab, ob „Wer ist dran?“ Sinn ergibt
+  const sichtbareSchritte = () => {
+    const liste = SCHRITTE.filter((s) => !s.nur || s.nur());
+    if ($("#wiedergabe").value !== "solo") return liste;
+    const bots = liste.find((s) => s.art === "bots");
+    return [liste[0], bots, ...liste.slice(1).filter((s) => s !== bots)];
+  };
   // Antwort als quadratische Cover-Kachel im Stil der Kartenzahl: Stichwort groß, eine Zeile darunter, Bild unten rechts,
   // kurze Einordnung als Plakette unten links; der lange Erklärtext steht im Tooltip
   function kachel(text, an, farbton, onclick, bild, erklaerung, [gross, unter, kurz, fussnote] = [text, "", ""]) {
@@ -482,11 +490,12 @@
       );
     } else if (s.art === "bots") {
       const feld = $("#auffuellen");
+      const solo = $("#wiedergabe").value === "solo";
       inhalt.push(galerie("bots", messen, [
         kachel("Ja, auf 6 auffüllen", feld.checked, 270, (ev) => waehlen(feld, true, ev.currentTarget), BILDER_BOTS.ja,
           "Freie Plätze übernehmen beim Start Bots – Name und Stärke würfelt die App.", ["Ja", "Bots füllen auf", "Immer 6 Plätze"]),
         kachel("Nein, nur echte Mitspieler", !feld.checked, 150, (ev) => waehlen(feld, false, ev.currentTarget), BILDER_BOTS.nein,
-          "Es spielen nur die, die den QR-Code gescannt haben.", ["Nein", "keine Bots", "Nur Menschen"]),
+          solo ? "Du spielst ganz für dich." : "Es spielen nur die, die den QR-Code gescannt haben.", ["Nein", "keine Bots", solo ? "Nur du" : "Nur Menschen"]),
       ]));
     } else if (s.art === "spieler") {
       // letzte Seite: sechs Plätze – Mitspieler, beim Start dazukommende Bots oder frei – und der Start-Knopf

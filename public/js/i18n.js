@@ -288,6 +288,8 @@ const UEBERSETZUNGEN = [
   ["Online", "Online", "En ligne", "Online", "Online", "Online"],
   ["spielen", "play", "jouer", "giocare", "jugar", "jogar"],
   ["Du", "You", "Toi", "Tu", "Tú", "Você"],
+  ["Nur du", "Just you", "Toi seul", "Solo tu", "Solo tú", "Só você"],
+  ["Du spielst ganz für dich.", "You play just for yourself.", "Tu joues juste pour toi.", "Giochi solo per te.", "Juegas solo para ti.", "Você joga só para você."],
   ["Allein", "Solo", "Seul", "Da solo", "Solo", "Sozinho"],
   ["Zum Üben", "For practice", "Pour s'entraîner", "Per allenarsi", "Para practicar", "Para treinar"],
   ["Mit oder ohne Bots", "With or without bots", "Avec ou sans bots", "Con o senza bot", "Con o sin bots", "Com ou sem bots"],
