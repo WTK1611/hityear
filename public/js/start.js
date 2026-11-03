@@ -77,7 +77,14 @@ document.fonts?.ready.then(startTitelEinpassen);
     const code = $("#raumcode").value.trim().toUpperCase();
     const meldung = $("#code-fehler");
     meldung.textContent = "";
-    if (code.length !== 4) return void (meldung.textContent = "Der Code hat 4 Zeichen – er steht groß auf dem Bildschirm des Gastgebers.");
+    if (code.length !== 4) {
+      meldung.textContent = code ? "Der Code hat 4 Zeichen – er steht groß auf dem Bildschirm des Gastgebers." : "Bitte zuerst den Code eingeben.";
+      const form = e.currentTarget;
+      form.classList.remove("wackeln");
+      void form.offsetWidth;
+      form.classList.add("wackeln");
+      return void $("#raumcode").focus();
+    }
     const knopf = e.submitter ?? $("#beitreten-form button");
     knopf.disabled = true;
     try {

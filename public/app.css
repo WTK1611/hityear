@@ -872,7 +872,8 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 }
 .start-karte .fehler:empty { display: none; }
 .code-feld { text-align: center; font-weight: 900; }
-@media (prefers-reduced-motion: reduce) { .start-bild { animation: none; } }
+.start-wahl > .start-karte.wackeln { animation: wackeln 0.45s; }
+@media (prefers-reduced-motion: reduce) { .start-bild, .start-wahl > .start-karte.wackeln { animation: none; } }
 @media (max-width: 700px) {
   .start-wahl { gap: 12px; } /* auch am Handy zwei Kacheln nebeneinander, so groß wie in der Einrichtung */
 }
