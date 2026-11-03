@@ -28,6 +28,16 @@
   // Die Platte ist der Play/Pause-Knopf: Klick hält an (bremst ab wie ein Plattenspieler) oder spielt weiter
   const platte = el("div", { class: "platte handgedreht", role: "button", tabindex: "0", "aria-label": "Abspielen" });
   const eq = equalizerEl(audio.element, 32);
+  eq.dataset.tvFokus = ""; // am Fernseher vorgewählt: → schaltet gleich durch die Equalizer
+  // Während des Spiels schalten ←/→ (Fernbedienung und PC-Tastatur) immer die Equalizer durch, ↑/↓ navigieren weiter
+  document.addEventListener("keydown", (e) => {
+    if ((e.key !== "ArrowRight" && e.key !== "ArrowLeft") || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.target === eq || !eq.isConnected || eq.closest(".versteckt") || document.activeElement?.matches?.("input, textarea, select")) return;
+    e.preventDefault();
+    e.stopPropagation();
+    eq.focus({ preventScroll: true });
+    eq.dispatchEvent(new KeyboardEvent("keydown", { key: e.key }));
+  }, true);
   $("#eq-platz").replaceWith(eq);
   playerBinden(audio.element, {
     leiste: $("#t-leiste"),

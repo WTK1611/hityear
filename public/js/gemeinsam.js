@@ -936,23 +936,23 @@ function equalizerEl(audioEl, anzahl = 24) {
     return b;
   });
   const eq = el("div", { class: "equalizer", role: "button", tabindex: "0", title: "Klicken: anderer Equalizer", "aria-label": "Equalizer-Stil wechseln" }, ...balken);
-  // Per Klick (oder OK auf der Fernbedienung) durch die Stile schalten; die Wahl bleibt auf dem Gerät
-  const STILE = ["balken", "spiegel", "punkte", "neon", "led", "regenbogen", "berge", "pixel", "retro"];
+  // Per Klick, OK oder ←/→ (Fernbedienung) durch die Stile schalten; die Wahl bleibt auf dem Gerät. Standard: LED
+  const STILE = ["led", "balken", "spiegel", "punkte", "neon", "regenbogen", "berge", "pixel", "retro"];
   let stil = Math.max(0, STILE.indexOf(speicher("zs_eq") ?? ""));
   const stilSetzen = () => {
     for (const s of STILE) eq.classList.toggle(`eq-${s}`, s === STILE[stil]);
   };
-  const wechseln = () => {
-    stil = (stil + 1) % STILE.length;
+  const wechseln = (schritt = 1) => {
+    stil = (stil + schritt + STILE.length) % STILE.length;
     speicher("zs_eq", STILE[stil]);
     stilSetzen();
   };
-  eq.addEventListener("click", wechseln);
+  eq.addEventListener("click", () => wechseln());
   eq.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      wechseln();
-    }
+    const schritt = { Enter: 1, " ": 1, ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    if (!schritt) return;
+    e.preventDefault(); // ←/→ bleiben beim Equalizer, ↑/↓ verlassen ihn (Pfeiltasten-Navigation)
+    wechseln(schritt);
   });
   stilSetzen();
   taktSimulieren(eq, balken);

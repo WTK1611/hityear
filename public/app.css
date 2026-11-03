@@ -326,6 +326,8 @@ main.breit > .fehler:empty { min-height: 0; margin: 0; }
 .equalizer.versteckt { display: none; }
 .equalizer[role="button"] { cursor: pointer; border-radius: 10px; }
 .equalizer[role="button"]:focus-visible { outline: 2px solid var(--cyan); outline-offset: 6px; }
+/* am Fernseher ist der Equalizer immer vorgewählt (←/→ wechselt den Stil): dort ohne Rahmen */
+main.tv-ansicht .equalizer[role="button"]:focus-visible { outline: none; }
 /* Stile (Klick wechselt): Spiegel wächst aus der Mitte, Punkte springen, Neon leuchtet */
 .equalizer.eq-spiegel { align-items: center; }
 .equalizer.eq-punkte i { background: none; position: relative; }
