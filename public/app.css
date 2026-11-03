@@ -873,8 +873,16 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 .start-karte .fehler:empty { display: none; }
 .code-feld { text-align: center; font-weight: 900; }
 @media (prefers-reduced-motion: reduce) { .start-bild { animation: none; } }
-@media (max-width: 620px) {
-  .start-wahl { grid-template-columns: minmax(0, 340px); }
+@media (max-width: 700px) {
+  .start-wahl { gap: 12px; } /* auch am Handy zwei Kacheln nebeneinander, so groß wie in der Einrichtung */
+}
+/* schmale Kachel (Handy): Code-Feld breiter und mit 16px (sonst zoomt iOS beim Tippen), Bild darüber */
+@container (max-width: 240px) {
+  .code-reihe { right: 7cqw; }
+  #beitreten-form .code-feld { flex: 1; width: auto; min-width: 0; height: 20cqw; font-size: 16px; letter-spacing: 0.12em; text-indent: 0.12em; }
+  .code-reihe button { flex: none; width: 20cqw; height: 20cqw; }
+  #beitreten-form .start-bild { width: 26cqw; bottom: 28cqw; }
+  .start-karte .fehler { bottom: 30cqw; font-size: 11px; }
 }
 
 /* Apple-Music-Vorschauen (Admin) */
