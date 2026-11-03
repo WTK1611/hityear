@@ -281,6 +281,7 @@ const UEBERSETZUNGEN = [
   ["Handys", "Phones", "Mobiles", "Telefoni", "Móviles", "Celulares"],
   ["Party vor Ort", "Party at home", "Fête sur place", "Festa dal vivo", "Fiesta en casa", "Festa ao vivo"],
   ["Online spielen", "Play online", "Jouer en ligne", "Gioca online", "Jugar online", "Jogar online"],
+  ["Handy als Hauptscreen", "Phone as main screen", "Mobile comme écran principal", "Telefono come schermo principale", "Móvil como pantalla principal", "Celular como tela principal"],
   ["Ton vom TV", "Sound from TV", "Son sur la télé", "Audio dalla TV", "Sonido en la tele", "Som na TV"],
   ["Ton am Handy", "Sound on phones", "Son sur mobile", "Audio sul telefono", "Sonido en el móvil", "Som no celular"],
   ["gleichzeitig", "at once", "en même temps", "insieme", "a la vez", "juntos"],
