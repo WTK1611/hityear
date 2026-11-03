@@ -826,30 +826,43 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 #decks-box .reihe > select, #decks-box .reihe > input, .deck-editor .reihe > input { flex: 1 1 260px; }
 
 /* ---------- Startseite: zwei Rahmen – mitspielen / Spiel erstellen ---------- */
-.start-wahl { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+.start-wahl { display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); justify-content: center; gap: 18px; align-items: stretch; }
 .start-wahl > .box { margin: 0; }
-.start-karte {
-  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
-  transition: transform 0.3s var(--feder), border-color 0.2s;
+/* im Stil der Einrichtungs-Kacheln: Farbverlauf, Aufkleber-Bild, weicher Schatten */
+.start-wahl > .box.start-karte {
+  --farbton: 330;
+  display: flex; flex-direction: column; gap: 12px; text-align: left; color: #fff;
+  border: 0; border-radius: 10%; padding: 20px; aspect-ratio: 1; /* quadratisch wie die Einrichtungs-Kacheln */
+  background: linear-gradient(145deg, hsl(var(--farbton) 85% 60%), hsl(calc(var(--farbton) + 50) 80% 38%));
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.7), 0 4px 10px -4px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s var(--feder), box-shadow 0.3s;
 }
-.start-karte:hover, .start-karte:focus-within { transform: translateY(-3px) rotate(-0.6deg); border-color: var(--cyan); }
-.start-karte + .start-karte:hover, .start-karte + .start-karte:focus-within { transform: translateY(-3px) rotate(0.6deg); border-color: var(--pink); }
-.start-karte h2 { margin: 0; }
+.start-wahl > .box.start-karte + .start-karte { --farbton: 190; }
+.start-karte:hover, .start-karte:focus-within { transform: translateY(-3px) rotate(-0.6deg); box-shadow: 0 20px 34px -12px rgba(0, 0, 0, 0.75), 0 6px 12px -4px rgba(0, 0, 0, 0.35); }
+.start-karte + .start-karte:hover, .start-karte + .start-karte:focus-within { transform: translateY(-3px) rotate(0.6deg); }
+.start-kopf { display: flex; align-items: flex-start; gap: 8px; margin-bottom: auto; }
+.start-kopf > div { flex: 1; display: grid; gap: 8px; }
+.start-karte h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 900; line-height: 1.05; }
 .start-karte h2 label { font: inherit; color: inherit; margin: 0; text-transform: none; letter-spacing: inherit; }
 .start-karte p { margin: 0; }
+.start-karte .leise { color: rgba(255, 255, 255, 0.9); font-weight: 600; }
+.start-karte .fehler { color: #fff; background: rgba(22, 12, 38, 0.55); padding: 6px 12px; border-radius: 12px; }
 .start-karte .fehler:empty { display: none; }
-.start-karte > button, .start-karte > .knopf { margin-top: auto; width: 100%; justify-content: center; }
-.eingang-symbol { font-size: 2.6rem; line-height: 1; animation: wippen 3s ease-in-out infinite; }
+.eingang-symbol { flex: none; width: clamp(96px, 40%, 130px); height: auto; margin: -6px -6px -4px 0; overflow: visible; animation: wippen 3s ease-in-out infinite; }
 .start-karte + .start-karte .eingang-symbol { animation-delay: -1.5s; }
-/* Geräte-Symbole: links Handy und Tablet (Mitspielen), rechts Fernseher und Monitor (Spiel erstellen) */
-.eingang-symbol.geraete { color: var(--cyan); height: 2.6rem; }
-.eingang-symbol.geraete svg { height: 100%; width: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(61, 216, 255, 0.45)); }
-.start-karte + .start-karte .eingang-symbol.geraete { color: var(--pink); }
-.start-karte + .start-karte .eingang-symbol.geraete svg { filter: drop-shadow(0 0 10px rgba(255, 61, 154, 0.45)); }
+/* Code-Feld und Knopf dunkel bzw. weiß, damit sie auf dem Verlauf gut lesbar bleiben */
+.start-karte .code-feld { background: rgba(22, 12, 38, 0.42); border: 2px solid rgba(255, 255, 255, 0.45); color: #fff; }
+.start-karte .code-feld:focus { border-color: #fff; box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25); }
+.start-karte .code-feld::placeholder { color: #fff; opacity: 0.4; }
+.start-karte > button, .start-karte > .knopf {
+  width: 100%; justify-content: center; background: #fff; color: #160c26; box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.7);
+}
+.start-karte > button:hover:not(:disabled), .start-karte > .knopf:hover { background: #fff; box-shadow: 0 14px 24px -10px rgba(0, 0, 0, 0.8); }
 .code-feld { text-align: center; font-size: 1.6rem; font-weight: 900; letter-spacing: 0.35em; padding: 12px; width: 100%; }
-.code-feld::placeholder { color: var(--leise); opacity: 0.5; }
+@media (prefers-reduced-motion: reduce) { .eingang-symbol { animation: none; } }
 @media (max-width: 620px) {
-  .start-wahl { grid-template-columns: 1fr; }
+  .start-wahl { grid-template-columns: minmax(0, 340px); }
 }
 
 /* Apple-Music-Vorschauen (Admin) */
