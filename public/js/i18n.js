@@ -280,6 +280,8 @@ const UEBERSETZUNGEN = [
   ["TV", "TV", "Télé", "TV", "Tele", "TV"],
   ["Handys", "Phones", "Mobiles", "Telefoni", "Móviles", "Celulares"],
   ["Party vor Ort", "Party at home", "Fête sur place", "Festa dal vivo", "Fiesta en casa", "Festa ao vivo"],
+  ["vor Ort", "at home", "sur place", "dal vivo", "en casa", "ao vivo"],
+  ["Party", "Party", "Fête", "Festa", "Fiesta", "Festa"],
   ["Online spielen", "Play online", "Jouer en ligne", "Gioca online", "Jugar online", "Jogar online"],
   ["Online spielen*", "Play online*", "Jouer en ligne*", "Gioca online*", "Jugar online*", "Jogar online*"],
   ["Nur Hauptscreen spielt Musik", "Only the main screen plays music", "Seul l’écran principal joue la musique", "Solo lo schermo principale suona la musica", "Solo la pantalla principal reproduce la música", "Só a tela principal toca a música"],

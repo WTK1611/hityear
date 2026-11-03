@@ -320,7 +320,7 @@
   const SCHRITTE = [
     {
       frage: "Wo läuft die Musik?", feld: "#wiedergabe", symbole: { host: "📺", alle: "📱" }, bilder: BILDER_WIEDERGABE,
-      koepfe: { host: ["TV", "Party vor Ort", "Ton vom TV", "Nur Hauptscreen spielt Musik"], alle: ["Handys", "Online spielen*", "Ton am Handy", "*ein Gerät ist Hauptscreen"] },
+      koepfe: { host: ["Party", "vor Ort", "Ton vom TV", "Nur Hauptscreen spielt Musik"], alle: ["Handys", "Online spielen*", "Ton am Handy", "*ein Gerät ist Hauptscreen"] },
       texte: {
         host: "Ein Fernseher oder Monitor ist der Hauptbildschirm, der Ton kommt aus seinen Lautsprechern. Die Handys dienen nur zum Tippen.",
         alle: "Ein Gerät richtet das Spiel ein, jedes Handy spielt die Musik selbst ab – auch wenn ihr nicht im selben Raum seid.",
