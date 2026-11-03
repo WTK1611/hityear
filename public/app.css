@@ -553,10 +553,9 @@ main.tv-ansicht .equalizer[role="button"]:focus-visible { outline: none; }
 .bot-marke { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; vertical-align: middle; background: rgba(155, 92, 255, 0.25); color: #d9c4ff; white-space: nowrap; }
 .bot-marke.leicht { background: rgba(61, 255, 176, 0.18); color: #9dffd6; }
 .bot-marke.profi { background: rgba(255, 61, 154, 0.22); color: #ffb3d6; }
-.zurueck-reihe { display: flex; justify-content: flex-end; margin-top: 22px; }
-/* Zurück-Knopf: wie die Knöpfe der Startseite, der Verlauf wandert langsam */
-.knopf.zurueck { animation: glanz 6s linear infinite; }
-@media (prefers-reduced-motion: reduce) { .knopf.zurueck, .spot { animation: none; } }
+/* Zurück-Knopf: immer links und schlicht (wie „‹ Zurück“ in der Einrichtung), nie farbig */
+.zurueck-reihe { display: flex; justify-content: flex-start; margin-top: 22px; }
+@media (prefers-reduced-motion: reduce) { .spot { animation: none; } }
 .start-reihe { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .check { display: flex; gap: 8px; align-items: center; font-weight: 600; }
 .check input { width: auto; accent-color: var(--pink); }

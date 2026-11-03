@@ -1174,7 +1174,7 @@ function taktSimulieren(eq, balken) {
 // Zurück-Knopf auf jeder Seite außer der Startseite und dem Hauptbildschirm (dort führt das Logo zurück):
 // in #zurueck-platz (im Rahmen), sonst unten auf der Seite
 if (!["/", "/index.html", "/host.html"].includes(location.pathname)) {
-  const knopf = el("a", { class: "knopf zurueck", href: "/" }, el("span", { text: "‹ Zurück" }));
+  const knopf = el("a", { class: "knopf zweit zurueck", href: "/" }, el("span", { text: "‹ Zurück" }));
   const platz = document.querySelector("#zurueck-platz");
   if (platz) platz.append(knopf);
   else document.querySelector("main")?.append(el("div", { class: "zurueck-reihe" }, knopf));
