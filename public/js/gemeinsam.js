@@ -864,6 +864,117 @@ function konfetti(menge = 140, von = null) {
   requestAnimationFrame(bild);
 }
 
+/**
+ * Kurzer Partikel-Effekt an einem Element (Einrichtungs-Kacheln): jeder Aufruf nimmt die nächste Art –
+ * Konfetti, Musiknoten, Sterne, Seifenblasen, Schallplatten. Eine Leinwand, gut eine Sekunde, dann weg.
+ */
+let funkenArt = 0;
+function funken(von) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || !von) return;
+  const arten = ["konfetti", "noten", "sterne", "blasen", "platten"];
+  const art = arten[funkenArt++ % arten.length];
+  if (art === "konfetti") return konfetti(40, von);
+  const c = el("canvas", { class: "konfetti", "aria-hidden": "true" });
+  document.body.append(c);
+  const ctx = c.getContext("2d");
+  const dpr = devicePixelRatio || 1;
+  c.width = innerWidth * dpr;
+  c.height = innerHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const farben = ["#ff3d9a", "#ff8a3d", "#ffd93d", "#3dffb0", "#3dd8ff", "#9b5cff"];
+  const r = von.getBoundingClientRect();
+  const mx = r.left + r.width / 2, my = r.top + r.height / 2;
+  const zufall = (a, b) => a + Math.random() * (b - a);
+  const menge = { noten: 18, sterne: 26, blasen: 22, platten: 12 }[art];
+  const teile = Array.from({ length: menge }, (_, i) => {
+    const winkel = (i / menge) * Math.PI * 2 + zufall(-0.3, 0.3);
+    const tempo = art === "sterne" ? zufall(5, 11) : art === "platten" ? zufall(5, 10) : zufall(1, 3);
+    return {
+      x: art === "sterne" || art === "platten" ? mx : r.left + zufall(0.1, 0.9) * r.width,
+      y: art === "sterne" || art === "platten" ? my : r.top + zufall(0.4, 1) * r.height,
+      vx: art === "sterne" || art === "platten" ? Math.cos(winkel) * tempo : zufall(-1.2, 1.2),
+      vy: art === "sterne" ? Math.sin(winkel) * tempo : art === "platten" ? Math.sin(winkel) * tempo - 6 : -zufall(2, 4.5),
+      g: art === "platten" ? 0.35 : art === "sterne" ? 0.05 : -0.02,
+      s: art === "blasen" ? zufall(8, 22) : art === "noten" ? zufall(22, 36) : zufall(8, 16),
+      rot: zufall(0, Math.PI * 2), vr: zufall(-0.15, 0.15), phase: zufall(0, 6),
+      f: farben[i % farben.length], zeichen: ["♪", "♫", "♬", "♩"][i % 4],
+    };
+  });
+  const stern = (s) => {
+    ctx.beginPath();
+    for (let k = 0; k < 10; k++) {
+      const rr = k % 2 ? s * 0.45 : s;
+      ctx.lineTo(Math.cos((k * Math.PI) / 5 - Math.PI / 2) * rr, Math.sin((k * Math.PI) / 5 - Math.PI / 2) * rr);
+    }
+    ctx.closePath();
+  };
+  const dauer = 1400, t0 = performance.now();
+  const bild = (t) => {
+    const anteil = (t - t0) / dauer;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (const p of teile) {
+      p.vy += p.g;
+      if (art === "sterne") { p.vx *= 0.93; p.vy *= 0.93; }
+      p.x += p.vx + (art === "noten" || art === "blasen" ? Math.sin(t / 220 + p.phase) * 0.8 : 0);
+      p.y += p.vy;
+      p.rot += p.vr;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - anteil * anteil);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(art === "blasen" ? 0 : p.rot);
+      if (art === "noten") {
+        ctx.font = `900 ${p.s}px Nunito, system-ui, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "#fff";
+        ctx.strokeText(p.zeichen, 0, 0);
+        ctx.fillStyle = p.f;
+        ctx.fillText(p.zeichen, 0, 0);
+      } else if (art === "sterne") {
+        stern(p.s * (0.8 + 0.3 * Math.sin(t / 60 + p.phase)));
+        ctx.fillStyle = p.i % 2 ? "#fff" : "#ffd93d";
+        ctx.fill();
+      } else if (art === "blasen") {
+        const s = p.s * (0.6 + anteil * 0.6);
+        ctx.beginPath();
+        ctx.arc(0, 0, s, 0, Math.PI * 2);
+        ctx.fillStyle = `${p.f}33`;
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(-s * 0.35, -s * 0.35, s * 0.18, 0, Math.PI * 2);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+      } else {
+        // kleine Schallplatte: schwarz mit weißem Rand, Rillen, farbiges Etikett
+        ctx.beginPath();
+        ctx.arc(0, 0, p.s, 0, Math.PI * 2);
+        ctx.fillStyle = "#160c26";
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(255,255,255,.18)";
+        ctx.beginPath();
+        ctx.arc(0, 0, p.s * 0.72, 0, Math.PI * 1.3);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, p.s * 0.36, 0, Math.PI * 2);
+        ctx.fillStyle = p.f;
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+    if (anteil < 1) requestAnimationFrame(bild);
+    else c.remove();
+  };
+  teile.forEach((p, i) => (p.i = i));
+  requestAnimationFrame(bild);
+}
+
 // Regel: Der aufwendige Hintergrund (Farbwolken, schwenkende Bühnen-Spotlights) läuft nur auf großen
 // Bildschirmen ohne Touch (Laptop, Desktop) und nur am Hauptbildschirm und auf der Startseite. Handys, Tablets
 // und Fernseher bekommen immer den ruhenden Verlauf ohne Animation und ohne Weichzeichner: Der teure Hintergrund

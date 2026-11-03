@@ -209,6 +209,15 @@
     `<g transform="rotate(${winkel} 76 92)"><rect x="58" y="${50 + k}" width="30" height="40" rx="4" fill="hsl(${(h + 40 * k) % 360} 85% ${62 + k * 4}%)" stroke="#fff" stroke-width="1.6"/>` +
     `<rect x="62" y="${54 + k}" width="22" height="22" rx="2" fill="#160c26" fill-opacity=".25"/><text x="73" y="${86 + k}" class="karte-jahr">${jahre[k]}</text>` +
     (symbol && k === 2 ? `<text x="73" y="${65 + k}" class="karte-symbol">${symbol}</text>` : "") + "</g>").join("") + "</g>";
+  // Deck-Cover: Plattenhülle (Kartenstil: farbig mit weißem Rand) und eine Schallplatte, die rechts herausschaut
+  const schallplatte = (h) =>
+    `<g class="platte"><circle cx="77" cy="64" r="19" fill="#160c26" stroke="#fff" stroke-width="1.6"/>` +
+    [15.5, 12.5].map((r) => `<circle cx="77" cy="64" r="${r}" class="rille" stroke-width=".8"/>`).join("") +
+    `<path d="M77 49a15 15 0 0 1 13 7.5" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round"/>` +
+    `<circle cx="77" cy="64" r="6.5" fill="hsl(${(h + 40) % 360} 85% 62%)"/><circle cx="77" cy="64" r="1.3" fill="#160c26"/></g>` +
+    `<g transform="rotate(-6 62 66)"><rect x="42" y="46" width="40" height="40" rx="4" fill="hsl(${(h + 80) % 360} 85% 70%)" stroke="#fff" stroke-width="1.6"/>` +
+    `<rect x="47" y="51" width="30" height="30" rx="3" fill="#160c26" fill-opacity=".25"/>` +
+    `<circle cx="62" cy="66" r="9" fill="none" stroke="#fff" stroke-width="2.4"/><circle cx="62" cy="66" r="2.4" fill="#fff"/></g>`;
   // Titel in Zeilen zu höchstens 12 Zeichen, höchstens vier Zeilen (schon übersetzt, damit der Umbruch passt)
   function titelZeilen(text) {
     const zeilen = [];
@@ -229,7 +238,7 @@
     });
     return titel;
   }
-  // Deck-Cover: Verlauf in der Farbe des Decks, Kartenstapel und der Paketname (ohne Marke davor)
+  // Deck-Cover: Verlauf in der Farbe des Decks, Plattenhülle mit Schallplatte und der Paketname (ohne Marke davor)
   function deckCover(wert, name, nr) {
     const h = farbe(nr);
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -242,7 +251,7 @@
       : `<stop offset="0" stop-color="#ff3d9a"/><stop offset=".35" stop-color="#ffd93d"/><stop offset=".7" stop-color="#3dd8ff"/><stop offset="1" stop-color="#9b5cff"/>`;
     svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${farben}</linearGradient></defs>` +
       `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
-      kartenStapel(wert ? h : 300);
+      schallplatte(wert ? h : 300);
     if (wert) svg.append(titelZeilen(t(name).replace(/^(HitYear|Party-Hits)\s+/i, "")));
     else {
       const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -466,7 +475,9 @@
       feld.value = wert;
       feld.dispatchEvent(new Event("change"));
     }
+    // jeder Tipp auf eine Kachel bekommt einen anderen Partikel-Effekt; bei der Kartenzahl mehr Konfetti je mehr Karten
     if (feld.id === "ziel") konfetti(Math.min(90, 14 + Number(wert) * 3), k);
+    else funken(k);
     for (const b of k.parentElement.children) b.setAttribute("aria-pressed", String(b === k));
     k.classList.add("tipp");
     wechsel = true;
@@ -527,6 +538,7 @@
               input.checked = !input.checked;
               input.dispatchEvent(new Event("change"));
               ev.currentTarget.setAttribute("aria-pressed", String(input.checked));
+              if (input.checked) funken(ev.currentTarget);
             },
           }, filterCover(s.art, text, farbe(i), i), el("span", { class: "deck-name" }, el("span", { text }), el("small", { class: "leise", text: `${anzahl} Songs` })));
         })),
