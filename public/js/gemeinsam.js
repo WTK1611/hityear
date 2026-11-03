@@ -1081,8 +1081,11 @@ function taktSimulieren(eq, balken) {
 // ---------- Fernbedienung (TV) ----------
 // Pfeiltasten springen zum nächsten bedienbaren Element in Pfeilrichtung, OK/Enter klickt.
 // In Textfeldern bleiben ←/→ beim Cursor; ↑/↓ verlassen das Feld. Auswahllisten öffnet OK.
+// Vorgewählt (Fernseher oder nach Pfeiltasten): [data-tv-fokus], im Setup die gewählte Kachel – auch nach
+// jedem Neuzeichnen, damit der Fokus nicht verloren geht. Die Zurück-Taste der Fernbedienung blättert im Setup zurück.
 (() => {
-  const AUSWAHL = "a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), summary, [tabindex]:not([tabindex='-1'])";
+  // Blätterpfeile der Galerie zählen nicht: der Fokus scrollt die Reihe selbst
+  const AUSWAHL = "a[href], button:not([disabled]):not(.galerie-pfeil), input:not([disabled]):not([type=hidden]), select:not([disabled]), summary, [tabindex]:not([tabindex='-1'])";
   const RICHTUNG = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
 
   function sichtbar(e) {
@@ -1117,11 +1120,50 @@ function taktSimulieren(eq, balken) {
     const textfeld = aktiv?.matches?.("input:not([type=checkbox]):not([type=radio]), textarea");
     if (textfeld && r[0] !== 0) return;
     const start = aktiv && aktiv !== document.body ? aktiv : null;
-    const ziel = start ? naechstes(start, r) : [...document.querySelectorAll(AUSWAHL)].find(sichtbar);
+    const ziel = start ? naechstes(start, r) : vorschlag() ?? [...document.querySelectorAll(AUSWAHL)].find(sichtbar);
     if (!ziel) return;
     ev.preventDefault();
-    ziel.focus({ preventScroll: true });
+    ziel.focus({ preventScroll: true, focusVisible: true });
     ziel.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+  });
+
+  // Tastatur-Modus: am Fernseher von Anfang an, sonst ab der ersten Pfeiltaste; ein Klick/Tipp beendet ihn
+  let tasten = fernseher;
+  document.addEventListener("keydown", (ev) => { if (RICHTUNG[ev.key]) tasten = true; }, true);
+  document.addEventListener("pointerdown", (ev) => { if (ev.pointerType !== "mouse" || !fernseher) tasten = false; }, true);
+
+  // in dieser Reihenfolge: ausdrücklich vorgewählt, im Setup die gewählte Kachel, sonst die erste Kachel
+  const VORSCHLAG = ["[data-tv-fokus]", "#schritt-inhalt [aria-pressed='true']", "#schritt-inhalt button:not(.galerie-pfeil)"];
+  const vorschlag = () => {
+    for (const sel of VORSCHLAG) {
+      const e = [...document.querySelectorAll(sel)].find((x) => !x.disabled && sichtbar(x));
+      if (e) return e;
+    }
+    return null;
+  };
+  let geplant = 0;
+  const fokusHalten = () => {
+    geplant = 0;
+    const aktiv = document.activeElement;
+    if (!tasten || (aktiv && aktiv !== document.body && aktiv.isConnected && sichtbar(aktiv))) return;
+    const ziel = vorschlag();
+    if (!ziel) return;
+    ziel.focus({ preventScroll: true, focusVisible: true });
+    ziel.scrollIntoView({ block: "nearest", inline: "nearest" });
+  };
+  const planen = () => (geplant ||= setTimeout(fokusHalten, 120));
+  new MutationObserver(planen).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
+  addEventListener("load", planen);
+
+  // Zurück-Taste der Fernbedienung (webOS 461, Tizen 10009, Android TV „GoBack“) – im Setup ein Schritt zurück
+  document.addEventListener("keydown", (ev) => {
+    const zurueck = ev.keyCode === 461 || ev.keyCode === 10009 || ev.key === "GoBack" || ev.key === "BrowserBack";
+    if (!zurueck) return;
+    const knopf = document.querySelector("#schritt-zurueck");
+    if (knopf && sichtbar(knopf)) {
+      ev.preventDefault();
+      knopf.click();
+    }
   });
 })();
 

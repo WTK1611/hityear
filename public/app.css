@@ -1266,6 +1266,8 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
   flex: 0 0 clamp(210px, 25vw, 300px); aspect-ratio: 1; display: block; position: relative; padding: 0; overflow: hidden; border-width: 3px;
 }
 .deck-raster button.deck-knopf .deck-cover { width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
+/* keine durchscheinenden Ecken: Knopf so rund wie das Cover (rx 10 von 100) und ohne eigene Fläche */
+.deck-raster button.deck-knopf, .deck-raster button.deck-knopf:hover:not(:disabled) { border-radius: 10%; background: transparent; }
 .deck-raster .deck-name { position: absolute; left: 7%; bottom: 7%; display: block; overflow: visible; }
 .deck-raster .deck-name > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .deck-raster .deck-name small {
@@ -1273,7 +1275,9 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 }
 .deck-raster button.deck-knopf.mehrfach::after { top: 10px; right: 10px; }
 /* Einzelauswahl: keine Vorauswahl hervorheben – ein Tipp wählt und führt gleich weiter (Mehrfachauswahl behält den Haken) */
-.deck-raster button.deck-knopf:not(.mehrfach)[aria-pressed="true"] { border-color: transparent; background: var(--flaeche); box-shadow: none; }
+.deck-raster button.deck-knopf:not(.mehrfach)[aria-pressed="true"] { border-color: transparent; background: transparent; box-shadow: none; }
+/* Fokus (Fernbedienung/Tastatur) ohne gelben Rahmen: Kachel hebt sich und leuchtet auf */
+.deck-raster button.deck-knopf:focus-visible { outline: none; box-shadow: 0 16px 34px -10px rgba(0, 0, 0, 0.75); filter: brightness(1.12); transform: scale(1.05); }
 .galerie button.galerie-pfeil { top: calc(50% - 40px); }
 /* wenige Kacheln (z. B. Kartenzahl) mittig, bei Überlauf trotzdem ab dem Anfang scrollbar */
 .deck-raster > :first-child { margin-left: auto; }

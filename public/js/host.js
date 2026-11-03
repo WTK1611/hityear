@@ -157,7 +157,8 @@
   const BILDER_WIEDERGABE = {
     host: tv(32, 2, 0.95) + bogen(146, 20, 0.9) + g(28, 20, 0.9, `<path d="M9 6q-8 12 0 24M0 0q-14 18 0 36" fill="none" stroke="${W}" stroke-width="4" stroke-linecap="round"/>`) +
       handy(52, 100, 0.5) + handy(90, 100, 0.5) + handy(128, 100, 0.5),
-    alle: handy(22, 44, 1.1, true) + handy(82, 20, 1.3, true) + handy(146, 44, 1.1, true) + bogen(186, 24, 0.7),
+    // jedes Handy spielt die Musik selbst: Schallwellen an allen drei
+    alle: handy(16, 44, 1.1, true) + bogen(62, 46, 0.55) + handy(78, 20, 1.3, true) + bogen(130, 22, 0.6) + handy(142, 44, 1.1, true) + bogen(188, 46, 0.55),
   };
   const BILDER_MODUS = {
     alle: person(30, 52, 1.1) + person(80, 40, 1.3) + person(138, 52, 1.1) + note(94, 0, 0.9),
@@ -325,7 +326,7 @@
     },
     {
       frage: "Wann endet eine Runde?", feld: "#warten", symbole: { alle: "✋", alle5: "⏱️", erster: "⚡" }, bilder: BILDER_WARTEN,
-      koepfe: { alle: ["30 s", "ganzer Song", "Zum Mitsingen"], alle5: ["5 s", "alle fertig", "Ausgewogen"], erster: ["5 s", "ab 1. Antwort", "Schnelle Runden"] },
+      koepfe: { alle: ["30 s", "nach ganzer Hörprobe", "Zum Mitsingen"], alle5: ["5 s", "nach allen Antworten", "Ausgewogen"], erster: ["5 s", "ab 1. Antwort", "Schnelle Runden"] },
       nur: () => $("#modus").value === "alle",
       texte: {
         alle: "Die Vorschau läuft immer ganz durch – Zeit genug zum Mitsingen und Grübeln.",
