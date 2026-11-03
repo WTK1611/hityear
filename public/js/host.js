@@ -111,6 +111,7 @@
       raten: Boolean($("#raten-was").value),
       ratenWas: $("#raten-was").value || "beide",
       auffuellen: $("#auffuellen").checked,
+      ohneBots: zustand?.einstellungen?.ohneBots ?? [],
       liste: $("#liste").value || null,
       jahrzehnte: filterMoeglich() ? gewaehlt(jzBox).map(Number) : [],
       genres: filterMoeglich() ? gewaehlt(genreBox) : [],
@@ -517,9 +518,15 @@
           if (du && i === 0) return el("div", { class: "platz" }, el("span", { class: "platz-symbol", "aria-hidden": "true", text: "🎧" }), el("span", { class: "platz-name", text: "Du" }));
           // freie Plätze: die Bots, die der Server beim Start einsetzt (Name, Avatar, Stufe stehen schon fest)
           const b = zustand?.botsDazu?.[i - spieler.length - (du ? 1 : 0)];
-          return bots && b
-            ? el("div", { class: "platz bot" }, avatarEl({ avatar: b.avatar, farbe: "#b48cff" }), el("span", { class: "platz-name", text: b.name }))
-            : el("div", { class: "platz frei" }, el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: "frei" }));
+          // ein Klick auf einen Bot nimmt ihn heraus, ein Klick auf einen freien Platz holt den zuletzt entfernten zurück
+          const weg = zustand?.einstellungen?.ohneBots ?? [];
+          if (bots && b) return platzKnopf(el("div", { class: "platz bot", title: "Bot entfernen" },
+            messen ? null : el("span", { class: "knopf zweit platz-weg", "aria-hidden": "true", text: "✕" }),
+            avatarEl({ avatar: b.avatar, farbe: "#b48cff" }), el("span", { class: "platz-name", text: b.name })), messen ? null : () => botsAendern([...weg, b.name]));
+          const zurueck = bots && weg.length && !messen;
+          return platzKnopf(el("div", { class: `platz frei ${zurueck ? "zurueckholen" : ""}`, title: zurueck ? "Bot zurückholen" : "" },
+            el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: zurueck ? "Bot dazu" : "frei" })),
+            zurueck ? () => botsAendern(weg.slice(0, -1)) : null);
         })),
         // „Online spielen“ ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit (bei „Party vor Ort“ ist es der Hauptscreen)
         messen || spieler.length >= 6 || $("#wiedergabe").value !== "alle" ? null
@@ -645,6 +652,21 @@
     else spiel(z);
   }
 
+  // Platz in der Lobby anklickbar machen (auch per Tastatur bzw. TV-Fernbedienung)
+  function platzKnopf(platz, aktion) {
+    if (!aktion) return platz;
+    platz.setAttribute("role", "button");
+    platz.tabIndex = 0;
+    platz.classList.add("klickbar");
+    platz.addEventListener("click", aktion);
+    platz.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); aktion(); }
+    });
+    return platz;
+  }
+  function botsAendern(ohneBots) {
+    tun("host:einstellungen", { ...einstellungenLesen(), ohneBots });
+  }
   // ---------- Lobby ----------
   let qrFuer = null;
   function lobby(z) {

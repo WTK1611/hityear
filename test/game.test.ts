@@ -377,6 +377,22 @@ test("Bot-Plan: sechs feste Bots (je zwei pro Stufe), freie Plätze in der Lobby
   assert.equal(bot.name, geplant[0].name);
   assert.equal(bot.avatar, geplant[0].avatar);
   assert.equal(botsDazu(s)[0].name, geplant[1].name);
+  // weggeklickter Bot fehlt, kein anderer rückt nach
+  s.einstellungen.ohneBots = [geplant[2].name];
+  const danach = botsDazu(s);
+  assert.equal(danach.length, 3);
+  assert.ok(!danach.some((b) => b.name === geplant[2].name));
   s.einstellungen.auffuellen = false;
   assert.equal(botsDazu(s).length, 0);
+});
+
+test("Allein üben: Platz für den Gastgeber ist in der Lobby reserviert", async () => {
+  const { botsDazu } = await import("../src/game.ts");
+  const s = neuesSpiel(5);
+  s.einstellungen = { ...s.einstellungen, auffuellen: true, wiedergabe: "solo", ohneBots: [] };
+  assert.equal(botsDazu(s).length, 5);
+  s.einstellungen.ohneBots = [botsDazu(s)[0].name];
+  assert.equal(botsDazu(s).length, 4);
+  spielerHinzufuegen(s, { id: "a", name: "Anna", farbe: "#f00", sitzung: "x" });
+  assert.equal(botsDazu(s).length, 4);
 });

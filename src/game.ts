@@ -48,6 +48,8 @@ export interface Einstellungen {
   ratenWas: RatenWas;
   /** Beim Start mit Bots auf 6 Mitspieler auffüllen (Name und Stufe zufällig) */
   auffuellen: boolean;
+  /** In der Lobby weggeklickte Bots (Namen) – sie kommen beim Start nicht dazu */
+  ohneBots: string[];
 }
 
 /** Genre-Gruppen der Lobby → Teilwörter im Genre-Tag (Apple/Deezer/Datei, z. B. „Hip-Hop/Rap“, „Deutsch-Pop“) */
@@ -82,6 +84,7 @@ export const STANDARD_EINSTELLUNGEN: Einstellungen = {
   raten: false,
   ratenWas: "beide",
   auffuellen: true,
+  ohneBots: [],
 };
 
 export interface Karte {
@@ -266,7 +269,12 @@ export function botPlan(s: Spiel, zufall = Math.random): BotVorschau[] {
 export function botsDazu(s: Spiel): BotVorschau[] {
   if (!s.einstellungen.auffuellen) return [];
   const namen = new Set(s.spieler.map((p) => p.name.toLowerCase()));
-  const plan = botPlan(s).filter((b) => !namen.has(b.name.toLowerCase())).slice(0, Math.max(0, 6 - s.spieler.length));
+  // weggeklickte Bots fehlen und machen ihren Platz nicht für einen anderen frei;
+  // „Allein üben“: der erste Platz ist schon in der Lobby für den Gastgeber reserviert
+  const weg = new Set(s.einstellungen.ohneBots ?? []);
+  const reserviert = s.einstellungen.wiedergabe === "solo" && s.phase === "lobby" && !s.spieler.some((p) => !p.bot) ? 1 : 0;
+  const plan = botPlan(s).filter((b) => !namen.has(b.name.toLowerCase()) && !weg.has(b.name))
+    .slice(0, Math.max(0, 6 - s.spieler.length - reserviert - weg.size));
   // hat ein Mitspieler das Avatar eines geplanten Bots, zeigt schon die Vorschau ein freies – so wie es der Bot beim Start bekommt
   const belegt = new Set([...s.spieler.map((p) => p.avatar), ...plan.map((b) => b.avatar)]);
   return plan.map((b) => {
@@ -298,6 +306,9 @@ export function grenzen(e: Partial<Einstellungen>): Einstellungen {
     raten: Boolean(z.raten),
     ratenWas: RATEN_WAS.includes(z.ratenWas) ? z.ratenWas : "beide",
     auffuellen: Boolean(z.auffuellen),
+    ohneBots: Array.isArray(z.ohneBots)
+      ? [...new Set(z.ohneBots.filter((n) => typeof n === "string" && BOT_LISTE.some((b) => b.name === n)))].slice(0, 6)
+      : [],
   };
 }
 

@@ -1331,6 +1331,12 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 @media (max-width: 560px) { .platz-raster { grid-template-columns: repeat(2, 1fr); } .platz-raster > .platz { min-height: 96px; } }
 .platz-raster > .platz { position: relative; }
 button.platz-weg { position: absolute; top: 6px; right: 6px; min-width: 0; padding: 4px 9px; font-size: 0.8rem; }
+.platz-raster > .platz.klickbar { cursor: pointer; transition: transform 0.15s, filter 0.15s; }
+.platz-raster > .platz.klickbar:hover, .platz-raster > .platz.klickbar:focus-visible { transform: scale(1.03); filter: brightness(1.15); outline: none; }
+.platz-raster > .platz.bot .platz-weg { position: absolute; top: 6px; right: 6px; min-width: 0; padding: 4px 9px; font-size: 0.8rem; opacity: 0; transition: opacity 0.15s; }
+.platz-raster > .platz.bot:hover .platz-weg, .platz-raster > .platz.bot:focus-visible .platz-weg { opacity: 1; }
+@media (hover: none) { .platz-raster > .platz.bot .platz-weg { opacity: 1; } }
+.platz-raster > .platz.frei.zurueckholen { opacity: 0.8; }
 .assistent-fuss { min-height: 60px; } /* so hoch wie „Spiel starten“ – der Rahmen springt auf der letzten Seite nicht */
 /* Hauptbildschirm groß und quer: --skala (host.js) verkleinert Cover-Karte und Zeitstrahle, bis nichts mehr scrollt */
 @media (min-width: 1024px) and (orientation: landscape) {
