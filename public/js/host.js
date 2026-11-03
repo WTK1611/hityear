@@ -261,6 +261,58 @@
   };
   // „Alle Songs“: ein ganzer Stapel Schallplatten in Regenbogenfarben statt einer Hülle
   const plattenStapel = () => platteSvg(52, 72, 15, "#3dd8ff") + platteSvg(64, 60, 16, "#ffd93d") + platteSvg(77, 68, 19, "#ff3d9a", "platte");
+  // Genre-Bilder im Kartenstil (farbige Flächen, weißer Rand, dunkle Details), unten rechts im 100er-Cover
+  const R = 'stroke="#fff" stroke-width="1.6" stroke-linejoin="round"';
+  const glitzer = (x, y, g = 1) => `<path d="M${x} ${y - 5 * g}l${1.3 * g} ${3.7 * g} ${3.7 * g} ${1.3 * g}-${3.7 * g} ${1.3 * g}-${1.3 * g} ${3.7 * g}-${1.3 * g}-${3.7 * g}-${3.7 * g}-${1.3 * g} ${3.7 * g}-${1.3 * g}z" fill="#ffd93d"/>`;
+  // dicker Strich mit weißem Rand: erst breit in Weiß, dann schmaler in der Farbe
+  const strich = (d, farbe, breite) => `<path d="${d}" fill="none" stroke="#fff" stroke-width="${breite + 3.2}" stroke-linecap="round" stroke-linejoin="round"/>` +
+    `<path d="${d}" fill="none" stroke="${farbe}" stroke-width="${breite}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const GENRE_BILDER = {
+    pop: (h) => {
+      const f = `hsl(${(h + 80) % 360} 85% 70%)`, f2 = `hsl(${(h + 40) % 360} 85% 62%)`;
+      return `<path d="M66 60L50 87a4.5 4.5 0 0 0 7.5 4L74 66z" fill="${f2}" ${R}/><circle cx="75" cy="54" r="13" fill="${f}" ${R}/>` +
+        `<path d="M67 48l14 14M71 44l14 14M64 54l12 12" stroke="#160c26" stroke-opacity=".25" stroke-width="1.6"/>` + glitzer(90, 76) + glitzer(56, 44, 0.7);
+    },
+    rock: (h) => {
+      const f = `hsl(${(h + 80) % 360} 85% 70%)`, f2 = `hsl(${(h + 40) % 360} 85% 62%)`;
+      const hals = "M66 70L88 42";
+      return `<path d="${hals}" stroke="#fff" stroke-width="9.2" stroke-linecap="round"/><circle cx="60" cy="78" r="14.6" fill="#fff"/><circle cx="70" cy="66" r="11.6" fill="#fff"/>` +
+        `<path d="${hals}" stroke="${f2}" stroke-width="6" stroke-linecap="round"/><rect x="84" y="36" width="9" height="11" rx="2.5" transform="rotate(38 88 42)" fill="#160c26"/>` +
+        `<circle cx="60" cy="78" r="13" fill="${f}"/><circle cx="70" cy="66" r="10" fill="${f}"/>` +
+        `<rect x="57" y="69" width="12" height="4" rx="1.5" transform="rotate(-52 63 71)" fill="#160c26" fill-opacity=".7"/><rect x="61" y="74" width="12" height="4" rx="1.5" transform="rotate(-52 67 76)" fill="#160c26" fill-opacity=".7"/>` +
+        `<path d="M58 82L86 45" stroke="#160c26" stroke-width=".8" stroke-opacity=".6"/>` + glitzer(48, 56, 0.8);
+    },
+    dance: (h) => {
+      const f = `hsl(${(h + 80) % 360} 85% 70%)`;
+      return `<path d="M70 32v12" stroke="#fff" stroke-width="2"/><circle cx="70" cy="66" r="21" fill="${f}" ${R}/>` +
+        `<g fill="none" stroke="#160c26" stroke-opacity=".28" stroke-width="1.3"><ellipse cx="70" cy="66" rx="9" ry="21"/><ellipse cx="70" cy="66" rx="17" ry="21"/>` +
+        `<path d="M50 59h40M49 66h42M50 73h40M54 52h32M54 80h32"/></g>` +
+        `<path d="M60 55l6-4 3 6-6 3z" fill="#fff" fill-opacity=".8"/>` + glitzer(94, 50) + glitzer(46, 84, 0.8) + glitzer(92, 86, 0.6);
+    },
+    hiphop: (h) => {
+      const f = `hsl(${(h + 80) % 360} 85% 70%)`, f2 = `hsl(${(h + 40) % 360} 85% 62%)`;
+      return strich("M54 54v-9h32v9", f2, 3) + `<rect x="43" y="53" width="54" height="34" rx="6" fill="${f}" ${R}/>` +
+        [56, 84].map((x) => `<circle cx="${x}" cy="71" r="10" fill="#160c26"/><circle cx="${x}" cy="71" r="4" fill="${f2}"/>`).join("") +
+        `<rect x="64" y="59" width="12" height="7" rx="1.5" fill="#160c26" fill-opacity=".3"/><circle cx="67" cy="78" r="1.6" fill="#160c26"/><circle cx="73" cy="78" r="1.6" fill="#160c26"/>`;
+    },
+    rnb: (h) => {
+      const f = `hsl(${(h + 80) % 360} 85% 70%)`;
+      return `<path d="M70 90L49 69a12 12 0 0 1 21-16 12 12 0 0 1 21 16z" fill="${f}" ${R}/>` +
+        `<g transform="translate(62 56) scale(.42)"><rect x="17" y="0" width="6" height="36" rx="2" fill="#160c26"/><ellipse cx="11" cy="37" rx="11" ry="7.5" transform="rotate(-18 11 37)" fill="#160c26"/><path d="M23 0c12 4 17 12 14 24-2-7-7-11-14-12z" fill="#160c26"/></g>` +
+        glitzer(92, 48) + glitzer(48, 48, 0.7);
+    },
+    schlager: (h) => {
+      const f2 = `hsl(${(h + 40) % 360} 85% 62%)`;
+      const brezel = "M70 62C62 46 44 50 46 64C48 77 62 80 84 89M70 62C78 46 96 50 94 64C92 77 78 80 56 89";
+      return strich(brezel, f2, 6.5) + [[52, 58], [60, 70], [88, 58], [80, 70], [70, 80]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.4" fill="#fff"/>`).join("") + glitzer(94, 86, 0.8);
+    },
+    film: (h) => {
+      const f = `hsl(${(h + 80) % 360} 85% 70%)`;
+      return `<rect x="46" y="60" width="46" height="30" rx="3" fill="${f}" ${R}/><path d="M52 70h34M52 78h22" stroke="#160c26" stroke-opacity=".3" stroke-width="2.4" stroke-linecap="round"/>` +
+        `<g transform="rotate(-16 46 59)"><rect x="46" y="49" width="46" height="10" rx="2" fill="#160c26" ${R}/>` +
+        [50, 62, 74, 86].map((x) => `<path d="M${x} 50h5l-5 8h-5z" fill="#fff"/>`).join("") + "</g>" + glitzer(96, 48, 0.8);
+    },
+  };
   // Titel in Zeilen zu höchstens 12 Zeichen, höchstens vier Zeilen (schon übersetzt, damit der Umbruch passt)
   function titelZeilen(text) {
     const zeilen = [];
@@ -310,9 +362,7 @@
   // Galerie: eine Reihe großer Cover, wischen per Touch oder blättern mit den Pfeilen; merkt sich je Schritt die Position
   const galerieStand = {};
   function galerie(schluessel, messen, karten) {
-    // Jahrzehnte und Genres: halb so große Kacheln in zwei Zeilen (zusammen so hoch wie eine normale Kachel)
-    const zweizeilig = schluessel === "jahrzehnte" || schluessel === "genres";
-    const reihe = el("div", { class: zweizeilig ? "deck-raster zweizeilig" : "deck-raster", "data-anzahl": String(Math.min(karten.length, 6)) }, karten);
+    const reihe = el("div", { class: "deck-raster", "data-anzahl": String(Math.min(karten.length, 6)) }, karten);
     const blaettern = (richtung) => reihe.scrollBy({ left: richtung * reihe.clientWidth * 0.8, behavior: "smooth" });
     const links = el("button", { type: "button", class: "galerie-pfeil links", "aria-label": "Zurück blättern", text: "‹", onclick: () => blaettern(-1) });
     const rechts = el("button", { type: "button", class: "galerie-pfeil rechts", "aria-label": "Weiter blättern", text: "›", onclick: () => blaettern(1) });
@@ -325,28 +375,12 @@
       rechts.disabled = reihe.scrollLeft + reihe.clientWidth > reihe.scrollWidth - 4;
       hinweis.classList.toggle("aus", links.disabled && rechts.disabled);
     };
-    // Kachelgröße: passen alle nebeneinander, teilen sie sich die Breite (höchstens 300px); sonst so, dass rechts
-    // knapp eine halbe Kachel angeschnitten bleibt – dann sieht man, dass es weitergeht
     const groesseSetzen = () => {
       if (matchMedia("(max-width: 700px)").matches) { reihe.classList.remove("vermessen"); return; }
-      const breite = reihe.clientWidth - 8, abstand = parseFloat(getComputedStyle(reihe).columnGap) || 16, n = karten.length;
+      const breite = reihe.clientWidth - 8, abstand = parseFloat(getComputedStyle(reihe).columnGap) || 16;
       if (!breite) return;
-      if (zweizeilig) {
-        // so groß wie eine Kachel bei drei nebeneinander, davon die Hälfte
-        reihe.style.setProperty("--kachel", `${Math.floor((Math.min(300, (breite - 2 * abstand) / 3) - abstand) / 2)}px`);
-        reihe.style.gridTemplateColumns = `repeat(${Math.ceil(n / 2)}, var(--kachel))`;
-        reihe.classList.add("vermessen");
-        pfeile();
-        return;
-      }
-      let groesse = Math.min(300, (breite - (n - 1) * abstand) / n);
-      if (groesse < 170) {
-        for (let ganz = 1; ganz < 20; ganz++) {
-          groesse = (breite - ganz * abstand) / (ganz + 0.45);
-          if (groesse <= 300) break;
-        }
-        groesse = Math.max(150, groesse);
-      }
+      // in jedem Schritt gleich groß: vier passen nebeneinander (höchstens 300px), weniger stehen mittig, mehr blättert man
+      const groesse = Math.max(150, Math.min(300, (breite - 3 * abstand) / 4));
       reihe.style.setProperty("--kachel", `${Math.floor(groesse)}px`);
       reihe.classList.add("vermessen");
       pfeile();
@@ -365,7 +399,7 @@
     return el("div", { class: "galerie" }, links, reihe, rechts, hinweis);
   }
   // Cover für Jahrzehnte („80er“ groß) und Genres (Name als Titel wie bei den Decks, Symbol auf der obersten Karte)
-  function filterCover(art, text, farbton, nr) {
+  function filterCover(art, text, farbton, nr, schluessel = "") {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
     svg.setAttribute("class", "deck-cover");
@@ -375,7 +409,8 @@
     // Jahrzehnte: Karten mit Jahren aus diesem Jahrzehnt (z. B. „80er“ → ’81, ’85, ’89)
     const jz = art === "jahrzehnte" ? text.match(/(\d)0(?=\D*$)/)?.[1] : null; // Zehnerstelle, auch bei „2000er“/„2010s“
     const genre = art === "genres" ? text.match(/^(\S+)\s+(.*)$/u) : null; // „🎸 Rock“ → Symbol und Name
-    const stapel = kartenStapel(h, jz ? [1, 5, 9].map((e) => `’${jz}${e}`) : undefined, genre?.[1]);
+    // Genres mit eigenem Bild (Mikrofon, Gitarre, …) statt Kartenstapel; unbekannte Genres: Symbol auf der Karte
+    const stapel = GENRE_BILDER[schluessel]?.(h) ?? kartenStapel(h, jz ? [1, 5, 9].map((e) => `’${jz}${e}`) : undefined, genre?.[1]);
     svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 85% 60%)"/><stop offset="1" stop-color="hsl(${(h + 50) % 360} 80% 38%)"/></linearGradient></defs>` +
       `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` + stapel;
     if (genre) {
@@ -594,7 +629,7 @@
               ev.currentTarget.setAttribute("aria-pressed", String(input.checked));
               if (input.checked) funken(ev.currentTarget);
             },
-          }, filterCover(s.art, text, farbe(i), i), el("span", { class: "deck-name" }, el("span", { text }), el("small", { class: "leise", text: `${anzahl} Songs` })));
+          }, filterCover(s.art, text, farbe(i), i, input.value), el("span", { class: "deck-name" }, el("span", { text }), el("small", { class: "leise", text: `${anzahl} Songs` })));
         })),
       );
     } else if (s.art === "bots") {
@@ -620,7 +655,7 @@
           const neuBereit = Boolean(p?.bereit && !bereitVorher.has(p.id));
           if (p?.bereit) bereitJetzt.add(p.id);
           if (p) return el("div", { class: `platz ${p.verbunden ? "" : "offline"} ${p.bereit ? "bereit" : ""} ${neuBereit ? "wackeln" : ""}` },
-            messen ? null : el("button", { type: "button", class: "zweit platz-weg", text: "✕", "aria-label": `${p.name} entfernen`, onclick: () => tun("host:entfernen", { spielerId: p.id }) }),
+            messen ? null : el("button", { type: "button", class: "zweit platz-weg", "aria-label": `${p.name} entfernen`, onclick: () => tun("host:entfernen", { spielerId: p.id }) }),
             avatarEl(p), el("span", { class: "platz-name", text: p.name + (p.verbunden ? "" : " (offline)") }));
           // „Allein üben“: der erste Platz ist für dich, du trittst erst nach „Spiel starten“ bei
           if (du && i === 0) return el("div", { class: "platz" }, el("span", { class: "platz-symbol", "aria-hidden": "true", text: "🎧" }), el("span", { class: "platz-name", text: "Du" }));
@@ -629,7 +664,7 @@
           // ein Klick auf einen Bot nimmt ihn heraus, ein Klick auf einen freien Platz holt den zuletzt entfernten zurück
           const weg = zustand?.einstellungen?.ohneBots ?? [];
           if (bots && b) return platzKnopf(el("div", { class: "platz bot", title: "Bot entfernen" },
-            messen ? null : el("span", { class: "knopf zweit platz-weg", "aria-hidden": "true", text: "✕" }),
+            messen ? null : el("span", { class: "knopf zweit platz-weg", "aria-hidden": "true" }),
             avatarEl({ avatar: b.avatar, farbe: "#b48cff" }), el("span", { class: "platz-name", text: b.name })), messen ? null : () => botsAendern([...weg, b.name]));
           const zurueck = bots && weg.length && !messen;
           return platzKnopf(el("div", { class: `platz frei ${zurueck ? "zurueckholen" : ""}`, title: zurueck ? "Bot zurückholen" : "" },

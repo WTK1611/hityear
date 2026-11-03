@@ -1313,14 +1313,6 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 .deck-raster[data-anzahl="4"] button.deck-knopf { flex-basis: max(170px, min(300px, calc((100% - 48px) / 4))); }
 /* von galerie() berechnet: alle passen nebeneinander, oder rechts bleibt eine Kachel angeschnitten */
 .deck-raster.vermessen button.deck-knopf { flex-basis: var(--kachel); }
-/* Jahrzehnte und Genres: halb so große Kacheln in zwei Zeilen, bei vielen seitlich scrollbar */
-@media (min-width: 701px) {
-  .deck-raster.zweizeilig { display: grid; grid-template-columns: repeat(3, var(--kachel, 142px)); justify-content: safe center; }
-  .deck-raster.zweizeilig > * { margin: 0; }
-  .deck-raster.zweizeilig button.deck-knopf { width: var(--kachel, 142px); }
-  .deck-raster.zweizeilig .deck-name small { padding: 3px 8px; font-size: 0.75rem; }
-  .deck-raster.zweizeilig button.deck-knopf.mehrfach::after { top: 6px; right: 6px; width: 24px; height: 24px; font-size: 0.85rem; }
-}
 .deck-cover .karte-jahr { fill: #160c26; font-size: 8px; font-weight: 900; text-anchor: middle; }
 .deck-cover .karte-symbol { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
 .galerie-hinweis { margin: 10px 0 0; text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--leise); transition: opacity 0.3s; }
@@ -1351,10 +1343,20 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 .platz-raster > .platz.offline { opacity: 0.5; }
 @media (max-width: 560px) { .platz-raster { grid-template-columns: repeat(2, 1fr); } .platz-raster > .platz { min-height: 96px; } }
 .platz-raster > .platz { position: relative; }
-button.platz-weg { position: absolute; top: 6px; right: 6px; min-width: 0; padding: 4px 9px; font-size: 0.8rem; }
+/* Entfernen: runder Knopf mit Kreuz (dunkel mit weißem Ring, beim Zeigen rot) */
+.platz-raster .platz-weg {
+  position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; min-width: 0; min-height: 0; padding: 0; border-radius: 50%;
+  display: block; font-size: 0; color: #fff; background: rgba(22, 12, 38, 0.72);
+  border: 2px solid rgba(255, 255, 255, 0.85); box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.6); transition: opacity 0.15s, background 0.15s, transform 0.15s var(--feder);
+}
+.platz-raster .platz-weg::before, .platz-raster .platz-weg::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 2.5px; margin: -1.25px 0 0 -6px; border-radius: 2px; background: currentColor; transform: rotate(45deg);
+}
+.platz-raster .platz-weg::after { transform: rotate(-45deg); }
+.platz-raster button.platz-weg:hover, .platz-raster > .platz.bot:hover .platz-weg { background: #ff3d6e; transform: scale(1.1); }
 .platz-raster > .platz.klickbar { cursor: pointer; transition: transform 0.15s, filter 0.15s; }
 .platz-raster > .platz.klickbar:hover, .platz-raster > .platz.klickbar:focus-visible { transform: scale(1.03); filter: brightness(1.15); outline: none; }
-.platz-raster > .platz.bot .platz-weg { position: absolute; top: 6px; right: 6px; min-width: 0; padding: 4px 9px; font-size: 0.8rem; opacity: 0; transition: opacity 0.15s; }
+.platz-raster > .platz.bot .platz-weg { opacity: 0; }
 .platz-raster > .platz.bot:hover .platz-weg, .platz-raster > .platz.bot:focus-visible .platz-weg { opacity: 1; }
 @media (hover: none) { .platz-raster > .platz.bot .platz-weg { opacity: 1; } }
 .platz-raster > .platz.frei.zurueckholen { opacity: 0.8; }
