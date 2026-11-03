@@ -10,7 +10,7 @@ import { geraten, interpretVarianten, titelVarianten } from "./normalisieren.ts"
 
 export type Phase = "lobby" | "hoeren" | "aufloesung" | "ende";
 /** host = Fernseher/Laptop, spieler = Handy von dem, der dran ist, alle = jedes Handy */
-export type Wiedergabe = "host" | "spieler" | "alle";
+export type Wiedergabe = "host" | "spieler" | "alle" | "solo";
 /** einzeln = reihum ist einer dran; alle = alle ordnen denselben Song gleichzeitig in ihren Zeitstrahl ein */
 export type Modus = "einzeln" | "alle";
 /** Musik-Avatare zur Auswahl beim Beitreten (gleiche Liste in public/js/gemeinsam.js). */
@@ -282,8 +282,8 @@ export function grenzen(e: Partial<Einstellungen>): Einstellungen {
   return {
     zielKarten: [10, 15, 20].includes(Math.round(z.zielKarten)) ? Math.round(z.zielKarten) : 10,
     ausschnittSek: 30,
-    // nur noch „vor Ort“ (host) oder „online“ (alle Handys); altes „spieler“ wird zu „alle“
-    wiedergabe: z.wiedergabe === "spieler" || z.wiedergabe === "alle" ? "alle" : "host",
+    // „vor Ort“ (host), „online“ (alle Handys) oder „allein“ (solo: Gastgeber spielt auf seinem Gerät); altes „spieler“ wird zu „alle“
+    wiedergabe: z.wiedergabe === "solo" ? "solo" : z.wiedergabe === "spieler" || z.wiedergabe === "alle" ? "alle" : "host",
     jahrzehnte: Array.isArray(z.jahrzehnte)
       ? [...new Set(z.jahrzehnte.map(Number).filter((j) => Number.isInteger(j) && j >= 1900 && j <= 2100 && j % 10 === 0))].sort()
       : [],
@@ -353,11 +353,17 @@ export function spielerHinzufuegen(s: Spiel, p: Omit<Spieler, "zeitstrahl" | "ri
   const spaeter = s.phase === "hoeren" || s.phase === "aufloesung";
   if (s.phase !== "lobby" && !(spaeter && !s.stechen)) throw new SpielFehler("Gerade kann niemand mehr einsteigen.");
   if (spaeter && !s.stapel.length) throw new SpielFehler("Keine Karten mehr im Stapel.");
-  if (s.spieler.length >= 6) throw new SpielFehler("Der Raum ist voll (max. 6).");
   const name = p.name.trim().slice(0, 20);
   if (!name) throw new SpielFehler("Bitte einen Namen eingeben.");
   if (s.spieler.some((x) => x.name.toLowerCase() === name.toLowerCase())) {
     throw new SpielFehler("Den Namen gibt es schon.");
+  }
+  if (s.spieler.length >= 6) {
+    // Raum voll: ein echter Mitspieler übernimmt den Platz (und die Farbe) eines Bots
+    const bot = botFuerPlatz(s);
+    if (!bot) throw new SpielFehler("Der Raum ist voll (max. 6).");
+    spielerEntfernen(s, bot.id);
+    p = { ...p, farbe: bot.farbe };
   }
   const avatar = p.avatar && AVATARE.includes(p.avatar) ? p.avatar : AVATARE[s.spieler.length % AVATARE.length];
   const neu: Spieler = { ...p, name, avatar, zeitstrahl: [], toleranz: 0, verbunden: true, richtig: 0, falsch: 0, punkte: 0 };
@@ -371,11 +377,19 @@ export function spielerHinzufuegen(s: Spiel, p: Omit<Spieler, "zeitstrahl" | "ri
   return neu;
 }
 
+/** Welcher Bot Platz macht: nicht im Stechen, möglichst nicht gerade dran, mit den wenigsten Karten. */
+export function botFuerPlatz(s: Spiel): Spieler | undefined {
+  const aktiv = s.phase === "lobby" ? undefined : aktiverSpieler(s)?.id;
+  const bots = s.spieler.filter((p) => p.bot && !s.stechen?.includes(p.id));
+  const wert = (p: Spieler) => p.zeitstrahl.length + (p.id === aktiv ? 100 : 0);
+  return bots.reduce<Spieler | undefined>((a, b) => (!a || wert(b) <= wert(a) ? b : a), undefined);
+}
+
 export function spielerEntfernen(s: Spiel, id: string): void {
   const i = s.spieler.findIndex((p) => p.id === id);
   if (i === -1) return;
   const warAktiv = aktiverSpieler(s)?.id === id;
-  s.spieler.splice(i, 1);
+  const [weg] = s.spieler.splice(i, 1);
   const ri = s.reihenfolge.indexOf(id);
   if (ri !== -1) {
     s.reihenfolge.splice(ri, 1);
@@ -386,6 +400,12 @@ export function spielerEntfernen(s: Spiel, id: string): void {
   if (s.spieler.length === 0) {
     s.phase = "ende";
     s.zug = null;
+    return;
+  }
+  // Ausgestiegene werden nicht durch Bots ersetzt; geht der letzte echte Mitspieler, endet das Spiel mit dem Stand von jetzt
+  if (!weg.bot && !s.spieler.some((p) => !p.bot)) {
+    if (!s.stechen?.length) s.stechen = null;
+    beenden(s);
     return;
   }
   if (alleGleichzeitig(s)) return; // der Raum prüft mit bereit(), ob jetzt ausgewertet werden kann

@@ -166,6 +166,33 @@ test("später einsteigen: Startkarte und hinten in der Reihenfolge", () => {
   assert.equal(sicht(s).aktiv, "b");
 });
 
+test("voller Raum mit Bots: echter Mitspieler übernimmt den Platz eines Bots", async () => {
+  const { botHinzufuegen } = await import("../src/game.ts");
+  const s = neuesSpiel(9);
+  spielerHinzufuegen(s, { id: "a", name: "Anna", farbe: "#f00", sitzung: "x" });
+  const farben = ["#1", "#2", "#3", "#4", "#5"];
+  for (const [i, f] of farben.entries()) botHinzufuegen(s, "mittel", `b${i}`, f);
+  starten(s, Array.from({ length: 20 }, (_, i) => k(1950 + i)));
+  s.spieler.find((p) => p.id === "b2")!.zeitstrahl = [];
+  const p = spielerHinzufuegen(s, { id: "n", name: "Neu", farbe: "#x", sitzung: "y" });
+  assert.equal(s.spieler.length, 6);
+  assert.ok(!s.spieler.some((q) => q.id === "b2")); // der Bot mit den wenigsten Karten macht Platz
+  assert.equal(p.farbe, "#3");
+  assert.equal(p.zeitstrahl.length, 1);
+  assert.ok(s.reihenfolge.includes("n") && !s.reihenfolge.includes("b2"));
+  // steigt ein echter Mitspieler aus, kommt kein Bot dazu; geht der letzte, ist das Spiel vorbei
+  spielerEntfernen(s, "a");
+  assert.equal(s.spieler.length, 5);
+  assert.equal(s.phase, "hoeren");
+  spielerEntfernen(s, "n");
+  assert.equal(s.phase, "ende");
+  assert.ok(s.gewinner.length >= 1);
+  // ohne Bots bleibt der volle Raum voll
+  const t = neuesSpiel(9);
+  for (const id of ["a", "b", "c", "d", "e", "f"]) spielerHinzufuegen(t, { id, name: id, farbe: "", sitzung: id });
+  assert.throws(() => spielerHinzufuegen(t, { id: "m", name: "Mia", farbe: "", sitzung: "z" }), /voll/);
+});
+
 test("Modus „alle“: erst merken, dann gemeinsam auswerten; Option „erster“", () => {
   for (const warten of ["alle", "erster"] as const) {
     const s = neuesSpiel(5);

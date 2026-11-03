@@ -104,6 +104,12 @@
       await socket.anfrage("host:verbinden", h);
     } catch {
       /* Host-Sitzung gehört zu einem alten Raum – dann eben nur Spieler */
+      return;
+    }
+    // „Allein üben“: der Start-Knopf am Gastgeber-Gerät hat hierher geschickt – nach dem Beitreten geht es gleich los
+    if (speicher(`zs_solo_start_${code}`)) {
+      speicher(`zs_solo_start_${code}`, null);
+      socket.anfrage("host:starten").catch((err) => fehler(err.message));
     }
   }
 
@@ -282,7 +288,7 @@
     hintergrundStimmung(z);
     if (hoeren) startsongZeigen(z.vorspiel, startsongAudio);
     const w = z.einstellungen.wiedergabe;
-    const hierAudio = hoeren && Boolean(z.ausschnitt) && (w === "alle" || (w === "spieler" && (alle || binDran)));
+    const hierAudio = hoeren && Boolean(z.ausschnitt) && (w === "alle" || w === "solo" || (w === "spieler" && (alle || binDran)));
     audio.laden(hierAudio ? z.ausschnitt : null);
     $("#audio-box").classList.toggle("versteckt", !hierAudio);
     // Quellenhinweis schon während der Hörprobe (ohne Link – der würde den Titel verraten)

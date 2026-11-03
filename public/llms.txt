@@ -19,7 +19,7 @@
 - Phones as controllers, one shared main screen as the stage; or every phone plays the music itself for remote play.
 - Game modes: everyone guesses at the same time, or players take turns.
 - Decks by country and theme (e.g. hits of all decades, party hits, rock, schlager), filters by decade and genre.
-- Optional AI bots fill free seats.
+- Optional AI bots fill free seats. Latecomers can join at any time and take a bot's seat; players who leave are not replaced by bots.
 - Song previews and covers are streamed directly from Deezer (Apple Music as a fallback) with a source badge. The server stores no music.
 - Privacy-friendly: no account, no advertising; anonymous usage statistics (self-hosted Matomo) only with consent.
 

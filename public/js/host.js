@@ -169,6 +169,8 @@
       handy(52, 100, 0.5) + handy(90, 100, 0.5) + handy(128, 100, 0.5),
     // jedes Handy spielt die Musik selbst: Schallwellen an allen drei
     alle: handy(16, 44, 1.1, true) + bogen(62, 46, 0.55) + handy(78, 20, 1.3, true) + bogen(130, 22, 0.6) + handy(142, 44, 1.1, true) + bogen(188, 46, 0.55),
+    // allein üben: ein Mensch mit seinem Handy, daneben (wer mag) ein Bot
+    solo: person(22, 40, 1.3) + handy(88, 24, 1.3, true) + bogen(140, 26, 0.6) + roboter(150, 70, 0.75),
   };
   const BILDER_MODUS = {
     alle: person(30, 52, 1.1) + person(80, 40, 1.3) + person(138, 52, 1.1) + note(94, 0, 0.9),
@@ -319,11 +321,15 @@
   }
   const SCHRITTE = [
     {
-      frage: "Wo läuft die Musik?", feld: "#wiedergabe", symbole: { host: "📺", alle: "📱" }, bilder: BILDER_WIEDERGABE,
-      koepfe: { host: ["Party", "vor Ort", "Ton vom TV", "Nur Hauptscreen spielt Musik"], alle: ["Online", "spielen", "Ton am Handy", "Alle Geräte spielen Musik"] },
+      frage: "Wo läuft die Musik?", feld: "#wiedergabe", symbole: { host: "📺", alle: "📱", solo: "🎧" }, bilder: BILDER_WIEDERGABE,
+      koepfe: {
+        host: ["Party", "vor Ort", "Ton vom TV", "Nur Hauptscreen spielt Musik"], alle: ["Online", "spielen", "Ton am Handy", "Alle Geräte spielen Musik"],
+        solo: ["Allein", "spielen", "Zum Üben", "Mit oder ohne Bots"],
+      },
       texte: {
         host: "Ein Fernseher oder Monitor ist der Hauptbildschirm, der Ton kommt aus seinen Lautsprechern. Die Handys dienen nur zum Tippen.",
         alle: "Ein Gerät richtet das Spiel ein, jedes Handy spielt die Musik selbst ab – auch wenn ihr nicht im selben Raum seid.",
+        solo: "Du spielst allein auf diesem Gerät – zum Üben, gegen Bots oder ganz für dich.",
       },
     },
     {
@@ -487,6 +493,7 @@
       const spieler = zustand?.spieler ?? [];
       const bots = $("#auffuellen").checked;
       const bereitJetzt = new Set();
+      const du = $("#wiedergabe").value === "solo" && !spieler.length;
       if (!messen) queueMicrotask(() => (bereitVorher = bereitJetzt)); // Mess-Durchlauf zählt nicht
       inhalt.push(
         el("div", { class: "platz-raster" }, Array.from({ length: 6 }, (_, i) => {
@@ -497,8 +504,10 @@
           if (p) return el("div", { class: `platz ${p.verbunden ? "" : "offline"} ${p.bereit ? "bereit" : ""} ${neuBereit ? "wackeln" : ""}` },
             messen ? null : el("button", { type: "button", class: "zweit platz-weg", text: "✕", "aria-label": `${p.name} entfernen`, onclick: () => tun("host:entfernen", { spielerId: p.id }) }),
             avatarEl(p), el("span", { class: "platz-name", text: p.name + (p.verbunden ? "" : " (offline)") }));
+          // „Allein üben“: der erste Platz ist für dich, du trittst erst nach „Spiel starten“ bei
+          if (du && i === 0) return el("div", { class: "platz" }, el("span", { class: "platz-symbol", "aria-hidden": "true", text: "🎧" }), el("span", { class: "platz-name", text: "Du" }));
           // freie Plätze: die Bots, die der Server beim Start einsetzt (Name, Avatar, Stufe stehen schon fest)
-          const b = zustand?.botsDazu?.[i - spieler.length];
+          const b = zustand?.botsDazu?.[i - spieler.length - (du ? 1 : 0)];
           return bots && b
             ? el("div", { class: "platz bot" }, avatarEl({ avatar: b.avatar, farbe: "#b48cff" }), el("span", { class: "platz-name", text: b.name }))
             : el("div", { class: "platz frei" }, el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: "frei" }));
@@ -635,6 +644,7 @@
     const e = z.einstellungen;
     $("#ziel").value = String(e.zielKarten);
     $("#wiedergabe").value = e.wiedergabe;
+    document.body.classList.toggle("solo", e.wiedergabe === "solo"); // allein: kein QR-Code zum Einladen
     $("#modus").value = e.modus;
     $("#warten").value = e.warten;
     $("#raten-was").value = e.raten ? e.ratenWas ?? "beide" : "";
@@ -645,7 +655,7 @@
 
     const v = z.verfuegbar ?? 0;
     const noetig = Math.max(e.auffuellen ? 6 : z.spieler.length, 1) + 5;
-    const fehlt = !z.spieler.length && !e.auffuellen ? "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen."
+    const fehlt = !z.spieler.length && !e.auffuellen && e.wiedergabe !== "solo" ? "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen."
       : v < noetig ? `Für ${z.spieler.length} Mitspieler braucht es mindestens ${noetig} Songs – wähle ein größeres Deck oder mehr Jahrzehnte/Genres.`
       : "";
     verfuegbarText.textContent = `${v} Songs passen zur Auswahl.${fehlt ? " " + fehlt : ""}`;
@@ -963,7 +973,12 @@
   }
 
   // ---------- Knöpfe ----------
-  startKnopf.addEventListener("click", () => tun("host:starten"));
+  // „Allein üben“: erst auf der Spieler-Seite Name und Avatar wählen, dort startet das Spiel dann von selbst
+  startKnopf.addEventListener("click", () => {
+    if (zustand?.einstellungen.wiedergabe !== "solo") return void tun("host:starten");
+    speicher(`zs_solo_start_${zustand.code}`, "1");
+    mitspielen();
+  });
   $("#revanche").addEventListener("click", () => tun("host:revanche"));
   zweiterKlick($("#beenden"), "Wirklich schließen? Alle fliegen raus", async () => {
     await tun("host:beenden");

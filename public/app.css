@@ -1802,3 +1802,6 @@ html.sparsam .platte.laeuft { scale: none; translate: none; }
 html.sparsam .equalizer { contain: layout paint; }
 
 button.hier-mitspielen { display: block; margin: 14px auto 0; }
+
+/* „Allein üben“: niemand muss einen QR-Code scannen */
+body.solo .qr-lobby { display: none !important; }

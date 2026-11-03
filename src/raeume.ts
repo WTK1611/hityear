@@ -136,7 +136,7 @@ function ausschnittUrlFuer(s: Spiel, d: SocketDaten): string | null {
   if (!t) return null;
   const w = s.einstellungen.wiedergabe;
   if (w === "host" && d.host) return `/api/audio/${t}`;
-  if (w === "alle" && d.spielerId) return `/api/audio/${t}`;
+  if ((w === "alle" || w === "solo") && d.spielerId) return `/api/audio/${t}`;
   // Modus „alle“: „Handy, wer dran ist“ heißt jedes Handy
   if (w === "spieler" && d.spielerId && (alleGleichzeitig(s) || d.spielerId === aktiverSpieler(s)?.id)) return `/api/audio/${t}`;
   return null;
@@ -683,6 +683,7 @@ export function socketsEinrichten(server: Server): void {
         if (!p) {
           if (!erlaubt("beitritt", ip, 30, 10 * 60_000)) throw new SpielFehler("Zu viele Beitritte. Bitte in ein paar Minuten nochmal.");
           const benutzt = new Set(s.spieler.map((q) => q.farbe));
+          const war = s.zug?.karte.songId;
           p = spielerHinzufuegen(s, {
             id: crypto.randomBytes(6).toString("base64url"),
             name: String(x.name ?? ""),
@@ -690,6 +691,9 @@ export function socketsEinrichten(server: Server): void {
             farbe: FARBEN.find((f) => !benutzt.has(f)) ?? FARBEN[0],
             sitzung: token(),
           });
+          // hat der neue Mitspieler einen Bot ersetzt, läuft die Runde ohne ihn weiter
+          if (s.phase === "hoeren" && s.zug?.karte.songId !== war) zugVorbereiten(s);
+          else if (s.phase === "hoeren" && alleGleichzeitig(s) && bereit(s) && !s.zug?.aufloesungUm) aufloesenNachSong(s);
         }
         p.verbunden = true;
         d.code = s.code;
