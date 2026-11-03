@@ -2,11 +2,11 @@
 
 [English](README.md) · **Deutsch**
 
-![Startseite von HitYear: „Wann kam der Song raus?“ mit Mitspielen und Spiel erstellen](docs/bilder/startseite.jpg)
+![Startseite von HitYear: „Wann kam der Song raus?“ mit den Kacheln „Spielen mit Code“ und „Party starten“](docs/bilder/startseite.jpg)
 
 **Wann kam der Song raus?** Ein Ausschnitt läuft, alle hören rein und sortieren den Song am Handy nach seinem Erscheinungsjahr in den eigenen Zeitstrahl. Wer zuerst genug Karten richtig liegen hat, gewinnt.
 
-- 1–6 Spielerinnen und Spieler, jede Person mit dem eigenen Handy: QR-Code scannen oder Code eingeben, ohne App. Optional schützt ein gemeinsames Passwort die ganze App; per QR-Code geht es ohne.
+- 1–6 Spielerinnen und Spieler, jede Person mit dem eigenen Handy – oder allein gegen KI-Bots üben: QR-Code scannen oder Code eingeben, ohne App. Optional schützt ein gemeinsames Passwort die ganze App; per QR-Code geht es ohne.
 - Ein Hauptbildschirm (TV, Laptop, Beamer) zeigt QR-Code, Musik-Player, Mitspieler und die Auflösung.
 - Die Musik kommt als 30-Sekunden-Hörprobe, die der Browser **direkt von Deezer** streamt (Apple Music als Ausweichquelle) – der Server speichert keine Musik. Optional eigene Sammlung, aus der der Server kurze Ausschnitte schneidet.
 - Oberfläche in 🇩🇪 Deutsch, 🇬🇧 English, 🇫🇷 Français, 🇮🇹 Italiano, 🇪🇸 Español und 🇧🇷 Português (Brasil).
@@ -15,9 +15,15 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 
 ## Bilder
 
-| Hauptbildschirm: Deck wählen | Handy |
+| Einrichtung: Wo läuft die Musik? | Deck wählen |
 |---|---|
-| ![Deck-Auswahl am Hauptbildschirm](docs/bilder/host-decks.jpg) | ![Handy-Ansicht](docs/bilder/handy.jpg) |
+| ![Einrichtungsschritt mit den Kacheln Party vor Ort, Online und Allein](docs/bilder/host-modus.jpg) | ![Deck-Auswahl mit Plattenhüllen als Cover](docs/bilder/host-decks.jpg) |
+| **Lobby: Mitspieler und KI-Bots** | **Runde am Hauptbildschirm** |
+| ![Lobby mit einer Spielerin am Handy und fünf Bots](docs/bilder/host-lobby.jpg) | ![Hauptbildschirm in der Runde: Schallplatte, Equalizer, alle Zeitstrahle](docs/bilder/host-runde.jpg) |
+
+| Handy: Startseite | Handy: eigener Zeitstrahl |
+|---|---|
+| <img src="docs/bilder/handy-start.jpg" width="260" alt="Startseite am Handy mit zwei Kacheln nebeneinander"> | <img src="docs/bilder/handy.jpg" width="260" alt="Handy in der Runde: Equalizer und eigener Zeitstrahl"> |
 
 ---
 
@@ -27,24 +33,24 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 2. **Hören:** Nach einem Countdown (3 · 2 · 1) läuft auf allen Geräten gleichzeitig ein Ausschnitt.
 3. **Einordnen:** Im eigenen Zeitstrahl die Lücke antippen, in die der Song gehört, und bestätigen. Gleiches Jahr wie eine Nachbarkarte zählt als richtig.
 4. **Auflösung:** Titel, Interpret, Jahr und Cover erscheinen. Wer richtig lag, bekommt die Karte in den Zeitstrahl.
-5. **Zusatzpunkte ⭐ (optional):** Nach dem Jahr zusätzlich Interpret und/oder Titel raten. Jeder Treffer gibt einen Stern.
+5. **Zusatzpunkte ⭐ (optional):** Nach dem Jahr zusätzlich Titel und Interpret raten. Jeder Treffer gibt einen Stern.
 6. **Sieg:** Wer die Zielzahl an Karten (10, 15 oder 20) erreicht, gewinnt sofort. Bei Gleichstand entscheiden die ⭐; sind auch die gleich, gewinnen alle Führenden gemeinsam.
 7. Nach der Auflösung geht es nach 10 Sekunden automatisch weiter. Überspringen gibt es nicht, damit alle die Auflösung gleich lang sehen.
 
-### Einstellungen in der Lobby
+### Einrichtung Schritt für Schritt
 
-| Einstellung | Optionen |
+Der Hauptbildschirm stellt pro Schritt eine Frage, die Antworten sind große Kacheln (am Handy zwei pro Reihe). Der QR-Code steht schon ab dem ersten Schritt daneben, Mitspieler können also beitreten, während eingerichtet wird.
+
+| Schritt | Optionen |
 |---|---|
+| Wo läuft die Musik? | **Party vor Ort** (Ton vom TV, Handys nur zum Tippen) · **Online** (jedes Handy spielt die Musik, auch an verschiedenen Orten; der Gastgeber kann auf demselben Gerät mitspielen) · **Allein** (zum Üben, mit oder ohne Bots) |
+| Wer ist dran? | alle gleichzeitig · reihum einer |
+| Wann endet eine Runde? (alle gleichzeitig) | nach ganzer Hörprobe (30 s) · 5 s nach allen Antworten · 5 s ab der ersten Antwort |
+| Was wird geraten? | nur das Jahr · Jahr + Songtitel & Interpret (Bonus-Sterne) |
 | Karten zum Sieg | 10 · 15 · 20 |
-| Musik läuft … | **Party vor Ort** (auf dem Hauptbildschirm) · **Online** (auf jedem Handy) |
-| Zeit zum Einordnen | bis alle gewählt haben · bis der Ausschnitt endet |
-| Wer ist dran? | alle gleichzeitig · immer nur ein Spieler |
-| Runde endet (alle gleichzeitig) | wenn alle getippt haben · 5 s danach · mit der ersten Eingabe |
-| Nicht erraten | Lösung zeigen oder verdecken, Song kommt später nochmal oder nicht |
-| Was wird geraten? | nur das Jahr · + Titel · + Interpret · + beides |
-| Deck | ganze Bibliothek oder ein eigenes Deck |
-| Toleranz pro Person | exakt · ±1 · ±2 · ±3 · ±5 Jahre (für Kinder oder Einsteiger) |
-| KI-Bots | freie Plätze bis 6 mit Bots auffüllen; Name und Stärke (leicht, mittel, Profi) würfelt die App |
+| Deck | alle Songs oder ein Deck, danach nach Jahrzehnten und Genres filtern (Mehrfachauswahl; *Weiter* erst, wenn Songs übrig bleiben) |
+| KI-Bots | freie Plätze bis 6 mit Bots auffüllen; Name und Stärke (leicht, mittel, Profi) würfelt die App. In der Lobby entfernt ein Klick einen Bot oder holt ihn zurück, echte Spieler übernehmen Bot-Plätze |
+| Toleranz pro Person | exakt · ±1 · ±2 · ±3 · ±5 Jahre (für Kinder oder Einsteiger; in der Lobby antippen) |
 
 ---
 
@@ -56,10 +62,13 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 | **Synchron spielen** | Server-autoritativer Zustand, gemeinsamer Startzeitpunkt auf der Serveruhr, Uhrabgleich per Ping, Stand-Nummer mit Abgleich alle 2 s samt Lebenszeichen (ohne Antwort → sofort neu verbinden), gezielte Nachfrage zu Auflösung und nächstem Song, Handshake vor jedem Songwechsel (höchstens 10 s „Warte auf …“), Hinweis bei Verbindungsverlust |
 | **Handy-Leistung** | Aufwendiger animierter Hintergrund nur am Hauptbildschirm; Handys bekommen einen ruhenden Verlauf ohne Weichzeichner (der teure Hintergrund ließ iPhones bei jedem Songwechsel 10–27 s einfrieren) |
 | **Fehlersuche** | Geräte melden Hänger der Seite, Trennungen und ausbleibende Antworten ins Server-Log (`[diagnose]`, `[verbindung]`, `[bereit]`) |
-| **Rechtliches** | Impressum, Datenschutz, Nutzungsbedingungen (AGB), Links in der Fußzeile, einmaliger Cookie-Hinweis (kein Tracking) |
-| **Hauptbildschirm** | QR-Code, drehende Schallplatte, die im Bass vibriert, Equalizer, Fortschrittsleiste, Mitspieler-Raster mit Live-Status (überlegt, getippt, rät), Ergebnis-Banner mit Sternen, „+1“-Animationen, Konfetti, Bestenliste |
+| **Rechtliches** | Impressum, Datenschutz, Nutzungsbedingungen (AGB), Links in der Fußzeile; anonyme Statistik (Matomo auf eigenem Server) nur mit Einwilligung, auf der Cookie-Seite widerrufbar |
+| **Suchmaschinen** | Startseite und „So geht's“ sind indexierbar (`robots.txt`, `sitemap.xml`, `llms.txt`); API, Räume, Hauptbildschirm, Handy und Bibliothek senden `noindex` |
+| **Startseite** | Zwei quadratische Kacheln: *Spielen mit Code* (Code-Feld direkt auf der Kachel, eigene Fehlermeldung) und *Party starten*; am Handy nebeneinander |
+| **Einrichtung** | Geführte Einrichtung mit Kacheln (Verlauf, Aufkleber-Bild, Schatten), Partikel bei jedem Tipp, Decks als Plattenhüllen, die aus dem Namen gestaltet sind (Flagge, Symbol), Startkarte wird vor dem ersten Song aufgedeckt |
+| **Hauptbildschirm** | QR-Code, drehende Schallplatte, die im Bass vibriert, Equalizer in 9 Stilen (Klick oder ←/→ schaltet um), Fortschrittsleiste, Mitspieler-Raster mit Live-Status (überlegt, getippt, rät), Ergebnis-Banner mit Sternen, „+1“-Animationen, Konfetti, Bestenliste |
 | **Handy** | Eigener Zeitstrahl zum Antippen, Countdown, geführtes Raten (Jahr → Interpret → Titel), Vibration, Bildschirm bleibt wach (Wake Lock) |
-| **TV-tauglich** | Eigene Schrift (Nunito), SVG-Symbole statt Sonderzeichen, Abstand gegen Overscan, Bedienung mit der Fernbedienung (Pfeiltasten + OK) |
+| **TV-tauglich** | Eigene Schrift (Nunito), SVG-Symbole statt Sonderzeichen, Abstand gegen Overscan, Bedienung mit der Fernbedienung durch alle Kacheln (Pfeiltasten + OK), passt ohne Scrollen auf 960×540, Sparmodus für Fernseher und alte Geräte (keine Dauer-Animationen, gedrosselter Equalizer) |
 | **Anti-Schummeln** | Ausschnitte ohne Metadaten mit Einmal-URLs; Titel und Jahr kommen erst mit der Auflösung zum Gerät |
 | **Audio** | Hörproben direkt von Deezer gestreamt (Apple Music als Ausweichquelle), mit Quellenhinweis; bei eigenen Dateien: Startpunkt zufällig bei 20–60 % der Songlänge, Ein- und Ausblenden, Lautstärke angeglichen (`loudnorm`) |
 | **Bibliothek** | Vorschauen von Apple/Deezer als Einträge (keine Dateien), optional Scan eigener Dateien (MP3, M4A, FLAC, OGG, Opus), Jahr aus manueller Angabe > Songliste (Originaljahr) > Tag bzw. Apple/Deezer > Jahrescharts, Prüfliste, Duplikate, Songs ausschließen |
@@ -67,6 +76,7 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 | **Hintergrund** | Eigene Geschichten zum Song |
 | **Sprachen** | 6 Sprachen; Umschalter mit Flaggen oben rechts auf der Startseite, sonst die Sprache des Browsers |
 | **App-Gefühl** | Web-App-Manifest und Icons (zum Home-Bildschirm hinzufügen) |
+| **Marketing** | `/marketing`: Bilder (Quadrat, Story, Link-Vorschau; DE/EN) und fertige Posttexte für soziale Netzwerke |
 
 ---
 
@@ -120,9 +130,10 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 | Datei | Aufgabe |
 |---|---|
 | `index.html` + `js/start.js` | Startseite: Code eingeben, QR scannen, Spiel erstellen, Sprachumschalter |
-| `host.html` + `js/host.js` | Hauptbildschirm: Lobby, Player, Mitspieler, Auflösung |
+| `host.html` + `js/host.js` | Hauptbildschirm: geführte Einrichtung, Lobby, Player, Mitspieler, Auflösung |
 | `spielen.html` + `js/spielen.js` | Handy: beitreten, einordnen, raten |
 | `admin.html` + `js/admin.js` | Bibliothek, Decks (nur Deutsch) |
+| `so-gehts.html`, `marketing.html` + `js/marketing.js` | Spielanleitung; Bilder und Posttexte zum Teilen |
 | `js/gemeinsam.js` | Gemeinsame Bausteine: Socket, Uhrabgleich, Player, Equalizer, Countdown, Fernbedienung |
 | `js/i18n.js` | Sprachen: übersetzt alle Texte der Seite über eine Tabelle (Deutsch → Zielsprache) |
 
@@ -172,7 +183,7 @@ Beiträge sind willkommen – siehe [CONTRIBUTING.md](CONTRIBUTING.md). Die Rege
 - Impressum, Datenschutz und Nutzungsbedingungen liegen unter `public/impressum.html`, `public/datenschutz.html`, `public/nutzungsbedingungen.html`.
 - Hörproben kommen von Apple Music und Deezer unter deren Entwickler-Bedingungen: **nur nicht kommerziell und privat**. Keine Funktionen einbauen, die Hörproben speichern, mitschneiden oder umgehen.
 - Eigene Dateien: nur rechtmäßig erworbene Musik. **Keine Musikdateien und keine Chartdaten sind Teil des Repos.**
-- Ausgeliefert werden nur kurze Ausschnitte, keine ganzen Dateien; die Seiten sind `noindex`.
+- Ausgeliefert werden nur kurze Ausschnitte, keine ganzen Dateien. Suchmaschinen indexieren nur die Startseite und „So geht's“.
 - Name und Logo „HitYear“ sind von der Lizenz nicht erfasst; keine fremden Marken.
 - Schrift Nunito unter der [SIL Open Font License](public/fonts/OFL.txt).
 

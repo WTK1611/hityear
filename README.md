@@ -2,11 +2,11 @@
 
 **English** · [Deutsch](README.de.md)
 
-![HitYear home page: "When did the song come out?" with join and create buttons](docs/bilder/startseite.jpg)
+![HitYear home page: "When did the song come out?" with the tiles "Join with a code" and "Start a party"](docs/bilder/startseite.jpg)
 
 **When did the song come out?** A clip plays, everyone listens, and each player places the song on their phone into their own timeline by release year. The first to get enough cards in the right spot wins.
 
-- 1–6 players, each on their own phone: scan the QR code or type the room code. No app. Optionally a shared password protects the whole app; the QR code lets guests in without it.
+- 1–6 players, each on their own phone – or practise alone against AI bots: scan the QR code or type the room code. No app. Optionally a shared password protects the whole app; the QR code lets guests in without it.
 - One main screen (TV, laptop, projector) shows the QR code, the music player, all players and the reveal.
 - Music comes as 30-second previews that the browser streams **directly from Deezer** (Apple Music as a fallback) – the server stores no music. Optionally your own collection, from which the server cuts short clips.
 - Interface in 🇩🇪 Deutsch, 🇬🇧 English, 🇫🇷 Français, 🇮🇹 Italiano, 🇪🇸 Español and 🇧🇷 Português (Brasil).
@@ -15,9 +15,15 @@ Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · Lic
 
 ## Screenshots
 
-| Main screen: choosing a deck | Phone |
+| Setup: where does the music play? | Choosing a deck |
 |---|---|
-| ![Deck selection on the main screen](docs/bilder/host-decks.jpg) | ![Phone view](docs/bilder/handy.jpg) |
+| ![Setup step with the tiles Party in the room, Online and Solo](docs/bilder/host-modus.jpg) | ![Deck selection with record-sleeve covers](docs/bilder/host-decks.jpg) |
+| **Lobby: players and AI bots** | **Round on the main screen** |
+| ![Lobby with one phone player and five bots](docs/bilder/host-lobby.jpg) | ![Main screen during a round: record, equalizer, all timelines](docs/bilder/host-runde.jpg) |
+
+| Phone: home page | Phone: your timeline |
+|---|---|
+| <img src="docs/bilder/handy-start.jpg" width="260" alt="Home page on the phone with two tiles side by side"> | <img src="docs/bilder/handy.jpg" width="260" alt="Phone during a round: equalizer and your own timeline"> |
 
 ---
 
@@ -27,24 +33,24 @@ Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · Lic
 2. **Listen:** After a countdown (3 · 2 · 1) a clip plays on all devices at the same moment.
 3. **Place:** Tap the gap in your timeline where the song belongs and confirm. Same year as a neighbouring card counts as correct.
 4. **Reveal:** Title, artist, year and cover appear. Whoever was right adds the card to their timeline.
-5. **Bonus stars ⭐ (optional):** After the year, also guess the artist and/or the title. Each hit earns a star.
+5. **Bonus stars ⭐ (optional):** After the year, also guess the title and the artist. Each hit earns a star.
 6. **Winning:** The first player to reach the target (10, 15 or 20 cards) wins right away. On a tie the ⭐ decide; if those are equal too, the leaders win together.
 7. After the reveal the game moves on automatically after 10 seconds. There is no skipping, so everyone sees the reveal equally long.
 
-### Lobby settings
+### Setup step by step
 
-| Setting | Options |
+The main screen asks one question per step, the answers are big tiles (on phones two per row). The QR code is visible from the first step, so players can join while you set up.
+
+| Step | Options |
 |---|---|
-| Cards to win | 10 · 15 · 20 |
-| Music plays … | **Party in the room** (on the main screen) · **Online** (on every phone) |
-| Time to place | until everyone has chosen · until the clip ends |
+| Where does the music play? | **Party in the room** (sound from the TV, phones only tap) · **Online** (every phone plays the music, also from different places; the host can play on the same device) · **Solo** (practise alone, with or without bots) |
 | Whose turn? | everyone at once · one player at a time |
-| Round ends (everyone at once) | when everyone has tapped · 5 s later · with the first answer |
-| Not guessed | show or hide the answer; the song comes back later or not |
-| What do you guess? | year only · + title · + artist · + both |
-| Deck | whole library or a custom deck |
-| Tolerance per player | exact · ±1 · ±2 · ±3 · ±5 years (for kids or beginners) |
-| AI bots | fill free seats up to 6 with bots; the app rolls name and strength (easy, medium, pro) |
+| When does a round end? (everyone at once) | after the full preview (30 s) · 5 s after all answers · 5 s after the first answer |
+| What do you guess? | year only · year + title & artist (bonus stars) |
+| Cards to win | 10 · 15 · 20 |
+| Deck | all songs or a deck, then filter by decades and genres (multiple choice; *Next* only once songs match) |
+| AI bots | fill free seats up to 6 with bots; the app rolls name and strength (easy, medium, pro). In the lobby a click removes a bot or brings it back, and real players take over bot seats |
+| Tolerance per player | exact · ±1 · ±2 · ±3 · ±5 years (for kids or beginners; tap it in the lobby) |
 
 ---
 
@@ -56,10 +62,13 @@ Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · Lic
 | **In sync** | Server-authoritative state, shared start time on the server clock, clock sync via ping, state counter checked every 2 s with a liveness reply (no reply → reconnect at once), targeted re-check at reveal and next song, handshake before every song change (at most 10 s “Waiting for …”), notice when the connection drops |
 | **Phone performance** | The heavy animated background runs only on the main screen; phones get a calm static gradient without blur (the heavy background froze iPhones for 10–27 s at every song change) |
 | **Debugging** | Devices report page freezes, disconnects and missing replies to the server log (`[diagnose]`, `[verbindung]`, `[bereit]`) |
-| **Legal** | Legal notice, privacy policy, terms of use, footer links, one-time cookie notice (no tracking) |
-| **Main screen** | QR code, spinning record that shakes to the bass, equalizer, progress bar, player grid with live status (thinking, placed, guessing), result banners with stars, “+1” animations, confetti, leaderboard |
+| **Legal** | Legal notice, privacy policy, terms of use, footer links; anonymous statistics (self-hosted Matomo) only with consent, revocable on the cookie page |
+| **Search engines** | Home page and “How to play” are indexable (`robots.txt`, `sitemap.xml`, `llms.txt`); API, rooms, main screen, phone and library send `noindex` |
+| **Home page** | Two square tiles: *Join with a code* (code field right on the tile, own error message) and *Start a party*; on phones side by side |
+| **Setup** | Guided setup with tiles (gradient, sticker image, shadow), a particle burst on every tap, decks as record sleeves designed from their name (flag, symbol), starting card revealed before the first song |
+| **Main screen** | QR code, spinning record that shakes to the bass, equalizer in 9 styles (click or ←/→ switches), progress bar, player grid with live status (thinking, placed, guessing), result banners with stars, “+1” animations, confetti, leaderboard |
 | **Phone** | Tappable personal timeline, countdown, guided guessing (year → artist → title), vibration, screen stays awake (Wake Lock) |
-| **TV-friendly** | Bundled font (Nunito), SVG icons instead of special characters, overscan margins, remote-control navigation (arrow keys + OK) |
+| **TV-friendly** | Bundled font (Nunito), SVG icons instead of special characters, overscan margins, remote-control navigation through every tile (arrow keys + OK), fits 960×540 without scrolling, power-saving mode for TVs and old devices (no continuous animations, throttled equalizer) |
 | **Anti-cheat** | Clips without metadata behind one-time URLs; title and year only reach devices with the reveal |
 | **Audio** | Previews streamed directly from Deezer (Apple Music as a fallback) with a source badge; for own files: random start at 20–60 % of the song, fade in/out, loudness normalisation (`loudnorm`) |
 | **Library** | Apple/Deezer previews as entries (no files), optional scan of own files (MP3, M4A, FLAC, OGG, Opus), year from manual entry > song list (original year) > tag or Apple/Deezer > year-end charts, review list, duplicates, exclude songs |
@@ -67,6 +76,7 @@ Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · Lic
 | **Trivia** | Your own stories per song |
 | **Languages** | 6 languages; flag switcher at the top right of the home page, otherwise the browser language |
 | **App feel** | Web app manifest and icons (add to home screen) |
+| **Marketing** | `/marketing`: images (square, story, link preview; DE/EN) and ready-made post texts for social networks |
 
 ---
 
@@ -120,9 +130,10 @@ Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · Lic
 | File | Purpose |
 |---|---|
 | `index.html` + `js/start.js` | Home page: enter code, scan QR, create game, language switcher |
-| `host.html` + `js/host.js` | Main screen: lobby, player, players, reveal |
+| `host.html` + `js/host.js` | Main screen: guided setup, lobby, player, players, reveal |
 | `spielen.html` + `js/spielen.js` | Phone: join, place, guess |
 | `admin.html` + `js/admin.js` | Library, decks (German only) |
+| `so-gehts.html`, `marketing.html` + `js/marketing.js` | How to play; images and post texts for sharing |
 | `js/gemeinsam.js` | Shared building blocks: socket, clock sync, player, equalizer, countdown, remote control |
 | `js/i18n.js` | Languages: translates every text on the page via a table (German → target language) |
 
@@ -171,7 +182,7 @@ Contributions are welcome – see [CONTRIBUTING.md](CONTRIBUTING.md). Rules in s
 
 - Previews come from Apple Music and Deezer under their developer terms: **non-commercial and private use only**. Do not add features that store, record or circumvent previews.
 - Own files: use only music you own legally. **No music files or chart data are part of this repository.**
-- Only short clips are served, never whole files; pages are `noindex`.
+- Only short clips are served, never whole files. Search engines index only the home page and “How to play”.
 - The name and logo “HitYear” are not covered by the license; no third-party trademarks.
 - Font Nunito under the [SIL Open Font License](public/fonts/OFL.txt).
 
