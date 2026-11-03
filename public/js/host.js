@@ -320,7 +320,7 @@
   const SCHRITTE = [
     {
       frage: "Wo läuft die Musik?", feld: "#wiedergabe", symbole: { host: "📺", alle: "📱" }, bilder: BILDER_WIEDERGABE,
-      koepfe: { host: ["TV", "Party vor Ort", "Ton vom TV"], alle: ["Handys", "Handy als Hauptscreen", "Ton am Handy"] },
+      koepfe: { host: ["TV", "Party vor Ort", "Ton vom TV", "Nur Hauptscreen spielt Musik"], alle: ["Handys", "Online spielen*", "Ton am Handy", "*ein Gerät ist Hauptscreen"] },
       texte: {
         host: "Ein Fernseher oder Monitor ist der Hauptbildschirm, der Ton kommt aus seinen Lautsprechern. Die Handys dienen nur zum Tippen.",
         alle: "Ein Gerät richtet das Spiel ein, jedes Handy spielt die Musik selbst ab – auch wenn ihr nicht im selben Raum seid.",
@@ -369,7 +369,7 @@
   const sichtbareSchritte = () => SCHRITTE.filter((s) => !s.nur || s.nur());
   // Antwort als quadratische Cover-Kachel im Stil der Kartenzahl: Stichwort groß, eine Zeile darunter, Bild unten rechts,
   // kurze Einordnung als Plakette unten links; der lange Erklärtext steht im Tooltip
-  function kachel(text, an, farbton, onclick, bild, erklaerung, [gross, unter, kurz] = [text, "", ""]) {
+  function kachel(text, an, farbton, onclick, bild, erklaerung, [gross, unter, kurz, fussnote] = [text, "", ""]) {
     const ns = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(ns, "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
@@ -380,7 +380,9 @@
     svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 85% 60%)"/><stop offset="1" stop-color="hsl(${(h + 50) % 360} 80% 38%)"/></linearGradient></defs>` +
       `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
       `<text x="8" y="16" class="deck-marke">HitYear</text>` +
-      (bild ? `<svg viewBox="0 0 200 134" x="44" y="56" width="54" height="36" class="kachel-bild">${bild}</svg>` : "");
+      // mit Fußnote: Bild etwas kleiner und tiefer, damit die Zeile darüber frei bleibt
+      (bild ? (fussnote ? `<svg viewBox="0 0 200 134" x="50" y="61" width="46" height="31" class="kachel-bild">${bild}</svg>`
+        : `<svg viewBox="0 0 200 134" x="44" y="56" width="54" height="36" class="kachel-bild">${bild}</svg>`) : "");
     // Zeile anlegen und, sobald sie (übersetzt) im Bild ist, notfalls verkleinern, damit lange Wörter nicht über den Rand laufen
     const zeile = (inhalt, x, y, klasse) => {
       const z = document.createElementNS(ns, "text");
@@ -395,6 +397,7 @@
     };
     zeile(gross, "8", "40", "filter-gross kachel-gross");
     if (unter) zeile(unter, "9", "51", "deck-titel kachel-unter");
+    if (fussnote) zeile(fussnote, "9", "58", "deck-titel kachel-fussnote");
     const k = el("button", { type: "button", class: "deck-knopf kachel", "aria-pressed": String(an), title: erklaerung || "", onclick },
       svg, el("span", { class: "deck-name" }, el("span", { text }), kurz ? el("small", { text: kurz }) : null));
     k.style.setProperty("--farbton", String(h));
