@@ -82,25 +82,32 @@ The main screen asks one question per step, the answers are big tiles (on phones
 
 ## Architecture
 
-```
- Phones (1–6)            Main screen (TV/laptop)            Library (browser)
- /spielen.html           /host.html                         /admin.html
-      │  Socket.IO + HTTPS      │                                  │
-      └───────────────┬─────────┴──────────────────────────────────┘
-                      ▼
-              Reverse proxy (e.g. Caddy) · TLS
-                      ▼
- ┌──────────────── Docker container ─────────────────────────────┐
- │ Node.js ≥ 22.18 (runs TypeScript directly, no build)           │
- │  ├─ HTTP: pages, JSON API, audio (range), covers, QR           │
- │  ├─ Socket.IO: rooms, state filtered per device                │
- │  ├─ Game engine: pure state machine (game.ts)                  │
- │  ├─ Library: scan, tags, year detection, decks                 │
- │  ├─ Previews: redirect to Apple Music/Deezer (nothing stored)  │
- │  └─ ffmpeg: clips without metadata (own files only)            │
- │ SQLite (node:sqlite, WAL) + clip cache → volume /daten         │
- │ Music (read-only) → /musik                                     │
- └────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  subgraph Geraete["Devices"]
+    H["📱 Phones (1–6)<br/>/spielen.html"]
+    T["📺 Main screen (TV/laptop)<br/>/host.html"]
+    A["🗂️ Library (browser)<br/>/admin.html"]
+  end
+  P["Reverse proxy (e.g. Caddy) · TLS"]
+  subgraph C["Docker container · Node.js ≥ 22.18"]
+    HTTP["HTTP: pages, JSON API,<br/>audio (range), covers, QR"]
+    WS["Socket.IO: rooms,<br/>state filtered per device"]
+    G["Game engine<br/>pure state machine (game.ts)"]
+    B["Library: scan, tags,<br/>year detection, decks"]
+    V["Previews: redirect<br/>(nothing stored)"]
+    F["ffmpeg: clips without metadata<br/>(own files only)"]
+  end
+  DB[("SQLite (WAL) + clip cache<br/>volume /daten")]
+  M[("Music (read-only)<br/>/musik")]
+  D["Deezer (main source)<br/>Apple Music (fallback)"]
+  H & T & A -- "HTTPS + Socket.IO" --> P --> HTTP & WS
+  WS --> G
+  HTTP --> B & V & F
+  G & B --> DB
+  F --> M
+  V -. "preview link" .-> D
+  T -. "plays preview directly" .-> D
 ```
 
 | Layer | Choice |
@@ -140,6 +147,30 @@ The main screen asks one question per step, the answers are big tiles (on phones
 The source code, comments and identifiers are in German. More detail (German): [`docs/ARCHITEKTUR.md`](docs/ARCHITEKTUR.md).
 
 ---
+
+## System requirements and performance
+
+**Minimum for private parties:** 1 vCPU, 512 MB RAM, 1 GB disk, Node.js ≥ 22.18 (or Docker). `ffmpeg` is only needed for your own music files.
+
+Load test with simulated games (TV + 4 phones per game via Socket.IO, real round timings, previews from Deezer; Deezer API calls replaced by a stub). Measured on a 10-core Apple Silicon Mac – on a typical VPS vCPU, expect roughly 2–3× the CPU values.
+
+| | 100 parallel games | 1000 parallel games |
+|---|---|---|
+| Connected devices | 500 | 5,000 |
+| CPU (Node process, share of one core) | Ø 3 %, peak 16 % | Ø 15 %, peak 28 % (≈ 60 % while 1,000 rooms open at once) |
+| RAM (Node process) | ≈ 210 MB | ≈ 600–660 MB |
+| Response time when placing a card (p95 / p99) | 2 / 9 ms | 10 / 19 ms |
+| Errors | 0 | 0 |
+| Recommendation | 1 vCPU, 512 MB–1 GB RAM | 2 vCPU, 1.5–2 GB RAM, raise the room limit |
+
+Limits and notes:
+
+- **Room limit:** at most 500 open games (`MAX_RAEUME` in `src/raeume.ts`). For 1,000 parallel games, raise it and give the container more RAM (the Compose file sets `mem_limit: 768m`, `cpus: 1.5`).
+- **One process:** all games live in the memory of one Node process (snapshots in SQLite). Scale up, not out.
+- **Deezer API:** a preview link is fetched once per song and cached until it expires (a few hours). When many new games start at the same time with an empty cache, Deezer's rate limit (about 50 requests per 5 seconds) becomes the bottleneck: with 100 games starting at once, the first preview took about 5 s (median).
+- **Bandwidth:** previews and covers load directly from Deezer/Apple; the server only sends small game updates and redirects.
+- **Own music files:** ffmpeg cuts each clip (≈ 0.6 MB per round). Cutting is CPU-heavy: 70 games with an empty cache kept about 1.5 cores busy. Clips are cached (up to ≈ 2 GB).
+- **Storage:** Docker image ≈ 450 MB, SQLite ≈ 5 MB for 6,000 songs, game snapshots ≈ 50 MB at 1,000 games (deleted after 2 days).
 
 ## Run locally
 
@@ -181,7 +212,7 @@ Contributions are welcome – see [CONTRIBUTING.md](CONTRIBUTING.md). Rules in s
 ## Legal (short version, not legal advice)
 
 - **Legal pages:** imprint, privacy policy, terms of use and cookie settings are in `public/impressum.html`, `public/datenschutz.html`, `public/nutzungsbedingungen.html` and `public/cookies.html`.
-- **Previews (Apple Music, Deezer):** used under the services' developer terms, for **non-commercial, private use only**. The server stores nothing from them; the browser plays the preview directly from the service. Cover and source are credited with a link to the service at every reveal. Do not add features that store, download, record or circumvent previews, or that remove the attribution.
+- **Previews (Deezer, with Apple Music as fallback):** used under the services' developer terms, for **non-commercial, private use only**. The server stores nothing from them; the browser plays the preview directly from the service. Cover and source are credited with a link to the service at every reveal. Do not add features that store, download, record or circumvent previews, or that remove the attribution.
 - **Own music files:** use only music you own legally. The server never delivers whole files, only short clips cut without metadata. Playing music at public events may require a performance licence (in Germany e.g. GEMA).
 - **Not in this repository:** music files, chart data and playlists.
 - **Privacy:** no ads, no tracking without consent. Anonymous statistics (self-hosted Matomo) run only after consent and can be revoked on the cookie page.

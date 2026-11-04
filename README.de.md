@@ -82,25 +82,32 @@ Der Hauptbildschirm stellt pro Schritt eine Frage, die Antworten sind große Kac
 
 ## Architektur
 
-```
- Handys (1–6)            Hauptbildschirm (TV/Laptop)        Bibliothek (Browser)
- /spielen.html           /host.html                         /admin.html
-      │  Socket.IO + HTTPS      │                                  │
-      └───────────────┬─────────┴──────────────────────────────────┘
-                      ▼
-              Reverse Proxy (z. B. Caddy) · TLS
-                      ▼
- ┌──────────────── Docker-Container ─────────────────────────────┐
- │ Node.js ≥ 22.18 (TypeScript direkt, ohne Build)                │
- │  ├─ HTTP: Seiten, JSON-API, Audio (Range), Cover, QR           │
- │  ├─ Socket.IO: Räume, Zustand pro Gerät gefiltert              │
- │  ├─ Spiel-Engine: reine Zustandsmaschine (game.ts)             │
- │  ├─ Bibliothek: Scan, Tags, Jahresermittlung, Decks            │
- │  ├─ Hörproben: Weiterleitung zu Apple Music/Deezer (nichts gespeichert) │
- │  └─ ffmpeg: Ausschnitte ohne Metadaten (nur eigene Dateien)    │
- │ SQLite (node:sqlite, WAL) + Ausschnitt-Cache → Volume /daten   │
- │ Musik (nur lesen) → /musik                                     │
- └────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  subgraph Geraete["Geräte"]
+    H["📱 Handys (1–6)<br/>/spielen.html"]
+    T["📺 Hauptbildschirm (TV/Laptop)<br/>/host.html"]
+    A["🗂️ Bibliothek (Browser)<br/>/admin.html"]
+  end
+  P["Reverse Proxy (z. B. Caddy) · TLS"]
+  subgraph C["Docker-Container · Node.js ≥ 22.18"]
+    HTTP["HTTP: Seiten, JSON-API,<br/>Audio (Range), Cover, QR"]
+    WS["Socket.IO: Räume,<br/>Zustand pro Gerät gefiltert"]
+    G["Spiel-Engine<br/>reine Zustandsmaschine (game.ts)"]
+    B["Bibliothek: Scan, Tags,<br/>Jahresermittlung, Decks"]
+    V["Hörproben: Weiterleitung<br/>(nichts gespeichert)"]
+    F["ffmpeg: Ausschnitte ohne Metadaten<br/>(nur eigene Dateien)"]
+  end
+  DB[("SQLite (WAL) + Ausschnitt-Cache<br/>Volume /daten")]
+  M[("Musik (nur lesen)<br/>/musik")]
+  D["Deezer (Hauptquelle)<br/>Apple Music (Reserve)"]
+  H & T & A -- "HTTPS + Socket.IO" --> P --> HTTP & WS
+  WS --> G
+  HTTP --> B & V & F
+  G & B --> DB
+  F --> M
+  V -. "Link zur Hörprobe" .-> D
+  T -. "spielt Hörprobe direkt" .-> D
 ```
 
 | Ebene | Wahl |
@@ -140,6 +147,30 @@ Der Hauptbildschirm stellt pro Schritt eine Frage, die Antworten sind große Kac
 Mehr dazu in [`docs/ARCHITEKTUR.md`](docs/ARCHITEKTUR.md).
 
 ---
+
+## Systemanforderungen und Leistung
+
+**Minimum für private Partys:** 1 vCPU, 512 MB RAM, 1 GB Speicher, Node.js ≥ 22.18 (oder Docker). `ffmpeg` braucht es nur für eigene Musikdateien.
+
+Lasttest mit simulierten Spielen (je Spiel Fernseher + 4 Handys über Socket.IO, echte Rundenzeiten, Hörproben von Deezer; Anfragen an die Deezer-API durch eine feste Antwort ersetzt). Gemessen auf einem Apple-Silicon-Mac mit 10 Kernen – auf einer üblichen VPS-vCPU etwa die 2- bis 3-fache CPU-Last einplanen.
+
+| | 100 Spiele gleichzeitig | 1000 Spiele gleichzeitig |
+|---|---|---|
+| Verbundene Geräte | 500 | 5.000 |
+| CPU (Node-Prozess, Anteil eines Kerns) | Ø 3 %, Spitze 16 % | Ø 15 %, Spitze 28 % (≈ 60 %, solange 1.000 Räume gleichzeitig öffnen) |
+| RAM (Node-Prozess) | ≈ 210 MB | ≈ 600–660 MB |
+| Antwortzeit beim Legen einer Karte (p95 / p99) | 2 / 9 ms | 10 / 19 ms |
+| Fehler | 0 | 0 |
+| Empfehlung | 1 vCPU, 512 MB–1 GB RAM | 2 vCPU, 1,5–2 GB RAM, Raumgrenze anheben |
+
+Grenzen und Hinweise:
+
+- **Raumgrenze:** höchstens 500 offene Spiele (`MAX_RAEUME` in `src/raeume.ts`). Für 1.000 Spiele gleichzeitig die Grenze anheben und dem Container mehr RAM geben (die Compose-Datei setzt `mem_limit: 768m`, `cpus: 1.5`).
+- **Ein Prozess:** Alle Spiele liegen im Speicher eines Node-Prozesses (Sicherung in SQLite). Größer machen statt verteilen.
+- **Deezer-API:** Der Link zur Hörprobe wird einmal je Song geholt und bis zum Ablauf (einige Stunden) zwischengespeichert. Starten viele neue Spiele gleichzeitig mit leerem Zwischenspeicher, bremst die Grenze von Deezer (etwa 50 Anfragen in 5 Sekunden): Bei 100 gleichzeitig startenden Spielen kam die erste Hörprobe im Mittel nach etwa 5 s.
+- **Bandbreite:** Hörproben und Cover laden direkt von Deezer/Apple; der Server schickt nur kleine Spielstände und Weiterleitungen.
+- **Eigene Musikdateien:** ffmpeg schneidet jeden Ausschnitt (≈ 0,6 MB je Runde). Das kostet Rechenzeit: 70 Spiele mit leerem Zwischenspeicher hielten etwa 1,5 Kerne beschäftigt. Ausschnitte werden zwischengespeichert (bis ≈ 2 GB).
+- **Speicher:** Docker-Image ≈ 450 MB, SQLite ≈ 5 MB für 6.000 Songs, Spielstände ≈ 50 MB bei 1.000 Spielen (nach 2 Tagen gelöscht).
 
 ## Lokal starten
 
@@ -181,7 +212,7 @@ Beiträge sind willkommen – siehe [CONTRIBUTING.md](CONTRIBUTING.md). Die Rege
 ## Rechtliches (Kurzfassung, keine Rechtsberatung)
 
 - **Rechtsseiten:** Impressum, Datenschutz, Nutzungsbedingungen und Cookie-Einstellungen liegen unter `public/impressum.html`, `public/datenschutz.html`, `public/nutzungsbedingungen.html` und `public/cookies.html`.
-- **Hörproben (Apple Music, Deezer):** genutzt unter den Entwickler-Bedingungen der Dienste, **nur nicht kommerziell und privat**. Der Server speichert nichts davon; der Browser spielt die Hörprobe direkt beim Dienst ab. Cover und Quelle werden bei jeder Auflösung mit Link zum Dienst genannt. Keine Funktionen einbauen, die Hörproben speichern, herunterladen, mitschneiden oder umgehen oder die Quellenangabe entfernen.
+- **Hörproben (Deezer, Apple Music als Reserve):** genutzt unter den Entwickler-Bedingungen der Dienste, **nur nicht kommerziell und privat**. Der Server speichert nichts davon; der Browser spielt die Hörprobe direkt beim Dienst ab. Cover und Quelle werden bei jeder Auflösung mit Link zum Dienst genannt. Keine Funktionen einbauen, die Hörproben speichern, herunterladen, mitschneiden oder umgehen oder die Quellenangabe entfernen.
 - **Eigene Musikdateien:** nur rechtmäßig erworbene Musik. Der Server liefert nie ganze Dateien, nur kurze Ausschnitte ohne Metadaten. Bei öffentlichen Veranstaltungen kann eine Lizenz nötig sein (in Deutschland z. B. GEMA).
 - **Nicht im Repo:** Musikdateien, Chartdaten und Playlists.
 - **Datenschutz:** keine Werbung, kein Tracking ohne Einwilligung. Anonyme Statistik (Matomo auf eigenem Server) läuft nur nach Einwilligung und ist auf der Cookie-Seite widerrufbar.
