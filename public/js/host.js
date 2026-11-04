@@ -185,9 +185,10 @@
   };
   const BILDER_RATEN = {
     "": karte(76, 20, 1.5),
-    // Jahreskarte wie beim Klassiker, links davor Song und Interpret als Plaketten mit je einem Bonus-Stern
-    beide: karte(40, 4, 1.5) + plakette(0, 0, note(9, 5, 0.9, D)) + plakette(0, 52, person(3, 9, 0.62, false, D) + mikro(25, 10, 0.5, D)) +
-      stern(36, -8, 0.8) + stern(36, 44, 0.8),
+    // Jahreskarte rechts wie beim Klassiker, links daneben mit Abstand Song und Interpret als kleinere Plaketten
+    // mit je einem Bonus-Stern; die Plaketten enden oberhalb des Etiketts unten links
+    beide: karte(80, 20, 1.42) + g(30, 0, 0.76, plakette(0, 0, note(9, 5, 0.9, D))) + g(30, 46, 0.76, plakette(0, 0, person(3, 9, 0.62, false, D) + mikro(25, 10, 0.5, D))) +
+      stern(57, -7, 0.62) + stern(57, 39, 0.62),
   };
   // sechs Plätze: zwei Menschen, der Rest Bots oder leer
   const PLAETZE = [[32, 14], [82, 14], [132, 14], [32, 74], [82, 74], [132, 74]];
