@@ -180,11 +180,14 @@ Contributions are welcome – see [CONTRIBUTING.md](CONTRIBUTING.md). Rules in s
 
 ## Legal (short version, not legal advice)
 
-- Previews come from Apple Music and Deezer under their developer terms: **non-commercial and private use only**. Do not add features that store, record or circumvent previews.
-- Own files: use only music you own legally. **No music files or chart data are part of this repository.**
-- Only short clips are served, never whole files. Search engines index only the home page and “How to play”.
-- The name and logo “HitYear” are not covered by the license; no third-party trademarks.
-- Font Nunito under the [SIL Open Font License](public/fonts/OFL.txt).
+- **Legal pages:** imprint, privacy policy, terms of use and cookie settings are in `public/impressum.html`, `public/datenschutz.html`, `public/nutzungsbedingungen.html` and `public/cookies.html`.
+- **Previews (Apple Music, Deezer):** used under the services' developer terms, for **non-commercial, private use only**. The server stores nothing from them; the browser plays the preview directly from the service. Cover and source are credited with a link to the service at every reveal. Do not add features that store, download, record or circumvent previews, or that remove the attribution.
+- **Own music files:** use only music you own legally. The server never delivers whole files, only short clips cut without metadata. Playing music at public events may require a performance licence (in Germany e.g. GEMA).
+- **Not in this repository:** music files, chart data and playlists.
+- **Privacy:** no ads, no tracking without consent. Anonymous statistics (self-hosted Matomo) run only after consent and can be revoked on the cookie page.
+- **Search engines:** only the home page and “How to play” are indexed; game rooms, invitations, admin and API are excluded.
+- **Trademarks:** the name and logo “HitYear” are not covered by the license. Apple Music and Deezer are trademarks of their owners and appear only as source credits; HitYear is not affiliated with or endorsed by them.
+- **Font:** Nunito under the [SIL Open Font License](public/fonts/OFL.txt).
 
 ## License
 

@@ -180,12 +180,14 @@ Beiträge sind willkommen – siehe [CONTRIBUTING.md](CONTRIBUTING.md). Die Rege
 
 ## Rechtliches (Kurzfassung, keine Rechtsberatung)
 
-- Impressum, Datenschutz und Nutzungsbedingungen liegen unter `public/impressum.html`, `public/datenschutz.html`, `public/nutzungsbedingungen.html`.
-- Hörproben kommen von Apple Music und Deezer unter deren Entwickler-Bedingungen: **nur nicht kommerziell und privat**. Keine Funktionen einbauen, die Hörproben speichern, mitschneiden oder umgehen.
-- Eigene Dateien: nur rechtmäßig erworbene Musik. **Keine Musikdateien und keine Chartdaten sind Teil des Repos.**
-- Ausgeliefert werden nur kurze Ausschnitte, keine ganzen Dateien. Suchmaschinen indexieren nur die Startseite und „So geht's“.
-- Name und Logo „HitYear“ sind von der Lizenz nicht erfasst; keine fremden Marken.
-- Schrift Nunito unter der [SIL Open Font License](public/fonts/OFL.txt).
+- **Rechtsseiten:** Impressum, Datenschutz, Nutzungsbedingungen und Cookie-Einstellungen liegen unter `public/impressum.html`, `public/datenschutz.html`, `public/nutzungsbedingungen.html` und `public/cookies.html`.
+- **Hörproben (Apple Music, Deezer):** genutzt unter den Entwickler-Bedingungen der Dienste, **nur nicht kommerziell und privat**. Der Server speichert nichts davon; der Browser spielt die Hörprobe direkt beim Dienst ab. Cover und Quelle werden bei jeder Auflösung mit Link zum Dienst genannt. Keine Funktionen einbauen, die Hörproben speichern, herunterladen, mitschneiden oder umgehen oder die Quellenangabe entfernen.
+- **Eigene Musikdateien:** nur rechtmäßig erworbene Musik. Der Server liefert nie ganze Dateien, nur kurze Ausschnitte ohne Metadaten. Bei öffentlichen Veranstaltungen kann eine Lizenz nötig sein (in Deutschland z. B. GEMA).
+- **Nicht im Repo:** Musikdateien, Chartdaten und Playlists.
+- **Datenschutz:** keine Werbung, kein Tracking ohne Einwilligung. Anonyme Statistik (Matomo auf eigenem Server) läuft nur nach Einwilligung und ist auf der Cookie-Seite widerrufbar.
+- **Suchmaschinen:** indexiert werden nur die Startseite und „So geht's“; Spielräume, Einladungen, Admin und API bleiben außen vor.
+- **Marken:** Name und Logo „HitYear“ sind von der Lizenz nicht erfasst. Apple Music und Deezer sind Marken ihrer Inhaber und erscheinen nur als Quellenangabe; HitYear ist mit ihnen weder verbunden noch von ihnen unterstützt.
+- **Schrift:** Nunito unter der [SIL Open Font License](public/fonts/OFL.txt).
 
 ## Lizenz
 
