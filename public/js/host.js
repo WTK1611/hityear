@@ -222,6 +222,7 @@
     [/deutsch|german/i, "q", ["#000", "#dd0000", "#ffce00"]], [/frankreich|france/i, "l", ["#0055a4", "#fff", "#ef4135"]],
     [/holland|niederland|netherlands/i, "q", ["#ae1c28", "#fff", "#21468b"]], [/ungarn|hungar/i, "q", ["#ce2939", "#fff", "#477050"]],
     [/kanada|canada/i, "l", ["#d52b1e", "#fff", "#fff", "#d52b1e"]], [/nordeuropa|northern europe|nordic/i, "nord", ["#006aa7", "#fecc00"]], [/mitteleuropa|central europe/i, "eu", ["#003399", "#ffcc00"]],
+    [/brasil|brazil|mpb/i, "br", ["#009c3b", "#ffdf00", "#002776"]],
   ];
   // Schlager ohne Land: Strahlenkranz in Pink und Gold wie in den Hitparaden der 70er
   const strahlenkranz = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
@@ -229,10 +230,15 @@
       const p = (grad) => `${(20 + 40 * Math.cos((grad * Math.PI) / 180)).toFixed(1)} ${(20 + 40 * Math.sin((grad * Math.PI) / 180)).toFixed(1)}`;
       return `<path d="M20 20L${p(i * 30)}L${p(i * 30 + 15)}z" fill="#ffd93d"/>`;
     }).join("") + `<circle cx="20" cy="20" r="10" fill="#ff3d9a"/>`;
+  // R&B und Soul ohne Land: Samt in Lila mit Rillen wie auf einer Soul-Single
+  const samt = () => `<rect width="40" height="40" fill="#3b145e"/>` +
+    [19, 14.5, 10].map((r, i) => `<circle cx="20" cy="20" r="${r}" fill="none" stroke="${i % 2 ? "#ff3d9a" : "#b04bd6"}" stroke-width="2.2"/>`).join("");
   function flagge(name) {
     const f = FLAGGEN.find(([muster]) => muster.test(name));
-    if (!f) return /schlager/i.test(name) ? strahlenkranz() : "";
+    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : "";
     const [, art, farben] = f;
+    if (art === "br") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M20 4L37 20L20 36L3 20z" fill="${farben[1]}"/>` +
+      `<circle cx="20" cy="20" r="9.5" fill="${farben[2]}"/><path d="M10.8 18.2q9-3 18.6 2.4" fill="none" stroke="#fff" stroke-width="1.6"/>`;
     if (art === "nord") return `<rect width="40" height="40" fill="${farben[0]}"/><rect x="11" width="7" height="40" fill="${farben[1]}"/><rect y="16.5" width="40" height="7" fill="${farben[1]}"/>`;
     if (art === "eu") return `<rect width="40" height="40" fill="${farben[0]}"/>` +
       Array.from({ length: 12 }, (_, i) => `<circle cx="${20 + 13 * Math.cos((i * Math.PI) / 6)}" cy="${20 + 13 * Math.sin((i * Math.PI) / 6)}" r="1.7" fill="${farben[1]}"/>`).join("");
@@ -250,6 +256,13 @@
     [/heimlich|liebling|guilty|secret/i, `<path d="M12 21L4 13a4.8 4.8 0 0 1 8-6 4.8 4.8 0 0 1 8 6z"/>`],
     [/jahrzehnt|decade/i, `<path d="M6 2h12v3l-4.5 7 4.5 7v3H6v-3l4.5-7L6 5z"/><path d="M9 20h6l-3-3z" fill="#ffd93d"/>`],
     [/jahres|charts|of the year/i, `<rect x="3" y="5" width="18" height="17" rx="3"/><rect x="3" y="5" width="18" height="5" rx="2" fill="#ff3d9a"/><text x="12" y="19.5" font-size="8.5" font-weight="900" text-anchor="middle" fill="#160c26" stroke="none">#1</text>`],
+    // R&B und Soul: Herz mit Note
+    [/r&b|rnb|soul/i, `<path d="M12 23L2.5 13.5a5.6 5.6 0 0 1 9.5-7 5.6 5.6 0 0 1 9.5 7z"/>` +
+      `<g fill="#160c26" stroke="none"><ellipse cx="10.4" cy="16.6" rx="2.6" ry="1.9" transform="rotate(-20 10.4 16.6)"/><rect x="12" y="8.6" width="1.4" height="8"/><path d="M13.4 8.6q3.6 1.4 3 4.6q-.8-2.2-3-2.4z"/></g>`],
+    // MPB und Bossa nova: Gitarre (violão), Umriss einmal um alle Teile, dann weiß gefüllt
+    [/mpb|bossa|brasil|brazil/i, ((teile) => `<g transform="rotate(38 12 12)"><g stroke-width="2.6" fill="#160c26">${teile}</g><g stroke="none">${teile}</g>` +
+      `<g fill="#160c26" stroke="none"><circle cx="12" cy="13.4" r="1.9"/><rect x="10" y="18.4" width="4" height="1.3" rx=".5"/></g></g>`)(
+      `<circle cx="12" cy="17.4" r="6"/><circle cx="12" cy="10.8" r="4.4"/><rect x="10.9" y="-0.5" width="2.2" height="10" rx=".8"/><rect x="10" y="-2" width="4" height="3.4" rx="1"/>`)],
     [/hits/i, `<path d="M12 1l3.4 7 7.6 1-5.5 5.3 1.4 7.6L12 18.3l-6.9 3.6 1.4-7.6L1 9l7.6-1z"/>`],
   ];
   function symbol(name) {
@@ -266,14 +279,14 @@
       (flaggeSvg ? `<g clip-path="url(#huelle-${nr})" transform="translate(42 46)">${flaggeSvg}</g>` : `<rect x="47" y="51" width="30" height="30" rx="3" fill="#160c26" fill-opacity=".2"/>`) +
       `<rect x="42" y="46" width="40" height="40" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/>` + symbol(name) + "</g>" +
       // Schlager: etwas Glitzer um die Hülle
-      (/schlager/i.test(name) ? glitzer(38, 52, 0.9) + glitzer(92, 42, 0.7) : "") +
+      (/schlager|r&b|rnb|soul/i.test(name) ? glitzer(38, 52, 0.9) + glitzer(92, 42, 0.7) : "") +
       // Länder-Decks: oben rechts das Länderkennzeichen wie am Auto
       kennzeichen(KENNZEICHEN.find(([muster]) => muster.test(name))?.[1]);
   };
   // Länderkennzeichen je Deck (Schlager und Jahrescharts sind deutsch); Mittel-/Nordeuropa ohne
   const KENNZEICHEN = [
     [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france/i, "F"], [/holland|niederland|netherlands/i, "NL"],
-    [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"],
+    [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"],
   ];
   // klein in der Ecke, damit es auch neben langen Titelzeilen („Deutschlands“) frei steht; längere Kennzeichen
   // werden nach links breiter, der rechte Rand bleibt
