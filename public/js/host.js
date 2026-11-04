@@ -222,9 +222,15 @@
     [/holland|niederland|netherlands/i, "q", ["#ae1c28", "#fff", "#21468b"]], [/ungarn|hungar/i, "q", ["#ce2939", "#fff", "#477050"]],
     [/kanada|canada/i, "l", ["#d52b1e", "#fff", "#fff", "#d52b1e"]], [/nordeuropa|northern europe|nordic/i, "nord", ["#006aa7", "#fecc00"]], [/mitteleuropa|central europe/i, "eu", ["#003399", "#ffcc00"]],
   ];
+  // Schlager ohne Land: Strahlenkranz in Pink und Gold wie in den Hitparaden der 70er
+  const strahlenkranz = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
+    Array.from({ length: 12 }, (_, i) => {
+      const p = (grad) => `${(20 + 40 * Math.cos((grad * Math.PI) / 180)).toFixed(1)} ${(20 + 40 * Math.sin((grad * Math.PI) / 180)).toFixed(1)}`;
+      return `<path d="M20 20L${p(i * 30)}L${p(i * 30 + 15)}z" fill="#ffd93d"/>`;
+    }).join("") + `<circle cx="20" cy="20" r="10" fill="#ff3d9a"/>`;
   function flagge(name) {
     const f = FLAGGEN.find(([muster]) => muster.test(name));
-    if (!f) return "";
+    if (!f) return /schlager/i.test(name) ? strahlenkranz() : "";
     const [, art, farben] = f;
     if (art === "nord") return `<rect width="40" height="40" fill="${farben[0]}"/><rect x="11" width="7" height="40" fill="${farben[1]}"/><rect y="16.5" width="40" height="7" fill="${farben[1]}"/>`;
     if (art === "eu") return `<rect width="40" height="40" fill="${farben[0]}"/>` +
@@ -257,7 +263,9 @@
       `<g transform="translate(0 3) rotate(-6 62 66)"><defs><clipPath id="huelle-${nr}"><rect width="40" height="40" rx="4"/></clipPath></defs>` +
       `<rect x="42" y="46" width="40" height="40" rx="4" fill="hsl(${(h + 80) % 360} 85% 70%)"/>` +
       (flaggeSvg ? `<g clip-path="url(#huelle-${nr})" transform="translate(42 46)">${flaggeSvg}</g>` : `<rect x="47" y="51" width="30" height="30" rx="3" fill="#160c26" fill-opacity=".2"/>`) +
-      `<rect x="42" y="46" width="40" height="40" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/>` + symbol(name) + "</g>";
+      `<rect x="42" y="46" width="40" height="40" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/>` + symbol(name) + "</g>" +
+      // Schlager: etwas Glitzer um die Hülle
+      (/schlager/i.test(name) ? glitzer(38, 52, 0.9) + glitzer(92, 42, 0.7) : "");
   };
   // „Alle Songs“: ein ganzer Stapel Schallplatten in Regenbogenfarben statt einer Hülle
   const plattenStapel = () => platteSvg(52, 72, 15, "#3dd8ff") + platteSvg(64, 60, 16, "#ffd93d") + platteSvg(77, 68, 19, "#ff3d9a", "platte");
