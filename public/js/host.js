@@ -1285,6 +1285,26 @@
   document.fonts?.ready.then(bald);
 }
 
+// Handy quer: wie ein Fernseher darstellen – das Layout ist mindestens 1280 px breit und der Browser skaliert es auf den Bildschirm.
+// So greifen Fernseher-Ansicht und --skala (unten), und alles passt ohne Scrollen. Hochkant bleibt die Handy-Ansicht.
+{
+  const meta = document.querySelector('meta[name="viewport"]');
+  const hochkant = meta?.content;
+  const handy = matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) <= 500;
+  const quer = () => (screen.orientation?.type ?? (Math.abs(Number(window.orientation)) === 90 ? "landscape" : "portrait")).startsWith("landscape");
+  const anpassen = () => {
+    const lang = Math.max(screen.width, screen.height), kurz = Math.min(screen.width, screen.height);
+    const breite = Math.max(1280, Math.round((860 * lang) / kurz)); // ~860 px Höhe wie ein kleiner Fernseher (Handys sind sehr breit)
+    const soll = quer() ? `width=${breite}, initial-scale=${(lang / breite).toFixed(3)}, viewport-fit=cover` : hochkant;
+    if (meta.content !== soll) meta.content = soll;
+  };
+  if (meta && handy) {
+    anpassen();
+    screen.orientation?.addEventListener?.("change", anpassen);
+    addEventListener("orientationchange", anpassen);
+  }
+}
+
 // Hauptbildschirm (groß, quer): die Spielansicht passt immer ohne Scrollen auf den Bildschirm.
 // Wächst der Inhalt (lange Zeitstrahle), werden Cover-Karte und Zeitstrahle per --skala stufenweise kleiner –
 // höchstens bis 0.45 (Schrift der Zeitstrahle hat eine Untergrenze), damit alles lesbar bleibt.

@@ -346,7 +346,7 @@ main.tv-ansicht .equalizer[role="button"]:focus-visible { outline: none; }
 .equalizer.eq-berge i { max-width: 22px; border-radius: 50% 50% 0 0 / 22px 22px 0 0; opacity: 0.9; }
 /* Pixel: Retro-Raster aus Quadraten */
 /* Retro: LED-Segmente grün → gelb → rot mit fallenden Spitzen (--sp: Spitze relativ zur Balkenhöhe) */
-.equalizer.eq-retro { gap: 3px; }
+.equalizer.eq-retro { gap: 3px; padding-top: 8px; } /* Platz für die Spitzen über vollen Balken (sonst abgeschnitten) */
 .equalizer.eq-retro i {
   position: relative; border-radius: 1px; overflow: visible;
   background: repeating-linear-gradient(to top, transparent 0 5px, rgba(11, 7, 22, 0.85) 5px 7px), linear-gradient(to top, #3dffb0 0 50%, #ffd93d 50% 78%, #ff3d6e 78%);
@@ -1547,7 +1547,6 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 @media (prefers-reduced-motion: reduce) { .leiste .aufladen { animation: none; } }
 /* Handy-Endseite: eigene Zeile hervorheben, Knopf zum Wechseln zwischen Runde und Bestenliste */
 #ende .rangliste .platz.ich:not(.sieg) { box-shadow: inset 0 0 0 2px var(--gelb); }
-#ende #listen-wechsel { margin-top: 16px; width: 100%; }
 /* Endseite: beide Listen mit gleich hohen Zeilen und gleichem Abstand; der Erklärtext der Bestenliste wandert unter die Liste,
    damit die Zeilen links und rechts auf derselben Höhe beginnen */
 @media (min-width: 1024px) {
@@ -1888,3 +1887,10 @@ body.solo .qr-lobby { display: none !important; }
 }
 @keyframes drehen-zurueck { 0%, 20% { transform: rotate(-90deg); } 55%, 100% { transform: rotate(0deg); } }
 @media (prefers-reduced-motion: reduce) { .drehen-handy { animation: none; } }
+
+/* Endseite (Handy): oben zwischen „Beste der Runde“ und Bestenliste umschalten */
+.listen-umschalter { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin: 14px 0 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--rand); }
+.listen-umschalter.versteckt { display: none; }
+.listen-umschalter button { margin: 0; min-width: 0; min-height: 44px; padding: 8px 6px; border-radius: 999px; background: transparent; box-shadow: none; color: var(--leise); font-weight: 800; font-size: clamp(0.78rem, 3.7vw, 0.95rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s, color 0.2s; }
+.listen-umschalter button[aria-selected="true"] { background: var(--verlauf); color: #160c26; }
+.listen-umschalter:not(.versteckt) + .ende-runde > h2 { display: none; }

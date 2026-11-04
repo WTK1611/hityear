@@ -552,6 +552,9 @@ function listeZeigen(beste) {
   bestenAn = beste;
   $("#ende-runde").classList.toggle("versteckt", beste);
   if (!$("#listen-wechsel").classList.contains("versteckt")) $("#bestenliste").classList.toggle("versteckt", !beste);
-  $("#listen-wechsel").textContent = beste ? "🏆 Beste der Runde" : "🏅 Bestenliste";
+  for (const k of $("#listen-wechsel").querySelectorAll("button")) k.setAttribute("aria-selected", String((k.dataset.liste === "beste") === beste));
 }
-$("#listen-wechsel").addEventListener("click", () => listeZeigen(!bestenAn));
+$("#listen-wechsel").addEventListener("click", (e) => {
+  const k = e.target.closest("button[data-liste]");
+  if (k) listeZeigen(k.dataset.liste === "beste");
+});

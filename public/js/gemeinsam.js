@@ -405,6 +405,8 @@ const tonwegWartend = [];
 function tonwegeAnschliessen() {
   const Ctx = window.AudioContext || window.webkitAudioContext;
   if (!Ctx || !tonwegWartend.length) return;
+  // erst nach einer echten Geste (auf Touch-Geräten zählt pointerdown noch nicht) – sonst warnt Chrome „AudioContext was not allowed to start“
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
   try {
     tonKontext ??= new Ctx();
   } catch {
@@ -423,7 +425,7 @@ function tonwegeAnschliessen() {
     }
   }, () => {});
 }
-for (const ev of ["pointerdown", "keydown"]) document.addEventListener(ev, tonwegeAnschliessen, true);
+for (const ev of ["pointerdown", "pointerup", "keydown", "click"]) document.addEventListener(ev, tonwegeAnschliessen, true);
 function tonweg(element) {
   if (!tonwege.has(element)) {
     tonwege.set(element, new Promise((fertig) => tonwegWartend.push({ element, fertig })));
@@ -1499,7 +1501,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Handys nur hochkant: im Browser lässt sich das Drehen nicht sperren – im Querformat deckt ein Hinweis die Seite ab
 // (CSS .drehen-hinweis). Als installierte App klappt die echte Sperre, Tablets und Fernseher bleiben frei.
+// Ausnahme: der Host (Spielfeld) darf quer – host.js stellt ihn dann wie auf dem Fernseher dar.
 (() => {
+  if (location.pathname.startsWith("/host")) return;
   const hinweis = el("div", { class: "drehen-hinweis", "aria-live": "polite" },
     el("div", { class: "drehen-handy", "aria-hidden": "true", text: "📱" }),
     el("p", { text: "Bitte halte dein Handy hochkant." }));

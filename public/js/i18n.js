@@ -531,6 +531,7 @@ const UEBERSETZUNGEN = [
   ["Profi", "pro", "pro", "pro", "pro", "pro"],
   ["KI-Bot ({0})", "AI bot ({0})", "Bot IA ({0})", "Bot IA ({0})", "Bot de IA ({0})", "Bot de IA ({0})"],
   ["🤖 {0}", "🤖 {0}", "🤖 {0}", "🤖 {0}", "🤖 {0}", "🤖 {0}"],
+  ["Liste wählen", "Choose list", "Choisir la liste", "Scegli elenco", "Elegir lista", "Escolher lista"],
   ["🏅 Bestenliste", "🏅 Leaderboard", "🏅 Classement", "🏅 Classifica", "🏅 Clasificación", "🏅 Ranking"],
   ["Alle Punkte aus allen Spielen – Karten plus ⭐ Zusatzpunkte.", "All points from all games – cards plus ⭐ bonus points.", "Tous les points de toutes les parties – cartes plus ⭐ points bonus.", "Tutti i punti di tutte le partite – carte più ⭐ punti extra.", "Todos los puntos de todas las partidas: cartas más ⭐ puntos extra.", "Todos os pontos de todas as partidas – cartas mais ⭐ pontos extras."],
   ["{0} Spiel", "{0} game", "{0} partie", "{0} partita", "{0} partida", "{0} partida"],
