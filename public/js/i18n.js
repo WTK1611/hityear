@@ -128,6 +128,7 @@ const UEBERSETZUNGEN = [
   ["Party vor Ort (auf dem Hauptbildschirm)", "Party in the room (on the main screen)", "Soirée sur place (sur l'écran principal)", "Festa dal vivo (sullo schermo principale)", "Fiesta presencial (en la pantalla principal)", "Festa presencial (na tela principal)"],
   ["Online (auf dem Handy)", "Online (on the phone)", "En ligne (sur le téléphone)", "Online (sul telefono)", "Online (en el móvil)", "Online (no celular)"],
   ["Zeit zum Einordnen", "Time to place", "Temps pour placer", "Tempo per piazzare", "Tiempo para colocar", "Tempo para posicionar"],
+  ["Dein Stand", "Your score", "Ton score", "Il tuo punteggio", "Tu marcador", "Seu placar"],
   ["bis alle gewählt haben", "until everyone has chosen", "jusqu'à ce que tous aient choisi", "finché tutti hanno scelto", "hasta que todos hayan elegido", "até todos escolherem"],
   ["bis der Ausschnitt endet", "until the clip ends", "jusqu'à la fin de l'extrait", "fino alla fine dello spezzone", "hasta que acabe el fragmento", "até o trecho acabar"],
   ["Wer ist dran?", "Whose turn?", "À qui le tour ?", "A chi tocca?", "¿A quién le toca?", "De quem é a vez?"],

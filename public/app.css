@@ -1604,6 +1604,14 @@ main:not(.breit):has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke
 .marke-uhr .weiter-label { font-size: 0.6rem; letter-spacing: 0.12em; }
 .marke-uhr .weiter-zahl, .marke-uhr .handy-uhr .weiter-zahl:not(.klein), .marke-uhr .weiter-zahl.klein { font-size: 1.7rem; line-height: 1.05; opacity: 1; }
 .marke-uhr .weiter-zahl.knapp { color: #ffe066; }
+/* Handy: eigener Stand (Karten/Ziel, Sterne) zwischen Logo und Countdown */
+.marke-stand { margin-left: auto; display: grid; justify-items: end; text-align: right; }
+.marke-stand + .marke-uhr { margin-left: 16px; }
+.marke-stand .weiter-label { font-size: 0.6rem; letter-spacing: 0.12em; }
+.stand-werte { display: flex; gap: 8px; align-items: baseline; font-weight: 900; font-size: 1.35rem; line-height: 1.15; white-space: nowrap; }
+.stand-sterne { color: #ffe066; }
+/* schmale Handys: im Spiel nur das Logo-Symbol, damit Stand und Countdown nebeneinander passen */
+@media (max-width: 430px) { .marke:has(.marke-stand:not(.versteckt)) .wortmarke { display: none; } }
 /* Handy-Endseite: weniger Abstand unter dem Logo und im Kopf der Siegerkarte */
 main:not(.breit):has(> #ende:not(.versteckt)) > .marke { margin-bottom: 10px; }
 section#ende.box { padding-top: 14px; }

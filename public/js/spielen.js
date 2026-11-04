@@ -71,7 +71,20 @@
   playerBinden(audio.element, { leiste: $("#t-leiste"), jetzt: $("#t-jetzt"), ende: $("#t-ende"), knopf: $("#abspielen"), animiert: [eq] });
   $("#name").value = speicher("zs_name") || "";
   // Countdowns (Zeit zum Einordnen, nächster Song) oben rechts neben dem Logo statt im Rahmen
-  $(".marke").append(el("div", { class: "marke-uhr", "aria-live": "off" }, $("#frist"), $("#weiter")));
+  // davor der eigene Stand: gesammelte Karten / Ziel und (wenn mitgeraten wird) die Sterne
+  const stand = el("div", { class: "marke-stand versteckt", "aria-live": "polite" },
+    el("span", { class: "weiter-label", text: "Dein Stand" }),
+    el("span", { class: "stand-werte" }, el("span", { class: "stand-karten" }), el("span", { class: "stand-sterne" })));
+  $(".marke").append(stand, el("div", { class: "marke-uhr", "aria-live": "off" }, $("#frist"), $("#weiter")));
+  const standZeigen = (z, ich) => {
+    stand.classList.toggle("versteckt", !ich);
+    if (!ich) return;
+    stand.querySelector(".stand-karten").textContent = `${ich.zeitstrahl.length}/${z.einstellungen.zielKarten}`;
+    const sterne = ich.punkte ?? 0;
+    const mitSternen = Boolean(z.einstellungen.raten) || sterne > 0;
+    stand.querySelector(".stand-sterne").textContent = mitSternen ? `⭐ ${sterne}` : "";
+    stand.querySelector(".stand-sterne").classList.toggle("versteckt", !mitSternen);
+  };
 
   // „Keine Verbindung“ meldet schon das gelbe Banner (gemeinsam.js) – nicht doppelt zeigen
   const fehler = (t) => ($("#fehler").textContent = t === "Keine Verbindung zum Server." ? "" : t || "");
@@ -221,6 +234,7 @@
     const z = zustand;
     if (!z.ich) return zeigen("#beitreten");
     const ich = z.spieler.find((p) => p.id === z.ich);
+    standZeigen(z, null); // nur während des Spiels (darunter wieder eingeblendet)
     if (!ich) return zeigen("#beitreten");
 
     if (z.phase === "lobby") {
@@ -264,6 +278,7 @@
     }
 
     zeigen("#spiel");
+    standZeigen(z, ich);
     // Während des Spiels kein „Zurück“ – das wäre ein Abbruch (in Lobby und am Ende bleibt er)
     document.querySelector(".zurueck-reihe")?.classList.add("versteckt");
     // Neue Runde/neuer Song → Eingabe immer frisch beim Zeitstrahl beginnen (alte Rate-Eingabe weg)
