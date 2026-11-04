@@ -1292,14 +1292,25 @@
   const hochkant = meta?.content;
   const handy = matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) <= 500;
   const quer = () => (screen.orientation?.type ?? (Math.abs(Number(window.orientation)) === 90 ? "landscape" : "portrait")).startsWith("landscape");
-  const anpassen = () => {
+  const anpassen = (gedreht = true) => {
+    // kam das Handy quer von den eigenen Karten (spielen.js): beim Hochkant-Drehen wieder dorthin
+    if (gedreht && !quer()) {
+      let zurueck = null;
+      try {
+        zurueck = sessionStorage.getItem("zs_spielfeld_quer");
+        sessionStorage.removeItem("zs_spielfeld_quer");
+      } catch {
+        /* ohne Rückweg */
+      }
+      if (zurueck) return location.replace(`/spielen.html?raum=${encodeURIComponent(zurueck)}`);
+    }
     const lang = Math.max(screen.width, screen.height), kurz = Math.min(screen.width, screen.height);
     const breite = Math.max(1280, Math.round((860 * lang) / kurz)); // ~860 px Höhe wie ein kleiner Fernseher (Handys sind sehr breit)
     const soll = quer() ? `width=${breite}, initial-scale=${(lang / breite).toFixed(3)}, viewport-fit=cover` : hochkant;
     if (meta.content !== soll) meta.content = soll;
   };
   if (meta && handy) {
-    anpassen();
+    anpassen(false);
     screen.orientation?.addEventListener?.("change", anpassen);
     addEventListener("orientationchange", anpassen);
   }

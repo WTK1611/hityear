@@ -228,7 +228,28 @@
     }
   });
 
+  // Gastgeber spielt am Handy mit: quer (ab der Startkarte) zeigt das Handy das Spielfeld wie am Fernseher (host.html),
+  // hochkant geht es dort zurück zu den eigenen Karten (host.js). Mitspieler bleiben hochkant (gemeinsam.js).
+  const handyGeraet = matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) <= 500;
+  const istQuer = () => (screen.orientation?.type ?? (Math.abs(Number(window.orientation)) === 90 ? "landscape" : "portrait")).startsWith("landscape");
+  function spielfeldPruefen() {
+    const frei = Boolean(handyGeraet && zustand?.host && zustand.phase !== "lobby");
+    document.documentElement.classList.toggle("drehen-frei", frei);
+    if (!frei || !istQuer()) return;
+    try {
+      sessionStorage.setItem("zs_spielfeld_quer", zustand.code);
+    } catch {
+      /* ohne Rückweg weiter */
+    }
+    location.replace("/host.html");
+  }
+  if (handyGeraet) {
+    screen.orientation?.addEventListener?.("change", spielfeldPruefen);
+    addEventListener("orientationchange", spielfeldPruefen);
+  }
+
   function darstellen() {
+    spielfeldPruefen();
     void wachHalten(Boolean(zustand && zustand.phase !== "ende")); // auch in der Lobby: sonst schläft das Handy vor dem Start ein
     document.querySelector(".zurueck-reihe")?.classList.remove("versteckt");
     const z = zustand;

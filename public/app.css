@@ -1894,3 +1894,16 @@ body.solo .qr-lobby { display: none !important; }
 .listen-umschalter button { margin: 0; min-width: 0; min-height: 44px; padding: 8px 6px; border-radius: 999px; background: transparent; box-shadow: none; color: var(--leise); font-weight: 800; font-size: clamp(0.78rem, 3.7vw, 0.95rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s, color 0.2s; }
 .listen-umschalter button[aria-selected="true"] { background: var(--verlauf); color: #160c26; }
 .listen-umschalter:not(.versteckt) + .ende-runde > h2 { display: none; }
+
+/* Gastgeber spielt am Handy mit: quer zeigt das Spielfeld (spielen.js), also kein Hochkant-Hinweis */
+.drehen-frei .drehen-hinweis { display: none !important; }
+/* Schmaler Hauptbildschirm: Spielcode-Karte mit fester Breite, der Countdown sitzt links daneben und überlappt nie
+   (die Beschriftung „Jetzt mitspielen“ ist je nach Sprache verschieden lang); auf ganz schmalen Handys ohne Schriftzug */
+@media (max-width: 700px) {
+  #spiel > .qr-klein, .qr-klein.qr-lobby { box-sizing: border-box; width: 104px; justify-items: center; text-align: center; }
+  #spiel > .qr-klein span, .qr-klein.qr-lobby span { font-size: 0.5rem; letter-spacing: 0.06em; line-height: 1.15; white-space: normal; }
+  main.breit .uhr-platz { right: calc(16px + 104px + 12px); }
+}
+@media (max-width: 430px) {
+  main.breit:has(> #spiel:not(.versteckt)) > .marke .wortmarke { display: none; }
+}
