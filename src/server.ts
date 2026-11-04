@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import QRCode from "qrcode";
 import { parseFile } from "music-metadata";
 import { config } from "./config.ts";
+import { GENRES, type Genre } from "./game.ts";
 import { db } from "./db.ts";
 import {
   APPLE_PRAEFIX, chartsLaden, duplikatVon, geschichteFuer, istApple, jahrNeuBerechnen, scannen, scanStatus,
@@ -340,6 +341,7 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
       hatCover: Boolean(z.hat_cover),
       geschichte: z.geschichte?.trim() || null, // nur selbst gepflegte, keine automatischen Chart-Sätze
       appleUrl: dienstLink(z),
+      genres: genresVon(z.genre),
     });
   }
 
@@ -544,4 +546,14 @@ for (const sig of ["SIGINT", "SIGTERM"] as const) {
     server.close(() => process.exit(0));
     setTimeout(() => process.exit(0), 3000).unref();
   });
+}
+
+/** Spiel-Genres (Schlüssel aus GENRES) zum Genre-Text eines Songs, höchstens zwei – für den Tag beim Aufdecken.
+ *  „deutsch“ allein macht noch keinen Schlager („Deutsch-Pop“). */
+function genresVon(genre: string | null): Genre[] {
+  const g = (genre ?? "").toLowerCase();
+  if (!g) return [];
+  return (Object.keys(GENRES) as Genre[])
+    .filter((k) => GENRES[k].some((w) => w !== "deutsch" && g.includes(w)))
+    .slice(0, 2);
 }

@@ -1908,3 +1908,4 @@ body.solo .qr-lobby { display: none !important; }
 @media (max-width: 430px) {
   main.breit:has(> #spiel:not(.versteckt)) > .marke .wortmarke { display: none; }
 }
+#spiel #hinweis:empty { display: none; } /* leer (Song läuft): keine Leerzeile unter dem EQ */

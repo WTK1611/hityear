@@ -943,7 +943,7 @@
           : z.einstellungen.modus === "alle" && z.einstellungen.warten === "alle5"
           ? "✓ Alle haben getippt – Auflösung in 5 Sekunden."
           : "" // alle haben getippt, der Song läuft zu Ende – das zeigen die grünen Rahmen
-        : !hierAudio ? "" : audio.url ? (z.einstellungen.modus === "alle" ? "Alle sortieren den Song am Handy ein." : `${aktiv?.name ?? "?"} sortiert den Song am Handy ein.`) : "Ausschnitt wird vorbereitet …";
+        : !hierAudio || audio.url ? "" : "Ausschnitt wird vorbereitet …"; // kein „Alle sortieren …“ – spart eine Zeile
     } else if (z.ergebnis) {
       audio.stop();
       const e = z.ergebnis;
@@ -992,6 +992,7 @@
       const fakten = [];
       if (d.album) fakten.push(`💿 ${d.album}`);
       fakten.push(`🗓️ ${String(k.jahr).slice(0, 3)}0er`);
+      for (const g of d.genres ?? []) if (GENRE_NAMEN[g]) fakten.push(GENRE_NAMEN[g]);
       $("#fakten").replaceChildren(...fakten.map((f) => el("span", { text: f })));
       // Apple/Deezer verlangen bei Hörproben einen Hinweis mit Link (gilt für Ton und Cover)
       if (d.appleUrl) {
