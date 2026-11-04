@@ -264,11 +264,14 @@
       `<rect x="42" y="46" width="40" height="40" rx="4" fill="hsl(${(h + 80) % 360} 85% 70%)"/>` +
       (flaggeSvg ? `<g clip-path="url(#huelle-${nr})" transform="translate(42 46)">${flaggeSvg}</g>` : `<rect x="47" y="51" width="30" height="30" rx="3" fill="#160c26" fill-opacity=".2"/>`) +
       `<rect x="42" y="46" width="40" height="40" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/>` + symbol(name) + "</g>" +
-      // Schlager: etwas Glitzer um die Hülle; ohne Flagge oben rechts das „D“ wie das Länderkennzeichen am Auto
-      (/schlager/i.test(name) ? glitzer(38, 52, 0.9) + glitzer(92, 42, 0.7) + (FLAGGEN.some(([muster]) => muster.test(name)) ? "" : kennzeichen("D")) : "");
+      // Schlager: etwas Glitzer um die Hülle
+      (/schlager/i.test(name) ? glitzer(38, 52, 0.9) + glitzer(92, 42, 0.7) : "") +
+      // deutsche Decks: oben rechts das „D“ wie das Länderkennzeichen am Auto
+      (/deutsch|german|schlager/i.test(name) ? kennzeichen("D") : "");
   };
-  const kennzeichen = (land) => `<g transform="rotate(-8 84 15)"><ellipse cx="84" cy="15" rx="11" ry="7.5" fill="#fff" stroke="#160c26" stroke-width="1.6"/>` +
-    `<text x="84" y="18.6" font-size="10" font-weight="900" text-anchor="middle" fill="#160c26" font-family="Nunito, system-ui, sans-serif">${land}</text></g>`;
+  // klein in der Ecke, damit es auch neben langen Titelzeilen („Deutschlands“) frei steht
+  const kennzeichen = (land) => `<g transform="rotate(-8 87 11)"><ellipse cx="87" cy="11" rx="8.5" ry="5.8" fill="#fff" stroke="#160c26" stroke-width="1.4"/>` +
+    `<text x="87" y="13.9" font-size="8" font-weight="900" text-anchor="middle" fill="#160c26" font-family="Nunito, system-ui, sans-serif">${land}</text></g>`;
   // „Alle Songs“: ein ganzer Stapel Schallplatten in Regenbogenfarben statt einer Hülle
   const plattenStapel = () => platteSvg(52, 72, 15, "#3dd8ff") + platteSvg(64, 60, 16, "#ffd93d") + platteSvg(77, 68, 19, "#ff3d9a", "platte");
   // Genre-Bilder im Kartenstil (farbige Flächen, weißer Rand, dunkle Details), unten rechts im 100er-Cover
