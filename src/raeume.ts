@@ -789,14 +789,23 @@ export function socketsEinrichten(server: Server): void {
   });
 }
 
-/** Für Auflösungs-Cover: nur Songs, die in einem Raum schon offen liegen. */
+/**
+ * Cover, Details und Quelle (/api/cover, /api/details, /api/quelle) nur für Songs, die in einem offenen Spiel
+ * aufgedeckt sind: in einem Zeitstrahl oder gerade in der Auflösung. Sonst ließe sich die ganze Bibliothek abfragen –
+ * die Song-ID folgt aus der Deezer-/Apple-ID (Schlüssel steht im öffentlichen Repo).
+ */
 export function songIstAufgedeckt(songId: string): boolean {
+  let offen = false;
   for (const s of raeume.values()) {
     if (s.phase === "hoeren" && s.zug?.karte.songId === songId) return false;
-    // falsch eingeordnet → zurück im Stapel: kommt wieder, also nichts verraten
-    if (s.phase === "aufloesung" && s.zug?.zurueck && s.zug.karte.songId === songId) return false;
+    if (s.phase === "aufloesung" && s.zug?.karte.songId === songId) {
+      // falsch eingeordnet → zurück im Stapel: kommt wieder, also nichts verraten
+      if (s.zug.zurueck) return false;
+      offen = true;
+    }
+    if (!offen && s.spieler.some((p) => p.zeitstrahl.some((k) => k.songId === songId))) offen = true;
   }
-  return Boolean(songHolen(songId));
+  return offen;
 }
 
 /** Einladungs-Token eines Raums (für QR-Code und Link). */

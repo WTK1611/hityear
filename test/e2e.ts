@@ -163,6 +163,17 @@ try {
   assert.ok(host.letzter.gewinner.length >= 1);
   console.log(`  Spiel nach ${runden} Runden beendet, Gewinner: ${host.letzter.gewinner.length}`);
 
+  // Details/Cover/Quelle nur für aufgedeckte Songs (im Zeitstrahl), nicht für die übrige Bibliothek
+  const offenIds = new Set<string>(host.letzter.spieler.flatMap((p: { zeitstrahl: Array<{ songId: string }> }) => p.zeitstrahl.map((k) => k.songId)));
+  const offenId = [...offenIds][0];
+  assert.equal((await fetch(`${BASIS}/api/details/${offenId}`, { headers: { Cookie: cookie } })).status, 200, "aufgedeckter Song: Details");
+  const alleSongs = (await (await fetch(`${BASIS}/api/admin/songs?filter=alle`, { headers: { Cookie: admin } })).json()) as Array<{ id: string }>;
+  const verdeckt = alleSongs.find((x) => !offenIds.has(x.id))!;
+  for (const pfad of ["details", "quelle", "cover"]) {
+    assert.equal((await fetch(`${BASIS}/api/${pfad}/${verdeckt.id}`, { headers: { Cookie: cookie } })).status, 404, `nicht aufgedeckter Song: /api/${pfad}`);
+  }
+  console.log("  Details/Cover/Quelle nur für aufgedeckte Songs");
+
   // Reconnect: neuer Socket mit Sitzungstoken landet beim selben Spieler
   const anna2 = client(cookie);
   await bis(() => anna2.connected);
