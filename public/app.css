@@ -359,6 +359,60 @@ main.tv-ansicht .equalizer[role="button"]:focus-visible { outline: none; }
 .steuerung .equalizer.eq-retro { --eq-hoehe: clamp(64px, 9vh, 96px); }
 .equalizer.eq-pixel { gap: 3px; }
 .equalizer.eq-pixel i { border-radius: 0; -webkit-mask: repeating-linear-gradient(to top, #000 0 8px, transparent 8px 11px); mask: repeating-linear-gradient(to top, #000 0 8px, transparent 8px 11px); background: hsl(calc(180 + var(--i, 0) * 140) 90% 60%); }
+/* ---- weitere EQ-Stile (Klick auf den Equalizer wechselt) ----
+   --o/--oa: Platz bei gespiegelter Reihenfolge (Bass Mitte/außen), --po/--pa 0…1, --dm Abstand zur Mitte 0…1 */
+.equalizer.eq-spektrum, .equalizer.eq-glut, .equalizer.eq-linien, .equalizer.eq-matrix,
+.equalizer.eq-digital, .equalizer.eq-aurora, .equalizer.eq-blasen { align-items: center; }
+.equalizer.eq-spektrum, .equalizer.eq-digital { gap: 2px; }
+.equalizer.eq-spektrum i { order: var(--oa); border-radius: 1px; background: hsl(calc(var(--pa, 0) * 330) 100% 58%);
+  -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 6px); mask-image: repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 6px);
+  -webkit-mask-size: 100% 6px; mask-size: 100% 6px; -webkit-mask-position: center; mask-position: center;
+  box-shadow: 0 0 10px hsl(calc(var(--pa, 0) * 330) 100% 58% / 0.7); }
+.equalizer.eq-synthwave { gap: 3px; }
+.equalizer.eq-synthwave i { border-radius: 1px; max-width: 10px;
+  background: linear-gradient(to top, #2de2ff, #7b5bff 50%, #ff3dc8); background-size: 100% var(--eq-hoehe, 72px); background-position: bottom;
+  -webkit-mask: repeating-linear-gradient(to top, #000 0 3px, transparent 3px 5px); mask: repeating-linear-gradient(to top, #000 0 3px, transparent 3px 5px);
+  filter: drop-shadow(0 0 4px #ff3dc8); }
+.steuerung .equalizer.eq-synthwave { --eq-hoehe: clamp(64px, 9vh, 96px); }
+.equalizer.eq-glut { gap: 5px; filter: drop-shadow(0 0 6px #ff2d55) drop-shadow(0 0 14px #b03dff); }
+.equalizer.eq-glut i { order: var(--o); max-width: 3px; border-radius: 999px;
+  background: linear-gradient(to bottom, hsl(calc(350 - var(--dm, 0) * 80) 100% 55%), #fff 50%, hsl(calc(350 - var(--dm, 0) * 80) 100% 55%)); }
+.equalizer.eq-linien { gap: 4px; }
+.equalizer.eq-linien i { max-width: 2px; border-radius: 999px; background: hsl(calc(var(--i, 0) * 300) 100% 62%); box-shadow: 0 0 6px hsl(calc(var(--i, 0) * 300) 100% 62%); }
+.equalizer.eq-disco { gap: 4px; }
+.equalizer.eq-disco i { position: relative; border-radius: 2px; overflow: visible;
+  background: repeating-linear-gradient(to top, hsl(calc(var(--i, 0) * 330) 100% 60%) 0 5px, transparent 5px 7px);
+  box-shadow: 0 0 14px hsl(calc(var(--i, 0) * 330) 100% 60% / 0.55); }
+.equalizer.eq-disco i::before { content: ""; position: absolute; inset: -40% 20% 0; border-radius: 999px;
+  background: linear-gradient(to top, hsl(calc(var(--i, 0) * 330) 100% 60% / 0.45), transparent); filter: blur(4px); z-index: -1; }
+.equalizer.eq-matrix { gap: 4px; background: radial-gradient(ellipse at center, rgba(61, 255, 120, 0.18), transparent 70%); }
+.equalizer.eq-matrix i { order: var(--o); max-width: 3px; border-radius: 999px; background: linear-gradient(to bottom, #b6ffcf, #2dff7a 50%, #b6ffcf);
+  box-shadow: 0 0 8px #2dff7a, 0 0 16px rgba(45, 255, 122, 0.5); opacity: calc(1 - var(--dm, 0) * 0.5); }
+.equalizer.eq-digital i { order: var(--o); border-radius: 0; background: hsl(calc(205 - var(--dm, 0) * 25) 100% 62%);
+  -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 5px, transparent 5px 7px); mask-image: repeating-linear-gradient(to bottom, #000 0 5px, transparent 5px 7px);
+  -webkit-mask-size: 100% 7px; mask-size: 100% 7px; -webkit-mask-position: center; mask-position: center;
+  filter: drop-shadow(0 0 5px #3db4ff); opacity: calc(1 - var(--dm, 0) * 0.45); }
+.equalizer.eq-aurora { gap: 2px; filter: blur(1.5px) drop-shadow(0 0 10px #ff2d6e); }
+.equalizer.eq-aurora i { order: var(--o); max-width: 6px; border-radius: 999px; opacity: 0.85;
+  background: linear-gradient(to bottom, transparent, hsl(calc(340 - var(--dm, 0) * 50) 100% 58%) 30% 70%, transparent); }
+.equalizer.eq-blasen { gap: 0; }
+.equalizer.eq-blasen i { order: var(--o); max-width: none; margin: 0 -3%; border-radius: 50%; mix-blend-mode: screen; filter: blur(2px);
+  background: radial-gradient(ellipse at center, hsl(calc(var(--po, 0) * 720 + 190) 100% 70%), hsl(calc(var(--po, 0) * 720 + 190) 100% 58% / 0.8) 40%, hsl(calc(var(--po, 0) * 720 + 190) 100% 55% / 0) 70%); }
+/* Wellen: SVG-Linien über den (unsichtbaren) Balken */
+.equalizer { position: relative; }
+.eq-welle-bild { display: none; }
+.equalizer.eq-welle i, .equalizer.eq-farbwelle i { visibility: hidden; }
+.equalizer.eq-welle .eq-welle-bild, .equalizer.eq-farbwelle .eq-welle-bild { display: block; position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.eq-welle-bild path { fill: none; stroke-width: 1.2; }
+.eq-welle-bild .mittellinie { stroke-width: 1; }
+.equalizer.eq-welle .eq-welle-bild { filter: drop-shadow(0 0 4px #3db4ff); }
+.equalizer.eq-welle .eq-welle-bild path { stroke: #6fd0ff; stroke-opacity: 0.75; }
+.equalizer.eq-welle .eq-welle-bild .strang-1 { stroke: #2f7bff; }
+.equalizer.eq-welle .eq-welle-bild .strang-2 { stroke: #b8ecff; stroke-opacity: 0.5; }
+.equalizer.eq-welle .eq-welle-bild .mittellinie { stroke: #b8ecff; stroke-opacity: 0.6; }
+.equalizer.eq-farbwelle .eq-welle-bild { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.35)); }
+.equalizer.eq-farbwelle .eq-welle-bild path { stroke-opacity: 0.8; }
+.equalizer.eq-farbwelle .eq-welle-bild .mittellinie { stroke: #fff; stroke-opacity: 0.35; }
 /* im Takt: --beat (0…1) kommt vom echten Equalizer (Bass) */
 .platte.laeuft { filter: drop-shadow(0 0 calc(var(--beat, 0) * 46px) rgba(255, 61, 154, 0.75)); }
 .mini-strahl.denkt h3 .avatar { transform: scale(calc(1 + var(--beat, 0) * 0.22)) rotate(calc(var(--beat, 0) * -8deg)); transition: transform 0.08s linear; }
@@ -771,7 +825,7 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 #eq-platz { flex: 1 1 auto; min-width: 0; display: flex; }
 /* Hauptbildschirm: Equalizer so breit wie die Zeitleiste darüber (Play-Knopf ist die Platte) */
 .steuerung .equalizer { margin: 0; flex: none; box-sizing: border-box; width: 100%; max-width: none; height: 88px; height: clamp(64px, 9vh, 96px); justify-content: space-between; overflow: hidden; }
-.steuerung .equalizer i { max-width: 18px; }
+:where(.steuerung) .equalizer i { max-width: 18px; } /* schwach, damit dünne Stile (Linien, Glut …) gewinnen */
 .steuerung .equalizer.eq-berge i { max-width: 26px; }
 .mini-player { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 12px; border-radius: 18px; background: rgba(0, 0, 0, 0.25); }
 .mini-player .zeitleiste { margin: 0; flex: 1; grid-template-columns: 2.8em 1fr 2.8em; }

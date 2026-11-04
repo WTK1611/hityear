@@ -937,13 +937,8 @@
       // nur neu einhängen, wenn nötig – sonst startet die Dreh-Animation bei jedem Update neu
       if ($("#cover-gross").firstChild !== platte) $("#cover-gross").replaceChildren(platte);
       platte.classList.toggle("gesperrt", !hierAudio || !audio.url);
-      $("#hinweis").textContent = z.aufloesungUm
-        ? z.einstellungen.modus === "alle" && z.einstellungen.warten === "erster"
-          ? "⚡ Die erste Antwort ist da – noch 5 Sekunden für alle anderen."
-          : z.einstellungen.modus === "alle" && z.einstellungen.warten === "alle5"
-          ? "✓ Alle haben getippt – Auflösung in 5 Sekunden."
-          : "" // alle haben getippt, der Song läuft zu Ende – das zeigen die grünen Rahmen
-        : !hierAudio || audio.url ? "" : "Ausschnitt wird vorbereitet …"; // kein „Alle sortieren …“ – spart eine Zeile
+      // keine Statuszeilen („Alle sortieren …“, „Die erste Antwort ist da …“) – die Uhr rechts oben zeigt den Countdown
+      $("#hinweis").textContent = z.aufloesungUm || !hierAudio || audio.url ? "" : "Ausschnitt wird vorbereitet …";
     } else if (z.ergebnis) {
       audio.stop();
       const e = z.ergebnis;

@@ -1044,11 +1044,19 @@ function equalizerEl(audioEl, anzahl = 24) {
   const balken = Array.from({ length: anzahl }, (_, i) => {
     const b = el("i");
     b.style.setProperty("--i", String(i / (anzahl - 1))); // 0…1 von links nach rechts (Farbe, Verzögerung)
+    // gespiegelte Stile ordnen die Balken per CSS „order“ um: --o Bass in der Mitte, --oa Bass außen;
+    // --po/--pa Platz 0…1 in dieser Reihenfolge (Farbe), --dm/--da Abstand zur Mitte 0…1
+    const mitte = Math.floor(anzahl / 2), c = (anzahl - 1) / 2;
+    const o = i % 2 === 0 ? mitte + i / 2 : mitte - 1 - (i - 1) / 2;
+    const oa = i % 2 === 0 ? i / 2 : anzahl - 1 - (i - 1) / 2;
+    for (const [k, v] of [["--o", o], ["--oa", oa]]) b.style.setProperty(k, String(v));
+    for (const [k, v] of [["--po", o / (anzahl - 1)], ["--pa", oa / (anzahl - 1)], ["--dm", Math.abs(o - c) / c], ["--da", Math.abs(oa - c) / c]]) b.style.setProperty(k, v.toFixed(3));
     return b;
   });
   const eq = el("div", { class: "equalizer", role: "button", tabindex: "0", title: "Klicken: anderer Equalizer", "aria-label": "Equalizer-Stil wechseln" }, ...balken);
   // Per Klick, OK oder ←/→ (Fernbedienung) durch die Stile schalten; die Wahl bleibt auf dem Gerät. Standard: LED
-  const STILE = ["led", "balken", "spiegel", "punkte", "neon", "regenbogen", "berge", "pixel", "retro"];
+  const STILE = ["led", "balken", "spiegel", "punkte", "neon", "regenbogen", "berge", "pixel", "retro",
+    "spektrum", "synthwave", "glut", "linien", "disco", "matrix", "digital", "aurora", "blasen", "welle", "farbwelle"];
   let stil = Math.max(0, STILE.indexOf(speicher("zs_eq") ?? ""));
   const stilSetzen = () => {
     for (const s of STILE) eq.classList.toggle(`eq-${s}`, s === STILE[stil]);
@@ -1066,6 +1074,7 @@ function equalizerEl(audioEl, anzahl = 24) {
     wechseln(schritt);
   });
   stilSetzen();
+  welleAnlegen(eq, balken);
   taktSimulieren(eq, balken);
   if (!audioEl) return eq;
   let ctx = null;
@@ -1159,6 +1168,78 @@ function equalizerEl(audioEl, anzahl = 24) {
  * Equalizer trotzdem wie echte Musik aussieht, wird ein Spektrum nachgebildet: Bass links kräftiger,
  * Höhen rechts schwächer, ein Schlag im 120er-Takt und je Balken ein weich schwankender Pegel.
  */
+/** Wellen-Stile („welle“, „farbwelle“): statt Balken glatte Linienbündel durch die Balkenhöhen (SVG, Farben im CSS).
+ *  Die Balken bleiben unsichtbar stehen und liefern die Höhen – egal ob gemessen, simuliert oder per CSS-Animation. */
+function welleAnlegen(eq, balken) {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("class", "eq-welle-bild");
+  svg.setAttribute("viewBox", "0 0 400 100");
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("aria-hidden", "true");
+  // Verläufe in Nutzerkoordinaten (flache Linien haben keine Höhe → objectBoundingBox würde nichts zeichnen);
+  // eigene IDs je Equalizer, Farbe als Attribut (der Stil „welle“ überschreibt sie per CSS)
+  const id = `eq-verlauf-${(welleAnlegen.zaehler = (welleAnlegen.zaehler ?? 0) + 1)}`;
+  const FARBEN = [["#3dd8ff", "#ffd93d", "#ff3d6e"], ["#ff8a3d", "#ff3d6e", "#3dd8ff"], ["#2f7bff", "#3dffb0", "#ffd93d"]];
+  svg.innerHTML = `<defs>${FARBEN.map((f, s) => `<linearGradient id="${id}-${s}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="400" y2="0">` +
+    f.map((farbe, k) => `<stop offset="${k / 2}" stop-color="${farbe}"/>`).join("") + "</linearGradient>").join("")}</defs>`;
+  const STRAENGE = 3, LINIEN = 5;
+  const pfade = [];
+  for (let s = 0; s < STRAENGE; s++)
+    for (let l = 0; l < LINIEN; l++) {
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("class", `strang-${s}`);
+      p.setAttribute("stroke", `url(#${id}-${s})`);
+      p.setAttribute("vector-effect", "non-scaling-stroke");
+      pfade.push({ p, s, l });
+      svg.append(p);
+    }
+  const mittellinie = document.createElementNS(NS, "path");
+  mittellinie.setAttribute("class", "mittellinie");
+  mittellinie.setAttribute("vector-effect", "non-scaling-stroke");
+  mittellinie.setAttribute("d", "M0 50H400");
+  svg.append(mittellinie);
+  eq.append(svg);
+  const n = balken.length;
+  // glatte Kurve durch die Punkte (Catmull-Rom → kubische Bézier)
+  const kurve = (pt) => {
+    let d = `M${pt[0][0]} ${pt[0][1].toFixed(1)}`;
+    for (let i = 0; i < pt.length - 1; i++) {
+      const [a, b, c, e] = [pt[i - 1] ?? pt[i], pt[i], pt[i + 1], pt[i + 2] ?? pt[i + 1]];
+      d += `C${(b[0] + (c[0] - a[0]) / 6).toFixed(1)} ${(b[1] + (c[1] - a[1]) / 6).toFixed(1)} ${(c[0] - (e[0] - b[0]) / 6).toFixed(1)} ${(c[1] - (e[1] - b[1]) / 6).toFixed(1)} ${c[0].toFixed(1)} ${c[1].toFixed(1)}`;
+    }
+    return d;
+  };
+  let bild = 0, zuletzt = 0;
+  const an = () => eq.isConnected && (eq.classList.contains("eq-welle") || eq.classList.contains("eq-farbwelle"));
+  const schritt = (t) => {
+    bild = 0;
+    if (!an()) return;
+    bild = requestAnimationFrame(schritt);
+    if (t - zuletzt < (typeof sparsam !== "undefined" && sparsam ? 80 : 30)) return;
+    zuletzt = t;
+    const voll = eq.clientHeight || 1;
+    const h = balken.map((b) => Math.min(1, b.offsetHeight / voll)); // erst alles lesen, dann schreiben
+    const z = t / 1000;
+    for (const { p, s, l } of pfade) {
+      const pt = [[0, 50]];
+      for (let i = 0; i < n; i++) {
+        const huelle = Math.sin((Math.PI * (i + 1)) / (n + 1)); // an den Rändern flach wie in der Vorlage
+        const welle = Math.sin(i * 0.55 + z * (0.8 + s * 0.35) + s * 2.1);
+        const auf = 66 * Math.sqrt(h[i]) * huelle * welle * (1 - l * 0.09) + (l - (LINIEN - 1) / 2) * 1.2 * huelle;
+        pt.push([((i + 1) * 400) / (n + 1), 50 - Math.max(-48, Math.min(48, auf))]);
+      }
+      pt.push([400, 50]);
+      p.setAttribute("d", kurve(pt));
+    }
+  };
+  const starten = () => {
+    if (an() && !bild) bild = requestAnimationFrame(schritt);
+  };
+  new MutationObserver(starten).observe(eq, { attributeFilter: ["class"] });
+  starten();
+}
+
 function taktSimulieren(eq, balken) {
   const n = balken.length;
   const pegel = balken.map(() => Math.random());
