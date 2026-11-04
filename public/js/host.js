@@ -212,7 +212,7 @@
   // Deck-Cover: Plattenhülle (Kartenstil: farbig mit weißem Rand) und eine Schallplatte, die rechts herausschaut.
   // Der Deck-Name gestaltet die Hülle: Land → Flagge als Hintergrund, Thema → Symbol darauf (sonst der Anfangsbuchstabe).
   const platteSvg = (cx, cy, r, etikett, klasse = "") =>
-    `<g${klasse ? ` class="${klasse}" style="transform-origin:${cx}px ${cy}px"` : ""}><circle cx="${cx}" cy="${cy}" r="${r}" fill="#160c26" stroke="#fff" stroke-width="1.6"/>` +
+    `<g${klasse ? ` class="${klasse}"` : ""}><circle cx="${cx}" cy="${cy}" r="${r}" fill="#160c26" stroke="#fff" stroke-width="1.6"/>` +
     [0.82, 0.66].map((f) => `<circle cx="${cx}" cy="${cy}" r="${r * f}" class="rille" stroke-width=".8"/>`).join("") +
     `<path d="M${cx} ${cy - r * 0.8}a${r * 0.8} ${r * 0.8} 0 0 1 ${r * 0.69} ${r * 0.4}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round"/>` +
     `<circle cx="${cx}" cy="${cy}" r="${r * 0.34}" fill="${etikett}"/><circle cx="${cx}" cy="${cy}" r="1.3" fill="#160c26"/></g>`;
@@ -273,7 +273,7 @@
   const kennzeichen = (land) => `<g transform="rotate(-8 87 11)"><ellipse cx="87" cy="11" rx="8.5" ry="5.8" fill="#fff" stroke="#160c26" stroke-width="1.4"/>` +
     `<text x="87" y="13.9" font-size="8" font-weight="900" text-anchor="middle" fill="#160c26" font-family="Nunito, system-ui, sans-serif">${land}</text></g>`;
   // „Alle Songs“: ein ganzer Stapel Schallplatten in Regenbogenfarben statt einer Hülle
-  const plattenStapel = () => platteSvg(52, 72, 15, "#3dd8ff") + platteSvg(64, 60, 16, "#ffd93d") + platteSvg(77, 68, 19, "#ff3d9a", "platte");
+  const plattenStapel = () => platteSvg(52, 72, 15, "#3dd8ff") + platteSvg(64, 60, 16, "#ffd93d") + platteSvg(77, 68, 19, "#ff3d9a", "platte im-stapel");
   // Genre-Bilder im Kartenstil (farbige Flächen, weißer Rand, dunkle Details), unten rechts im 100er-Cover
   const R = 'stroke="#fff" stroke-width="1.6" stroke-linejoin="round"';
   const glitzer = (x, y, g = 1) => `<path d="M${x} ${y - 5 * g}l${1.3 * g} ${3.7 * g} ${3.7 * g} ${1.3 * g}-${3.7 * g} ${1.3 * g}-${1.3 * g} ${3.7 * g}-${1.3 * g}-${3.7 * g}-${3.7 * g}-${1.3 * g} ${3.7 * g}-${1.3 * g}z" fill="#ffd93d"/>`;
