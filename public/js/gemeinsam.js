@@ -121,19 +121,17 @@ function karteEl(k, extra = "") {
   return faerben(karte, k.jahr);
 }
 
-/** Hinweis „Auf Apple Music/Deezer anhören“ mit Link zum Song – die Dienste verlangen ihn bei Hörproben und Covern. */
-function quelleBadge(dienst, link) {
-  const art = dienst === "Deezer" ? "deezer" : "apple";
-  const text = `Auf ${dienst} anhören`;
-  const attr = { class: `quelle-badge ${art}`, title: `Hörprobe & Cover: ${dienst}` };
-  return link ? el("a", { ...attr, href: link, target: "_blank", rel: "noopener", text }) : el("span", { ...attr, text });
+/** Hinweis „Hörprobe & Cover bereitgestellt von …“, verlinkt auf den Song – die Dienste verlangen Hinweis und Link. */
+function quelleHinweis(dienst, link, klasse) {
+  const attr = { class: klasse, text: `Hörprobe & Cover bereitgestellt von ${dienst}` };
+  return link ? el("a", { ...attr, class: `${klasse} quelle-link`, href: link, target: "_blank", rel: "noopener" }) : el("small", attr);
 }
 
 async function quelleZeigen(songId, ziel) {
   try {
     const q = await api(`/api/quelle/${songId}`);
     if (!q.dienst) return;
-    ziel.replaceChildren(el("small", { class: "quelle-hinweis", text: `Hörprobe & Cover bereitgestellt von ${q.dienst}` }), quelleBadge(q.dienst, q.link));
+    ziel.replaceChildren(quelleHinweis(q.dienst, q.link, "quelle-hinweis"));
   } catch {
     /* ohne Hinweis weiter */
   }
@@ -1498,3 +1496,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.fonts?.ready.then(planen);
   planen();
 });
+
+// Handys nur hochkant: im Browser lässt sich das Drehen nicht sperren – im Querformat deckt ein Hinweis die Seite ab
+// (CSS .drehen-hinweis). Als installierte App klappt die echte Sperre, Tablets und Fernseher bleiben frei.
+(() => {
+  const hinweis = el("div", { class: "drehen-hinweis", "aria-live": "polite" },
+    el("div", { class: "drehen-handy", "aria-hidden": "true", text: "📱" }),
+    el("p", { text: "Bitte halte dein Handy hochkant." }));
+  document.body.append(hinweis);
+  const handy = matchMedia("(pointer: coarse) and (max-width: 500px), (pointer: coarse) and (max-height: 500px)");
+  if (handy.matches) screen.orientation?.lock?.("portrait").catch(() => {});
+})();

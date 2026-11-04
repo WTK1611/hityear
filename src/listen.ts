@@ -66,6 +66,7 @@ function dateiLesen(datei: string): Liste | null {
   const iT = spalte(kopf, SPALTEN.titel);
   const iJ = spalte(kopf, SPALTEN.jahr);
   if (iA < 0 || iT < 0) return null; // z. B. Jahrescharts-Datei mit anderem Aufbau
+  if (/^year,pos,artist,title/i.test(zeilen[0])) return null; // Jahrescharts: eigenes Deck (jahresHitsLesen), nicht doppelt
   const eintraege = zeilen.slice(1).map((z) => {
     const f = zerlegen(z);
     const jahr = iJ >= 0 ? Number(f[iJ]) : NaN;
@@ -190,7 +191,7 @@ export function listenLaden(): number {
   }
   const jahresHits = jahresHitsLesen();
   if (jahresHits.eintraege.length) {
-    const name = "Deutschlands Jahreshits";
+    const name = "Jahrescharts 70er bis heute";
     listen.set(JAHRES_HITS_ID, { id: JAHRES_HITS_ID, name, quelle: "datei", eintraege: jahresHits.eintraege });
   }
   dbListenLaden();

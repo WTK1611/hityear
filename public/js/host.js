@@ -267,7 +267,7 @@
       // Schlager: etwas Glitzer um die Hülle
       (/schlager/i.test(name) ? glitzer(38, 52, 0.9) + glitzer(92, 42, 0.7) : "") +
       // deutsche Decks: oben rechts das „D“ wie das Länderkennzeichen am Auto
-      (/deutsch|german|schlager/i.test(name) ? kennzeichen("D") : "");
+      (/deutsch|german|schlager|jahrescharts/i.test(name) ? kennzeichen("D") : "");
   };
   // klein in der Ecke, damit es auch neben langen Titelzeilen („Deutschlands“) frei steht
   const kennzeichen = (land) => `<g transform="rotate(-8 87 11)"><ellipse cx="87" cy="11" rx="8.5" ry="5.8" fill="#fff" stroke="#160c26" stroke-width="1.4"/>` +
@@ -641,7 +641,7 @@
       const box = s.art === "jahrzehnte" ? jzBox : genreBox;
       // Hinweise rechts neben der Frage statt darunter: sonst wäre dieser Schritt der höchste und der Rahmen überall zu hoch
       inhalt[0] = el("div", { class: "frage-zeile" }, inhalt[0],
-        el("div", { class: "frage-notiz" }, el("p", { class: "leise klein", text: s.art === "jahrzehnte" ? "Wähle mindestens ein Jahrzehnt." : "Wähle mindestens ein Genre." }), einmal(verfuegbarText)));
+        el("div", { class: "frage-notiz" }, el("p", { class: "leise klein", text: s.art === "jahrzehnte" ? "Ohne Auswahl spielt ihr alle Jahrzehnte." : "Ohne Auswahl spielt ihr alle Genres." }), einmal(verfuegbarText)));
       inhalt.push(
         galerie(s.art, messen, [...box.querySelectorAll("label")].map((l, i) => {
           const input = l.querySelector("input");
@@ -722,14 +722,15 @@
     startKnopf.classList.toggle("versteckt", !letzter);
     weiterPruefen(s);
   }
-  // Jahrzehnte/Genres: weiter erst, wenn mindestens eins gewählt ist und die Auswahl Songs hat
+  // Jahrzehnte/Genres: ohne Auswahl „Weiter mit allen“ (leere Auswahl = alle), sonst weiter, solange die Auswahl Songs hat
   function weiterPruefen(s) {
     const knopf = $("#schritt-weiter");
     const box = s?.art === "jahrzehnte" ? jzBox : s?.art === "genres" ? genreBox : null;
     const keins = box && !box.querySelector("input:checked");
     const leer = box && !keins && zustand?.verfuegbar === 0;
-    knopf.disabled = Boolean(keins || leer);
-    knopf.title = keins ? t(s.art === "jahrzehnte" ? "Wähle mindestens ein Jahrzehnt." : "Wähle mindestens ein Genre.") : leer ? t("Keine Songs passen zur Auswahl.") : "";
+    knopf.textContent = t(keins ? "Weiter mit allen ›" : "Weiter ›");
+    knopf.disabled = Boolean(leer);
+    knopf.title = leer ? t("Keine Songs passen zur Auswahl.") : "";
   }
   // Der Rahmen bleibt in jedem Schritt gleich hoch: alle Schritte unsichtbar in voller Breite aufbauen, den höchsten nehmen
   let gemessen = false;
@@ -985,7 +986,7 @@
       // Apple/Deezer verlangen bei Hörproben einen Hinweis mit Link (gilt für Ton und Cover)
       if (d.appleUrl) {
         const dienst = /deezer\.com/.test(d.appleUrl) ? "Deezer" : "Apple Music";
-        $("#fakten").append(el("span", { class: "leise", text: `Hörprobe & Cover bereitgestellt von ${dienst}` }), quelleBadge(dienst, d.appleUrl));
+        $("#fakten").append(quelleHinweis(dienst, d.appleUrl, "leise"));
       }
       // eigene Geschichte (in der Bibliothek gepflegt) – ein Satz reicht
       if (d.geschichte) {
