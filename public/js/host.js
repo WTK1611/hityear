@@ -266,12 +266,22 @@
       `<rect x="42" y="46" width="40" height="40" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/>` + symbol(name) + "</g>" +
       // Schlager: etwas Glitzer um die Hülle
       (/schlager/i.test(name) ? glitzer(38, 52, 0.9) + glitzer(92, 42, 0.7) : "") +
-      // deutsche Decks: oben rechts das „D“ wie das Länderkennzeichen am Auto
-      (/deutsch|german|schlager|jahrescharts/i.test(name) ? kennzeichen("D") : "");
+      // Länder-Decks: oben rechts das Länderkennzeichen wie am Auto
+      kennzeichen(KENNZEICHEN.find(([muster]) => muster.test(name))?.[1]);
   };
-  // klein in der Ecke, damit es auch neben langen Titelzeilen („Deutschlands“) frei steht
-  const kennzeichen = (land) => `<g transform="rotate(-8 87 11)"><ellipse cx="87" cy="11" rx="8.5" ry="5.8" fill="#fff" stroke="#160c26" stroke-width="1.4"/>` +
-    `<text x="87" y="13.9" font-size="8" font-weight="900" text-anchor="middle" fill="#160c26" font-family="Nunito, system-ui, sans-serif">${land}</text></g>`;
+  // Länderkennzeichen je Deck (Schlager und Jahrescharts sind deutsch); Mittel-/Nordeuropa ohne
+  const KENNZEICHEN = [
+    [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france/i, "F"], [/holland|niederland|netherlands/i, "NL"],
+    [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"],
+  ];
+  // klein in der Ecke, damit es auch neben langen Titelzeilen („Deutschlands“) frei steht; längere Kennzeichen
+  // werden nach links breiter, der rechte Rand bleibt
+  const kennzeichen = (land) => {
+    if (!land) return "";
+    const rx = 5.5 + 3 * land.length, cx = 95.5 - rx, gross = land.length > 2 ? 7 : 8;
+    return `<g transform="rotate(-8 ${cx} 11)"><ellipse cx="${cx}" cy="11" rx="${rx}" ry="5.8" fill="#fff" stroke="#160c26" stroke-width="1.4"/>` +
+      `<text x="${cx}" y="${11 + gross * 0.36}" font-size="${gross}" font-weight="900" text-anchor="middle" fill="#160c26" font-family="Nunito, system-ui, sans-serif">${land}</text></g>`;
+  };
   // „Alle Songs“: ein ganzer Stapel Schallplatten in Regenbogenfarben statt einer Hülle
   const plattenStapel = () => platteSvg(52, 72, 15, "#3dd8ff") + platteSvg(64, 60, 16, "#ffd93d") + platteSvg(77, 68, 19, "#ff3d9a", "platte im-stapel");
   // Genre-Bilder im Kartenstil (farbige Flächen, weißer Rand, dunkle Details), unten rechts im 100er-Cover
