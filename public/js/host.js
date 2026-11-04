@@ -400,6 +400,19 @@
     };
     new ResizeObserver(groesseSetzen).observe(reihe);
     requestAnimationFrame(groesseSetzen);
+    // Mausrad: senkrecht drehen blättert waagerecht, je Raste eine Kachel (Scroll-Snap rastet ohnehin kachelweise ein).
+    // Am Anfang/Ende der Reihe scrollt das Rad wieder die Seite; waagerechtes Wischen am Trackpad bleibt unberührt.
+    let radPause = 0;
+    reihe.addEventListener("wheel", (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || reihe.scrollWidth <= reihe.clientWidth + 4) return;
+      const richtung = Math.sign(e.deltaY);
+      if ((richtung < 0 && reihe.scrollLeft < 4) || (richtung > 0 && reihe.scrollLeft + reihe.clientWidth > reihe.scrollWidth - 4)) return;
+      e.preventDefault();
+      if (performance.now() < radPause) return;
+      radPause = performance.now() + 220;
+      const kachel = reihe.firstElementChild?.getBoundingClientRect().width ?? 200;
+      reihe.scrollBy({ left: richtung * (kachel + (parseFloat(getComputedStyle(reihe).columnGap) || 16)), behavior: "smooth" });
+    }, { passive: false });
     reihe.addEventListener("scroll", () => {
       galerieStand[schluessel] = reihe.scrollLeft;
       pfeile();
