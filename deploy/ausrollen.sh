@@ -31,13 +31,15 @@ fi
 PREFIX="$(git -C "$HIER" rev-parse --show-prefix)"
 TOP="$(git -C "$HIER" rev-parse --show-toplevel)"
 STAND="$(git -C "$HIER" rev-parse --short HEAD)"
+# laufende Nummer für die Version (1.<Anzahl Commits>), steigt mit jedem Update
+NUMMER="$(git -C "$HIER" rev-list --count HEAD)"
 # vom Repo-Wurzelordner aus (aus einem Unterordner wäre das Archiv leer)
 git -C "$TOP" archive --format=tar "HEAD${PREFIX:+:${PREFIX%/}}" \
   | gzip -c \
   | ssh "$ZIEL" "set -e; rm -rf '$DIR/app.neu'; mkdir -p '$DIR/app.neu'; tar xzf - -C '$DIR/app.neu' \
       --anchored --exclude=test --exclude=docs --exclude=musik; \
       cp '$DIR/app.neu/deploy/docker-compose.yml' '$DIR/docker-compose.yml'; \
-      echo '$STAND' > '$DIR/app.neu/STAND'; rm -rf '$DIR/app.alt'; \
+      echo '$NUMMER $STAND' > '$DIR/app.neu/STAND'; rm -rf '$DIR/app.alt'; \
       [ -d '$DIR/app' ] && mv '$DIR/app' '$DIR/app.alt'; mv '$DIR/app.neu' '$DIR/app'"
 echo "  Stand $STAND übertragen (vorheriger Stand liegt in $DIR/app.alt)."
 

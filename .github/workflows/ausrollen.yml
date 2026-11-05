@@ -43,6 +43,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ganze Historie: die Versionsnummer (1.<Anzahl Commits>) zählt die Commits
 
       - name: SSH einrichten
         env:

@@ -1,6 +1,6 @@
 {
   "name": "zeitstrahl",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Musik Party-Spiel – Songs hören und im eigenen Zeitstrahl nach Jahr einordnen",
   "type": "module",

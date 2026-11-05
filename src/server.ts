@@ -1,5 +1,6 @@
 // HTTP-Server: statische Seiten, kleine JSON-API, Audio-Ausschnitte, Socket.IO.
 import http, { type IncomingMessage, type ServerResponse } from "node:http";
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
@@ -27,11 +28,17 @@ import {
 } from "./auth.ts";
 import { einladungFuer, einladungGueltig, laufendeSpiele, raumPruefenErlaubt, raumStatus, raeumeLaden, socketsEinrichten, songIstAufgedeckt } from "./raeume.ts";
 
-// App-Version für die Fußzeile: package.json-Version und kurzer Commit (meta/STAND aus dem Ausrollen), lokal „dev“
-const VERSION = (() => {
+// App-Version: <Hauptversion aus package.json>.<Anzahl Commits>, steigt mit jedem Update. Auf dem Server aus meta/STAND
+// („<Nummer> <Commit>“, schreibt deploy/ausrollen.sh), lokal aus git mit „-dev“ dahinter
+const { VERSION, COMMIT } = (() => {
   const lesen = (datei: string) => { try { return fs.readFileSync(path.join(process.cwd(), datei), "utf8").trim(); } catch { return ""; } };
-  const paket = (() => { try { return String(JSON.parse(lesen("package.json")).version ?? ""); } catch { return ""; } })();
-  return `${paket || "0"}-${lesen("meta/STAND") || "dev"}`;
+  const haupt = (() => { try { return String(JSON.parse(lesen("package.json")).version ?? "").split(".")[0]; } catch { return ""; } })() || "1";
+  const [nummer, commit] = lesen("meta/STAND").split(/\s+/);
+  if (nummer && /^\d+$/.test(nummer)) return { VERSION: `${haupt}.${nummer}`, COMMIT: commit ?? "" };
+  try {
+    const git = (...a: string[]) => execFileSync("git", a, { cwd: process.cwd(), encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    return { VERSION: `${haupt}.${git("rev-list", "--count", "HEAD")}-dev`, COMMIT: git("rev-parse", "--short", "HEAD") };
+  } catch { return { VERSION: `${haupt}.0-dev`, COMMIT: "" }; }
 })();
 
 // Letzte Absicherung: ein einzelner Fehler (Timer, Stream, Promise) darf nicht alle laufenden Spiele beenden
@@ -501,7 +508,7 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   sicherheitsHeader(res, url.pathname);
   try {
-    if (url.pathname === "/healthz") return json(res, 200, { ok: true, songs: statistik().songs, spiele: laufendeSpiele(), version: VERSION });
+    if (url.pathname === "/healthz") return json(res, 200, { ok: true, songs: statistik().songs, spiele: laufendeSpiele(), version: VERSION, commit: COMMIT });
     if (url.pathname.startsWith("/api/")) return await api(req, res, url);
     // Kurzlink aus dem QR-Code → Spielerseite mit Einladung
     const kurz = /^\/s\/([A-Za-z0-9]{4,6})\.([A-Za-z0-9_-]{6,32})$/.exec(url.pathname);
