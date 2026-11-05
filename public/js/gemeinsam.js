@@ -1332,7 +1332,8 @@ function taktSimulieren(eq, balken) {
     const ax = a.left + a.width / 2, ay = a.top + a.height / 2;
     let bestes = null, bestWert = Infinity;
     for (const e of document.querySelectorAll(AUSWAHL)) {
-      if (e === von || !sichtbar(e)) continue;
+      // Fußzeile (Impressum …) nicht per Pfeil anspringen: Sie läge sonst „rechts“ von jeder Kachelreihe
+      if (e === von || !sichtbar(e) || e.closest(".credits")) continue;
       const b = e.getBoundingClientRect();
       const bx = b.left + b.width / 2, by = b.top + b.height / 2;
       // Abstand in Pfeilrichtung (muss positiv sein) und quer dazu (wird stärker bestraft)

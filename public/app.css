@@ -896,7 +896,7 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 }
 .start-wahl > .box.start-karte + .start-karte { --farbton: 190; }
 .start-wahl > .start-karte:hover, .start-wahl > .start-karte:focus-within { transform: translateY(-3px); }
-.start-wahl > a.start-karte:focus-visible { outline: none; transform: scale(1.05); filter: brightness(1.12); box-shadow: 0 16px 34px -10px rgba(0, 0, 0, 0.75); }
+.start-wahl > a.start-karte:focus-visible { outline: 4px solid var(--gelb); outline-offset: 4px; transform: scale(1.05); filter: brightness(1.12); box-shadow: 0 0 0 10px rgba(255, 217, 61, 0.18), 0 16px 34px -10px rgba(0, 0, 0, 0.75); }
 .start-karte h2 { margin: 0; font-weight: 900; letter-spacing: 0; }
 .start-karte h2 label { font: inherit; color: inherit; margin: 0; text-transform: none; letter-spacing: inherit; cursor: inherit; }
 .start-gross { position: absolute; left: 8cqw; top: 6.5cqw; font-size: 26cqw; line-height: 1; white-space: nowrap; }
@@ -1326,7 +1326,9 @@ button.deck-knopf.tipp { animation: tipp 0.38s var(--feder); }
 /* Deck-Galerie */
 .galerie { position: relative; }
 .deck-raster {
-  display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 4px; padding: 6px 4px 24px;
+  /* Innenabstand rundum für den gelben Fokus-Rahmen (Fernbedienung), sonst schneidet der Scrollbereich ihn ab;
+     der negative Rand hält die Kacheln an ihrem bisherigen Platz */
+  display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; padding: 16px 16px 26px; margin: -10px -12px 0;
   scrollbar-width: none; overscroll-behavior-x: contain;
 }
 .deck-raster::-webkit-scrollbar { display: none; }
@@ -1370,8 +1372,12 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 .deck-raster button.deck-knopf, .deck-raster button.deck-knopf:hover:not(:disabled), .deck-raster button.deck-knopf:not(.mehrfach)[aria-pressed="true"] {
   box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.7), 0 4px 10px -4px rgba(0, 0, 0, 0.35);
 }
-/* Fokus (Fernbedienung/Tastatur) ohne gelben Rahmen: Kachel hebt sich und leuchtet auf */
-.deck-raster button.deck-knopf:focus-visible { outline: none; box-shadow: 0 16px 34px -10px rgba(0, 0, 0, 0.75); filter: brightness(1.12); transform: scale(1.05); }
+/* Fokus (Fernbedienung/Tastatur): gelber Rahmen wie bei den Knöpfen, dazu hebt sich die Kachel und leuchtet auf –
+   am Fernseher muss auf Abstand klar sein, welche Kachel gewählt ist */
+.deck-raster button.deck-knopf:focus-visible {
+  outline: 4px solid var(--gelb); outline-offset: 4px;
+  box-shadow: 0 0 0 10px rgba(255, 217, 61, 0.18), 0 16px 34px -10px rgba(0, 0, 0, 0.75); filter: brightness(1.12); transform: scale(1.05);
+}
 .galerie button.galerie-pfeil { top: calc(50% - 40px); }
 /* wenige Kacheln (z. B. Kartenzahl) mittig, bei Überlauf trotzdem ab dem Anfang scrollbar */
 .deck-raster > :first-child { margin-left: auto; }
