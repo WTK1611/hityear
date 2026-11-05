@@ -1392,10 +1392,11 @@ function taktSimulieren(eq, balken) {
     }
     return null;
   };
-  // Ziffern an den Kacheln (1–9) und am Hauptknopf (0) – dieselbe Auswahl wie die Zifferntasten unten. Sichtbar am
-  // Fernseher (auch mit Touchscreen) und am PC mit Maus/Tastatur, nicht auf Handys und Tablets. In der Galerie zählen nur die Kacheln im Bild,
-  // nach dem Blättern wird neu nummeriert. Startseite: 1 = Spielen mit Code, 2 = Party starten.
-  const marken = fernseher || (matchMedia("(hover: hover) and (pointer: fine)").matches && !navigator.maxTouchPoints);
+  // Ziffern an den Kacheln (1–9) und am Hauptknopf (0) – dieselbe Auswahl wie die Zifferntasten unten. Sichtbar nur am
+  // Fernseher (auch mit Touchscreen); am PC wirkten Marken und Hinweiszeilen unaufgeräumt, die Zifferntasten gehen dort
+  // trotzdem. In der Galerie zählen nur die Kacheln im Bild, nach dem Blättern wird neu nummeriert.
+  // Startseite: 1 = Spielen mit Code, 2 = Party starten, 3 = Sprache.
+  const marken = fernseher;
   document.documentElement.classList.toggle("tasten-hinweise", marken);
   const imBild = (e) => {
     const reihe = e.closest(".deck-raster");
