@@ -1,5 +1,6 @@
 // Räume + Echtzeit (Socket.IO). Jeder Client bekommt einen auf ihn gefilterten
 // Zustand; die verdeckte Karte verlässt den Server erst bei der Auflösung.
+import { codeGesperrt } from "./sperrcodes.ts";
 import crypto from "node:crypto";
 import type { Server, Socket } from "socket.io";
 import { db } from "./db.ts";
@@ -46,7 +47,7 @@ function zufallsCode(): string {
   let c = "";
   do {
     c = Array.from({ length: 4 }, () => CODE_ZEICHEN[crypto.randomInt(CODE_ZEICHEN.length)]).join("");
-  } while (raeume.has(c));
+  } while (raeume.has(c) || codeGesperrt(c)); // keine anstößigen Codes (sperrcodes.ts)
   return c;
 }
 
