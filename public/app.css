@@ -1096,6 +1096,9 @@ html:not([lang="de"]) #geschichte { display: none !important; }
 }
 .sprache-liste { width: max-content; max-width: calc(100vw - 32px); }
 .sprache-liste > button { white-space: nowrap; }
+/* blättern rastet auf ganze Zeilen ein – oben und unten frei für ▲/▼ */
+.sprache-liste { scroll-snap-type: y proximity; scroll-padding: 30px 0; }
+.sprache-liste > button[role="radio"] { scroll-snap-align: start; }
 /* ▼ unten im Menü: blättert weiter (am Ende wieder nach oben) – Zifferntaste 9 */
 .sprache-liste .sprache-mehr {
   position: sticky; bottom: -10px; margin: 0 -10px -10px; padding: 4px 0 6px; justify-content: center; border-radius: 0 0 20px 20px;

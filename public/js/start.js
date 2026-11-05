@@ -177,11 +177,12 @@ document.fonts?.ready.then(startTitelEinpassen);
   const hoch = el("button", { type: "button", class: "sprache-mehr sprache-hoch", tabindex: "-1", "aria-hidden": "true", text: "▲", hidden: true });
   hoch.addEventListener("click", (e) => {
     e.stopPropagation();
-    liste.scrollTo({ top: Math.max(0, liste.scrollTop - liste.clientHeight + 40), behavior: "smooth" });
+    const ziel = liste.scrollTop - liste.clientHeight + 40;
+    liste.scrollTo({ top: ziel < 60 ? 0 : ziel, behavior: "smooth" }); // kurz vor oben: ganz nach oben, dann schließt 0 wieder
   });
   liste.addEventListener("scroll", () => {
     mehr.textContent = liste.scrollTop + liste.clientHeight >= liste.scrollHeight - 4 ? "▲" : "▼";
-    hoch.hidden = liste.scrollTop < 4;
+    hoch.hidden = liste.scrollTop < 12;
   }, { passive: true });
   liste.prepend(hoch);
   liste.append(mehr);
