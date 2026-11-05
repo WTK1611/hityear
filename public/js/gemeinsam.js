@@ -1382,22 +1382,48 @@ function taktSimulieren(eq, balken) {
     }
     return null;
   };
-  // TV: Ziffern an den Kacheln (1–9) und am Hauptknopf (0) – dieselbe Auswahl wie die Zifferntasten unten
-  const kachelnJetzt = () => [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e));
+  // Ziffern an den Kacheln (1–9) und am Hauptknopf (0) – dieselbe Auswahl wie die Zifferntasten unten. Sichtbar am
+  // Fernseher und am PC mit Maus/Tastatur (nicht auf Touch-Geräten). In der Galerie zählen nur die Kacheln im Bild,
+  // nach dem Blättern wird neu nummeriert. Startseite: 1 = Spielen mit Code, 2 = Party starten.
+  const marken = !matchMedia("(pointer: coarse)").matches &&
+    (fernseher || (matchMedia("(hover: hover) and (pointer: fine)").matches && !navigator.maxTouchPoints));
+  document.documentElement.classList.toggle("tasten-hinweise", marken);
+  const imBild = (e) => {
+    const reihe = e.closest(".deck-raster");
+    if (!reihe) return true;
+    const r = e.getBoundingClientRect(), b = reihe.getBoundingClientRect();
+    return r.left + r.width / 2 > b.left && r.left + r.width / 2 < b.right;
+  };
+  const kachelnJetzt = () => {
+    const setup = [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e) && imBild(e));
+    return setup.length ? setup : [...document.querySelectorAll(".start-wahl > .start-karte")].filter(sichtbar);
+  };
   const hauptknopf = () => ["#schritt-weiter", "#starten"].map((s) => document.querySelector(s)).find((e) => e && !e.disabled && sichtbar(e));
+  const wer = fernseher ? "Fernbedienung" : "Tastatur";
+  const taste = (text) => el("b", { text });
   const zifferMarken = () => {
-    if (!fernseher || !document.querySelector("#schritt-inhalt")) return;
+    const setup = document.querySelector("#schritt-inhalt");
+    const start = document.querySelector(".start-wahl");
+    if (!marken || (!setup && !start)) return;
     const soll = new Map(kachelnJetzt().slice(0, 9).map((e, i) => [e, String(i + 1)]));
-    const knopf = hauptknopf();
+    const knopf = setup && hauptknopf();
     if (knopf) soll.set(knopf, "0");
     for (const e of document.querySelectorAll("[data-ziffer]")) if (!soll.has(e)) e.removeAttribute("data-ziffer");
     for (const [e, z] of soll) if (e.dataset.ziffer !== z) e.dataset.ziffer = z;
+    if (document.querySelector(".ziffern-hinweis")) return;
     const assistent = document.querySelector("#assistent");
-    if (assistent && !document.querySelector(".ziffern-hinweis")) {
+    if (assistent) {
       assistent.after(el("p", { class: "ziffern-hinweis", "aria-hidden": "true" },
-        "Fernbedienung: ", el("b", { text: "1" }), el("b", { text: "2" }), el("b", { text: "3" }), " … wählt die Kachel · ", el("b", { text: "0" }), " = Weiter / Start"));
+        `${wer}: `, taste("◀"), taste("▶"), " blättern · ", taste("1"), taste("2"), taste("3"), " … wählt · ", taste("OK"), " bestätigt · ", taste("0"), " = Weiter / Start"));
+    } else if (start) {
+      start.after(el("p", { class: "ziffern-hinweis", "aria-hidden": "true" },
+        `${wer}: `, taste("1"), " Spielen mit Code · ", taste("2"), " Party starten · ", taste("◀"), taste("▶"), " wählen, ", taste("OK"), " bestätigt"));
     }
   };
+  // nach dem Blättern in der Galerie neu nummerieren
+  document.addEventListener("scroll", () => planen(), { capture: true, passive: true });
+  // Pfeiltasten scrollen die Galerie weich mit: nach dem Fokuswechsel noch einmal nachzählen
+  document.addEventListener("focusin", () => setTimeout(planen, 450));
   let geplant = 0;
   const fokusHalten = () => {
     geplant = 0;
@@ -1422,10 +1448,21 @@ function taktSimulieren(eq, balken) {
     if (!ziel) return;
     ev.preventDefault();
     tasten = true;
+    // Startseite „Spielen mit Code“: ins Codefeld springen statt das Formular abzuschicken
+    const feld = ziel.matches("form") ? ziel.querySelector("input") : null;
+    if (feld) return void feld.focus({ focusVisible: true });
     ziel.focus({ preventScroll: true, focusVisible: true });
     ziel.scrollIntoView({ block: "nearest", inline: "nearest" });
     ziel.click();
   });
+
+  // Tasten, die es nur auf Fernbedienungen gibt (Farbtasten, Kanal, Zurück bei webOS/Tizen): Das Gerät ist ein
+  // Fernseher, auch wenn sich der Browser wie ein Desktop meldet – ab dem nächsten Aufruf TV-Modus (?tv=0 nimmt es zurück)
+  document.addEventListener("keydown", (ev) => {
+    if (fernseher || tvVonHand) return;
+    const fernbedienung = /^(ColorF\d\w*|Channel(Up|Down)|GoBack|TV\w*)$/.test(ev.key) || [403, 404, 405, 406, 427, 428, 461, 10009].includes(ev.keyCode);
+    if (fernbedienung) try { localStorage.setItem("hityear-tv", "1"); } catch { /* egal */ }
+  }, true);
 
   // Zurück-Taste der Fernbedienung (webOS 461, Tizen 10009, Android TV „GoBack“) – im Setup ein Schritt zurück
   document.addEventListener("keydown", (ev) => {
