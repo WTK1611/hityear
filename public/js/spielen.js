@@ -47,7 +47,7 @@
       const fertig = gelegt.has(p.id);
       return el("span", { class: `tipp-avatar ${fertig ? "fertig" : ""} ${neu.includes(p) ? "neu" : ""}` },
         el("span", { class: "tipp-bild" }, avatarEl(p)),
-        el("span", { class: "tipp-name", text: p.name.split(" ")[0] }));
+        el("span", { class: "tipp-name", text: (p.bot ? t(p.name) : p.name).split(" ")[0] })); // Bot-Namen erst übersetzen, dann kürzen
     }));
     const fertig = andere.filter((p) => gelegt.has(p.id)).length;
     const text = box.querySelector(".tipp-text");
