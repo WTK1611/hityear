@@ -8,7 +8,7 @@
 
 // Ziffer → Buchstaben, als die man sie lesen kann (mehrere Lesarten möglich)
 const LESARTEN: Record<string, string[]> = {
-  "2": ["2", "Z"], "3": ["3", "E"], "4": ["4", "A"], "5": ["5", "S"], "6": ["6", "G", "B"], "7": ["7", "T"], "9": ["9", "G"],
+  "0": ["0", "O"], "1": ["1", "I", "L"], "8": ["8", "B"], "2": ["2", "Z"], "3": ["3", "E"], "4": ["4", "A"], "5": ["5", "S"], "6": ["6", "G", "B"], "7": ["7", "T"], "9": ["9", "G"],
 };
 
 /** Gesperrte Wörter und Wortanfänge nach Kategorie (Großbuchstaben, Umlaute aufgelöst). */
@@ -34,6 +34,8 @@ export const SPERRLISTE: Record<string, readonly string[]> = {
   rechtsextremismus: [
     "NAZI", "NAZ", "SS", "HH", "KKK", "NSDA", "NSU", "HEIL", "SIEG", "HITL", "ZOG", "RAHOW", "WPWW", "REICH", "HAKEN", "HKKR",
     "FUHR", "FUEHR", "GAS", "SKIN",
+    // Zahlencodes der Szene (18 = A.H., 88 = H.H., 14 Words, 28 = B&H) – heute nicht im Code-Alphabet, aber für später
+    "18", "88", "14", "28", "1488",
   ],
   politik: [
     "AFD", "NPD", "CDU", "CSU", "SPD", "FDP", "BSW", "DKP", "KPD", "SED", "MLPD", "OVP", "FPO", "SVP", "PIS", "VOX", "GOP",
@@ -44,7 +46,7 @@ export const SPERRLISTE: Record<string, readonly string[]> = {
   beleidigung: [
     "HASS", "HATE", "ARSCH", "ARSC", "ARSE", "ASS", "DUMM", "DEPP", "FOTZE", "LUDER", "MERD", "MRD", "CACA", "KACK", "KAKA",
     "SHIT", "SCHEI", "PISS", "PERRA", "CABR", "MERDA", "VAFF", "STRNZ", "PQP", "NTM", "TWAT", "LOSER", "SUCK", "SUKA", "BLYAT",
-    "BLYA", "PENDEJ", "CHUP", "CRAP", "DAMN", "FAGG", "BITCH", "BTCH", "WTF", "STFU", "KYS",
+    "BLYA", "PENDEJ", "CHUP", "CRAP", "DAMN", "FAGG", "BITCH", "BTCH", "WTF", "STFU", "KYS", "MF", "MOFO", "MFKR", "1312", "187",
   ],
   tod: ["DEAD", "DEATH", "DIED", "RIP", "666", "SATAN", "TEUFEL"],
   // Marken und Sender: kein Code soll wie Werbung oder eine Kooperation aussehen

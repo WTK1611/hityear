@@ -14,6 +14,9 @@ test("Sperrcodes: Ziffern werden auch als Buchstaben gelesen", () => {
   assert.ok(codeGesperrt("NKKK"));
   assert.ok(codeGesperrt("AFDX"));
   assert.ok(codeGesperrt("PUMA"));
+  assert.ok(codeGesperrt("HH18"));
+  assert.ok(codeGesperrt("18MF"));
+  assert.ok(codeGesperrt("AMFC"));
 });
 
 test("Sperrcodes: harmlose Codes bleiben erlaubt", () => {
