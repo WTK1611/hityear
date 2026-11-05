@@ -9,7 +9,7 @@
 - 1–6 Spielerinnen und Spieler, jede Person mit dem eigenen Handy – oder allein gegen KI-Bots üben: QR-Code scannen oder Code eingeben, ohne App. Optional schützt ein gemeinsames Passwort die ganze App; per QR-Code geht es ohne.
 - Ein Hauptbildschirm (TV, Laptop, Beamer) zeigt QR-Code, Musik-Player, Mitspieler und die Auflösung.
 - Die Musik kommt als 30-Sekunden-Hörprobe, die der Browser **direkt von Deezer** streamt (Apple Music als Ausweichquelle) – der Server speichert keine Musik. Optional eigene Sammlung, aus der der Server kurze Ausschnitte schneidet.
-- Oberfläche in 🇩🇪 Deutsch, 🇬🇧 English, 🇫🇷 Français, 🇮🇹 Italiano, 🇪🇸 Español und 🇧🇷 Português (Brasil).
+- Oberfläche in **29 Sprachen** – Deutsch, English, Français, Italiano, Español, Português (Brasil und Portugal), Nederlands, Polski, Türkçe, Русский, Українська, Svenska, Norsk, Dansk, Suomi, Čeština, Slovenčina, Magyar, Română, Български, Ελληνικά, Hrvatski, Srpski, Shqip, Català, 日本語, עברית und العربية.
 
 Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · Lizenz: [PolyForm Noncommercial 1.0.0](LICENSE.md) (frei nutzbar, änderbar, weitergebbar – **nicht kommerziell**) · [Mitmachen erwünscht](CONTRIBUTING.md)
 
@@ -21,9 +21,9 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 | **Lobby: Mitspieler und KI-Bots** | **Runde am Hauptbildschirm** |
 | ![Lobby mit einer Spielerin am Handy und fünf Bots](docs/bilder/host-lobby.jpg) | ![Hauptbildschirm in der Runde: Schallplatte, Equalizer, alle Zeitstrahle](docs/bilder/host-runde.jpg) |
 
-| Handy: Startseite | Handy: eigener Zeitstrahl |
-|---|---|
-| <img src="docs/bilder/handy-start.jpg" width="260" alt="Startseite am Handy mit zwei Kacheln nebeneinander"> | <img src="docs/bilder/handy.jpg" width="260" alt="Handy in der Runde: Equalizer und eigener Zeitstrahl"> |
+| Handy: Startseite | Handy: eigener Zeitstrahl | Sprachmenü (29 Sprachen) |
+|---|---|---|
+| <img src="docs/bilder/handy-start.jpg" width="240" alt="Startseite am Handy mit zwei Kacheln nebeneinander"> | <img src="docs/bilder/handy.jpg" width="240" alt="Handy in der Runde: Equalizer, eigener Zeitstrahl und wer schon getippt hat"> | <img src="docs/bilder/sprachen.jpg" width="320" alt="Offenes Sprachmenü mit Flaggen, acht Sprachen sichtbar, der Rest scrollt"> |
 
 ---
 
@@ -58,23 +58,23 @@ Der Hauptbildschirm stellt pro Schritt eine Frage, die Antworten sind große Kac
 
 | Bereich | Was es kann |
 |---|---|
-| **Beitreten** | Raumcode (4 Zeichen, verwechslungsarm: S/5, Z/2, B/8 werden toleriert) oder QR-Code mit Einladungs-Token; Kamera-Scan auf der Startseite |
-| **Synchron spielen** | Server-autoritativer Zustand, gemeinsamer Startzeitpunkt auf der Serveruhr, Uhrabgleich per Ping, Stand-Nummer mit Abgleich alle 2 s samt Lebenszeichen (ohne Antwort → sofort neu verbinden), gezielte Nachfrage zu Auflösung und nächstem Song, Handshake vor jedem Songwechsel (höchstens 10 s „Warte auf …“), Hinweis bei Verbindungsverlust |
+| **Beitreten** | Raumcode (4 Zeichen, verwechslungsarm: S/5, Z/2, B/8 werden toleriert; keine Codes, die sich als anstößiges Wort lesen) oder QR-Code mit Einladungs-Token; Kamera-Scan auf der Startseite; das Codefeld klappt auch mit kyrillischer, griechischer oder arabischer Tastatur (gleich aussehende Buchstaben und Ziffern werden umgesetzt, sonst bittet ein Hinweis ums Umschalten). Wer während einer Runde beitritt, darf den laufenden Song noch einordnen |
+| **Synchron spielen** | Server-autoritativer Zustand, gemeinsamer Startzeitpunkt auf der Serveruhr, Uhrabgleich per Ping, Stand-Nummer mit Abgleich alle 2 s samt Lebenszeichen (ohne Antwort → sofort neu verbinden), gezielte Nachfrage zu Auflösung und nächstem Song, Handshake vor jedem Songwechsel (höchstens 10 s „Warte auf …“), Hinweis bei Verbindungsverlust; sind alle offline, zählt der Hauptbildschirm 15 s herunter und macht weiter, nach 3 solchen Runden pausiert das Spiel |
 | **Handy-Leistung** | Aufwendiger animierter Hintergrund nur am Hauptbildschirm; Handys bekommen einen ruhenden Verlauf ohne Weichzeichner (der teure Hintergrund ließ iPhones bei jedem Songwechsel 10–27 s einfrieren) |
-| **Fehlersuche** | Geräte melden Hänger der Seite, Trennungen und ausbleibende Antworten ins Server-Log (`[diagnose]`, `[verbindung]`, `[bereit]`) |
+| **Fehlersuche** | Geräte melden Hänger der Seite, Trennungen und ausbleibende Antworten ins Server-Log (`[diagnose]`, `[verbindung]`, `[bereit]`); die Fußzeile zeigt Live-Spiele, App-Version (1.<Anzahl Commits>) und das erkannte Gerät (tv/tb/sp/pc) |
 | **Rechtliches** | Impressum, Datenschutz, Nutzungsbedingungen (AGB), Links in der Fußzeile; anonyme Statistik (Matomo auf eigenem Server) nur mit Einwilligung, auf der Cookie-Seite widerrufbar |
 | **Suchmaschinen** | Startseite und „So geht's“ sind indexierbar (`robots.txt`, `sitemap.xml`, `llms.txt`); API, Räume, Hauptbildschirm, Handy und Bibliothek senden `noindex` |
 | **Startseite** | Zwei quadratische Kacheln: *Spielen mit Code* (Code-Feld direkt auf der Kachel, eigene Fehlermeldung) und *Party starten*; am Handy nebeneinander |
 | **Einrichtung** | Geführte Einrichtung mit Kacheln (Verlauf, Aufkleber-Bild, Schatten), Partikel bei jedem Tipp, Decks als Plattenhüllen, die aus dem Namen gestaltet sind (Flagge, Symbol), Startkarte wird vor dem ersten Song aufgedeckt |
-| **Hauptbildschirm** | QR-Code, drehende Schallplatte, die im Bass vibriert, Equalizer in 9 Stilen (Klick oder ←/→ schaltet um), Fortschrittsleiste, Mitspieler-Raster mit Live-Status (überlegt, getippt, rät), Ergebnis-Banner mit Sternen, „+1“-Animationen, Konfetti, Bestenliste |
-| **Handy** | Eigener Zeitstrahl zum Antippen, Countdown, geführtes Raten (Jahr → Interpret → Titel), Vibration, Bildschirm bleibt wach (Wake Lock) |
-| **TV-tauglich** | Eigene Schrift (Nunito), SVG-Symbole statt Sonderzeichen, Abstand gegen Overscan, Bedienung mit der Fernbedienung durch alle Kacheln (Pfeiltasten + OK), passt ohne Scrollen auf 960×540, Sparmodus für Fernseher und alte Geräte (keine Dauer-Animationen, gedrosselter Equalizer) |
+| **Hauptbildschirm** | QR-Code, drehende Schallplatte, die im Bass vibriert, Equalizer in 20 Stilen (Klick oder ←/→ schaltet um), Fortschrittsleiste, Mitspieler-Raster mit Live-Status (überlegt, getippt, rät), Auflösung mit Genre und Quellenlink, Ergebnis-Banner mit Sternen, „+1“-Animationen, Konfetti, Bestenliste |
+| **Handy** | Eigener Zeitstrahl zum Antippen, Stand im Kopf, wer schon getippt hat, Countdown, geführtes Raten (Jahr → Interpret → Titel), Vibration, Bildschirm bleibt wach (Wake Lock); der Gastgeber dreht das Handy quer und sieht das Spielfeld wie am Fernseher |
+| **TV-tauglich** | Eigene Schrift (Nunito), SVG-Symbole statt Sonderzeichen, Abstand gegen Overscan, Bedienung mit der Fernbedienung durch alle Kacheln (Pfeiltasten + OK) und Zifferntasten (1 = Empfehlung/Weiter, 2–9 wählen, 0 = Zurück; die Ziffern stehen nur am Fernseher dran, am PC gehen die Tasten ohne Anzeige), passt ohne Scrollen auf 960×540, Sparmodus für Fernseher und alte Geräte (Animationen laufen einmal, keine Leuchtfilter, gedrosselter Equalizer), Demo-Party mit Bots nach 5 Minuten ohne Bedienung am Fernseher |
 | **Anti-Schummeln** | Ausschnitte ohne Metadaten mit Einmal-URLs; Titel und Jahr kommen erst mit der Auflösung zum Gerät |
 | **Audio** | Hörproben direkt von Deezer gestreamt (Apple Music als Ausweichquelle), mit Quellenhinweis; bei eigenen Dateien: Startpunkt zufällig bei 20–60 % der Songlänge, Ein- und Ausblenden, Lautstärke angeglichen (`loudnorm`) |
 | **Bibliothek** | Vorschauen von Apple/Deezer als Einträge (keine Dateien), optional Scan eigener Dateien (MP3, M4A, FLAC, OGG, Opus), Jahr aus manueller Angabe > Songliste (Originaljahr) > Tag bzw. Apple/Deezer > Jahrescharts, Prüfliste, Duplikate, Songs ausschließen |
 | **Decks** | Eigene Decks zusammenstellen; Playlists von Deezer/Apple Music oder eigene Songlisten (CSV) importieren |
 | **Hintergrund** | Eigene Geschichten zum Song |
-| **Sprachen** | 6 Sprachen; Umschalter mit Flaggen oben rechts auf der Startseite, sonst die Sprache des Browsers |
+| **Sprachen** | 29 Sprachen, je Sprache eine Datei (`public/js/sprachen/<code>.js`), geladen wird nur die gewählte; Flaggenmenü auf der Startseite (8 sichtbar, der Rest scrollt; Fernbedienung: 3 öffnet, Ziffern wählen, 9/0 blättern), `?lang=xx` im Link, sonst die Sprache des Browsers. Hebräisch und Arabisch behalten das Layout von links nach rechts |
 | **App-Gefühl** | Web-App-Manifest und Icons (zum Home-Bildschirm hinzufügen) |
 | **Marketing** | `/marketing`: Bilder (Quadrat, Story, Link-Vorschau; DE/EN) und fertige Posttexte für soziale Netzwerke |
 
@@ -116,7 +116,7 @@ flowchart TB
 | Echtzeit | Socket.IO 4 mit Verbindungs-Wiederherstellung (2 min) und Ping alle 5 s |
 | Daten | SQLite über `node:sqlite` |
 | Audio | ffmpeg (libmp3lame, loudnorm, afade) |
-| Frontend | HTML, CSS und Vanilla-JS ohne Bundler; Übersetzung über `public/js/i18n.js` |
+| Frontend | HTML, CSS und Vanilla-JS ohne Bundler; Übersetzungen in `public/js/sprachen/<code>.js` |
 | Betrieb | Docker Compose hinter einem Reverse Proxy; Ausrollen per GitHub Actions |
 
 ### Module (`src/`)
@@ -142,7 +142,7 @@ flowchart TB
 | `admin.html` + `js/admin.js` | Bibliothek, Decks (nur Deutsch) |
 | `so-gehts.html`, `marketing.html` + `js/marketing.js` | Spielanleitung; Bilder und Posttexte zum Teilen |
 | `js/gemeinsam.js` | Gemeinsame Bausteine: Socket, Uhrabgleich, Player, Equalizer, Countdown, Fernbedienung |
-| `js/i18n.js` | Sprachen: übersetzt alle Texte der Seite über eine Tabelle (Deutsch → Zielsprache) |
+| `js/i18n.js` + `js/sprachen/*.js` | Sprachen: wählt die Sprache, lädt ihre Tabelle und übersetzt alle Texte der Seite (Deutsch → Zielsprache) |
 
 Mehr dazu in [`docs/ARCHITEKTUR.md`](docs/ARCHITEKTUR.md).
 
@@ -205,7 +205,7 @@ Beiträge sind willkommen – siehe [CONTRIBUTING.md](CONTRIBUTING.md). Die Rege
 - Keine Build-Schritte und keine Frontend-Frameworks: TypeScript läuft direkt in Node, das Frontend ist Vanilla-JS.
 - Spielregeln gehören als reine Funktionen in `game.ts` und bekommen Tests in `test/`.
 - Der Server entscheidet alles. Geräte bekommen nur, was sie sehen dürfen (`sicht()`).
-- Neue Texte im Frontend auf Deutsch schreiben und in `public/js/i18n.js` für alle Sprachen ergänzen.
+- Neue Texte im Frontend auf Deutsch schreiben und in jeder Datei unter `public/js/sprachen/` ergänzen (`test/i18n.test.ts` prüft, dass keiner fehlt).
 - Nie Passwörter, Schlüssel oder `.env`-Inhalte ins Repo, in Commits oder Logs.
 - Vor jedem Push: `npm run typecheck && npm test`.
 

@@ -9,7 +9,7 @@
 - 1–6 players, each on their own phone – or practise alone against AI bots: scan the QR code or type the room code. No app. Optionally a shared password protects the whole app; the QR code lets guests in without it.
 - One main screen (TV, laptop, projector) shows the QR code, the music player, all players and the reveal.
 - Music comes as 30-second previews that the browser streams **directly from Deezer** (Apple Music as a fallback) – the server stores no music. Optionally your own collection, from which the server cuts short clips.
-- Interface in 🇩🇪 Deutsch, 🇬🇧 English, 🇫🇷 Français, 🇮🇹 Italiano, 🇪🇸 Español and 🇧🇷 Português (Brasil).
+- Interface in **29 languages** – Deutsch, English, Français, Italiano, Español, Português (Brasil and Portugal), Nederlands, Polski, Türkçe, Русский, Українська, Svenska, Norsk, Dansk, Suomi, Čeština, Slovenčina, Magyar, Română, Български, Ελληνικά, Hrvatski, Srpski, Shqip, Català, 日本語, עברית and العربية.
 
 Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · License: [PolyForm Noncommercial 1.0.0](LICENSE.md) (free to use, modify and share – **not commercially**) · [Contributions welcome](CONTRIBUTING.md)
 
@@ -21,9 +21,9 @@ Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · Lic
 | **Lobby: players and AI bots** | **Round on the main screen** |
 | ![Lobby with one phone player and five bots](docs/bilder/host-lobby.jpg) | ![Main screen during a round: record, equalizer, all timelines](docs/bilder/host-runde.jpg) |
 
-| Phone: home page | Phone: your timeline |
-|---|---|
-| <img src="docs/bilder/handy-start.jpg" width="260" alt="Home page on the phone with two tiles side by side"> | <img src="docs/bilder/handy.jpg" width="260" alt="Phone during a round: equalizer and your own timeline"> |
+| Phone: home page | Phone: your timeline | Language menu (29 languages) |
+|---|---|---|
+| <img src="docs/bilder/handy-start.jpg" width="240" alt="Home page on the phone with two tiles side by side"> | <img src="docs/bilder/handy.jpg" width="240" alt="Phone during a round: equalizer, your own timeline and who has already tapped"> | <img src="docs/bilder/sprachen.jpg" width="320" alt="Open language menu with flags, eight languages visible, the rest scrolls"> |
 
 ---
 
@@ -58,23 +58,23 @@ The main screen asks one question per step, the answers are big tiles (on phones
 
 | Area | What it does |
 |---|---|
-| **Joining** | 4-character room code (S/5, Z/2, B/8 mix-ups are tolerated) or QR code with an invite token; camera scan on the home page |
-| **In sync** | Server-authoritative state, shared start time on the server clock, clock sync via ping, state counter checked every 2 s with a liveness reply (no reply → reconnect at once), targeted re-check at reveal and next song, handshake before every song change (at most 10 s “Waiting for …”), notice when the connection drops |
+| **Joining** | 4-character room code (S/5, Z/2, B/8 mix-ups are tolerated; no codes that read as rude words) or QR code with an invite token; camera scan on the home page; the code field also works with Cyrillic, Greek or Arabic keyboards (look-alike letters and digits are mapped, otherwise a hint asks to switch). Whoever joins during a round can still place the current song |
+| **In sync** | Server-authoritative state, shared start time on the server clock, clock sync via ping, state counter checked every 2 s with a liveness reply (no reply → reconnect at once), targeted re-check at reveal and next song, handshake before every song change (at most 10 s “Waiting for …”), notice when the connection drops; if all players are offline the main screen counts down 15 s and continues, after 3 such rounds it pauses |
 | **Phone performance** | The heavy animated background runs only on the main screen; phones get a calm static gradient without blur (the heavy background froze iPhones for 10–27 s at every song change) |
-| **Debugging** | Devices report page freezes, disconnects and missing replies to the server log (`[diagnose]`, `[verbindung]`, `[bereit]`) |
+| **Debugging** | Devices report page freezes, disconnects and missing replies to the server log (`[diagnose]`, `[verbindung]`, `[bereit]`); the footer shows live games, app version (1.<number of commits>) and the detected device (tv/tb/sp/pc) |
 | **Legal** | Legal notice, privacy policy, terms of use, footer links; anonymous statistics (self-hosted Matomo) only with consent, revocable on the cookie page |
 | **Search engines** | Home page and “How to play” are indexable (`robots.txt`, `sitemap.xml`, `llms.txt`); API, rooms, main screen, phone and library send `noindex` |
 | **Home page** | Two square tiles: *Join with a code* (code field right on the tile, own error message) and *Start a party*; on phones side by side |
 | **Setup** | Guided setup with tiles (gradient, sticker image, shadow), a particle burst on every tap, decks as record sleeves designed from their name (flag, symbol), starting card revealed before the first song |
-| **Main screen** | QR code, spinning record that shakes to the bass, equalizer in 9 styles (click or ←/→ switches), progress bar, player grid with live status (thinking, placed, guessing), result banners with stars, “+1” animations, confetti, leaderboard |
-| **Phone** | Tappable personal timeline, countdown, guided guessing (year → artist → title), vibration, screen stays awake (Wake Lock) |
-| **TV-friendly** | Bundled font (Nunito), SVG icons instead of special characters, overscan margins, remote-control navigation through every tile (arrow keys + OK), fits 960×540 without scrolling, power-saving mode for TVs and old devices (no continuous animations, throttled equalizer) |
+| **Main screen** | QR code, spinning record that shakes to the bass, equalizer in 20 styles (click or ←/→ switches), progress bar, player grid with live status (thinking, placed, guessing), reveal with genre tag and source link, result banners with stars, “+1” animations, confetti, leaderboard |
+| **Phone** | Tappable personal timeline, score in the header, who has already tapped, countdown, guided guessing (year → artist → title), vibration, screen stays awake (Wake Lock); the host turns the phone sideways to get the main-screen view |
+| **TV-friendly** | Bundled font (Nunito), SVG icons instead of special characters, overscan margins, remote-control navigation through every tile (arrow keys + OK) and number keys (1 = recommended/next, 2–9 choose, 0 = back; the numbers are shown only on TVs, on a PC the keys work without them), fits 960×540 without scrolling, power-saving mode for TVs and old devices (animations run once, no glow filters, throttled equalizer), demo party with bots after 5 minutes without input on a TV |
 | **Anti-cheat** | Clips without metadata behind one-time URLs; title and year only reach devices with the reveal |
 | **Audio** | Previews streamed directly from Deezer (Apple Music as a fallback) with a source badge; for own files: random start at 20–60 % of the song, fade in/out, loudness normalisation (`loudnorm`) |
 | **Library** | Apple/Deezer previews as entries (no files), optional scan of own files (MP3, M4A, FLAC, OGG, Opus), year from manual entry > song list (original year) > tag or Apple/Deezer > year-end charts, review list, duplicates, exclude songs |
 | **Decks** | Build custom decks; import Deezer/Apple Music playlists or your own song lists (CSV) |
 | **Trivia** | Your own stories per song |
-| **Languages** | 6 languages; flag switcher at the top right of the home page, otherwise the browser language |
+| **Languages** | 29 languages, one file per language (`public/js/sprachen/<code>.js`), only the chosen one is loaded; flag menu on the home page (8 visible, the rest scrolls; remote: 3 opens, digits choose, 9/0 page), `?lang=xx` in the link, otherwise the browser language. Hebrew and Arabic keep the left-to-right layout |
 | **App feel** | Web app manifest and icons (add to home screen) |
 | **Marketing** | `/marketing`: images (square, story, link preview; DE/EN) and ready-made post texts for social networks |
 
@@ -116,7 +116,7 @@ flowchart TB
 | Real time | Socket.IO 4 with connection state recovery (2 min) and a 5 s ping |
 | Data | SQLite via `node:sqlite` |
 | Audio | ffmpeg (libmp3lame, loudnorm, afade) |
-| Frontend | HTML, CSS and vanilla JS without a bundler; translations in `public/js/i18n.js` |
+| Frontend | HTML, CSS and vanilla JS without a bundler; translations in `public/js/sprachen/<code>.js` |
 | Operations | Docker Compose behind a reverse proxy; deployment via GitHub Actions |
 
 ### Modules (`src/`)
@@ -142,7 +142,7 @@ flowchart TB
 | `admin.html` + `js/admin.js` | Library, decks (German only) |
 | `so-gehts.html`, `marketing.html` + `js/marketing.js` | How to play; images and post texts for sharing |
 | `js/gemeinsam.js` | Shared building blocks: socket, clock sync, player, equalizer, countdown, remote control |
-| `js/i18n.js` | Languages: translates every text on the page via a table (German → target language) |
+| `js/i18n.js` + `js/sprachen/*.js` | Languages: picks the language, loads its table and translates every text on the page (German → target language) |
 
 The source code, comments and identifiers are in German. More detail (German): [`docs/ARCHITEKTUR.md`](docs/ARCHITEKTUR.md).
 
@@ -205,7 +205,7 @@ Contributions are welcome – see [CONTRIBUTING.md](CONTRIBUTING.md). Rules in s
 - No build steps and no frontend frameworks: TypeScript runs directly in Node, the frontend is vanilla JS.
 - Game rules belong in `game.ts` as pure functions, with tests in `test/`.
 - The server decides everything. Devices only receive what they may see (`sicht()`).
-- Write new UI texts in German and add them for every language in `public/js/i18n.js`.
+- Write new UI texts in German and add them to every file in `public/js/sprachen/` (`test/i18n.test.ts` checks that none is missing).
 - Never put passwords, keys or `.env` contents into the repo, commits or logs.
 - Before every push: `npm run typecheck && npm test`.
 
