@@ -1976,3 +1976,21 @@ body.solo .qr-lobby { display: none !important; }
 /* Tasten-Test (?tasten): Anzeige oben links über allem */
 .tasten-test { position: fixed; left: 12px; top: 12px; z-index: 9999; max-width: min(92vw, 900px); margin: 0; padding: 14px 16px; border-radius: 12px;
   background: rgba(10, 6, 20, 0.92); color: #fff; font: 600 16px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; pointer-events: none; }
+
+/* TV: Ziffern-Marken für die Fernbedienung (gemeinsam.js zifferMarken) */
+html.tv #schritt-inhalt button[data-ziffer] { position: relative; }
+html.tv #schritt-inhalt button[data-ziffer]::before {
+  content: attr(data-ziffer); position: absolute; top: 8px; left: 8px; z-index: 1; width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center; background: rgba(22, 12, 38, 0.85); color: var(--gelb); border: 2px solid var(--gelb);
+  font: 900 1rem/1 inherit; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+html.tv #schritt-weiter[data-ziffer]::before, html.tv #starten[data-ziffer]::before {
+  content: attr(data-ziffer); display: inline-grid; place-items: center; width: 1.5em; height: 1.5em; margin-right: 0.5em; border-radius: 50%;
+  background: rgba(22, 12, 38, 0.85); color: var(--gelb); font-weight: 900; font-size: 0.85em; vertical-align: 0.1em;
+}
+.ziffern-hinweis { display: none; }
+html.tv #lobby .ziffern-hinweis { display: block; margin: 0; text-align: center; font-size: 0.95rem; font-weight: 700; color: var(--leise); }
+html.tv .ziffern-hinweis b {
+  display: inline-grid; place-items: center; width: 1.6em; height: 1.6em; margin: 0 2px; border-radius: 50%;
+  border: 2px solid var(--gelb); color: var(--gelb); font-size: 0.85em;
+}

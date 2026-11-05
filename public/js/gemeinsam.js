@@ -988,7 +988,6 @@ const tvVonHand = (() => {
     return localStorage.getItem("hityear-tv");
   } catch { return wert; }
 })();
-const fernseher = tvVonHand === "1" || (tvVonHand !== "0" && /SMART-?TV|SmartTV|Tizen|Web0S|webOS|NetCast|VIDAA|Hisense|HbbTV|BRAVIA|PhilipsTV|Android TV|GoogleTV|AFT[A-Z]|CrKey|Roku|AppleTV|TV Safari|\bTV\b/i.test(navigator.userAgent));
 // Gemessen zu langsam (siehe Bildraten-Messung unten): Gerät bekommt dauerhaft den ruhigen Hintergrund; ?tv=0 setzt zurück
 const LANGSAM = "hityear-langsam";
 const gemessenLangsam = (() => {
@@ -997,12 +996,18 @@ const gemessenLangsam = (() => {
     return localStorage.getItem(LANGSAM) === "1";
   } catch { return false; }
 })();
+// Gemessen langsam und gebaut wie ein Fernseher – Bildschirm 16:9 ab 1280 Gerätepixeln, kein Touch – gilt als TV (Tasten-Modus,
+// Demo, Kürzel „tv“), auch wenn der Browser sich wie ein Desktop meldet; ?tv=0 nimmt das zurück
+const wieTv = Math.abs(screen.width / screen.height - 16 / 9) < 0.05 && Math.max(screen.width, screen.height) * (devicePixelRatio || 1) >= 1280 && !navigator.maxTouchPoints;
+const fernseher = tvVonHand === "1" || (tvVonHand !== "0" && (gemessenLangsam && wieTv ||
+  /SMART-?TV|SmartTV|Tizen|Web0S|webOS|NetCast|VIDAA|Hisense|HbbTV|BRAVIA|PhilipsTV|Android TV|GoogleTV|AFT[A-Z]|CrKey|Roku|AppleTV|TV Safari|\bTV\b/i.test(navigator.userAgent)));
 const grosserBildschirm = !fernseher && !gemessenLangsam && matchMedia("(min-width: 1024px)").matches && !matchMedia("(pointer: coarse)").matches;
 // Sparmodus (app.css: html.sparsam): keine Dauer-Animationen, die jedes Bild neu malen. Immer auf Fernsehern,
 // sonst nur auf alten Geräten (höchstens 2 Kerne oder 2 GB Speicher) – aktuelle Tablets und Handys behalten alles.
 const altesGeraet = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2;
 const sparsam = fernseher || altesGeraet || gemessenLangsam;
 document.documentElement.classList.toggle("sparsam", sparsam);
+document.documentElement.classList.toggle("tv", fernseher);
 const hauptbildschirm = location.pathname === "/host.html";
 const startseite = location.pathname === "/" || location.pathname === "/index.html";
 const spots = () => ["s1", "s2", "s3", "s4"].map((s) => el("div", { class: `spot ${s}` }));
@@ -1034,15 +1039,8 @@ if (grosserBildschirm && (hauptbildschirm || startseite)) {
       const schnitt = zeiten.reduce((a, b) => a + b, 0) / zeiten.length;
       const ruckler = zeiten.filter((d) => d > 50).length / zeiten.length;
       if (schnitt < 28 && ruckler < 0.15) return;
-      // Sieht das langsame Gerät aus wie ein Fernseher – Bildschirm 16:9 ab 1280 px, kein Touch, Browser füllt den
-      // ganzen Bildschirm –, gilt es ab dem nächsten Aufruf als TV (Tasten-Modus, Demo); ?tv=0 nimmt das zurück
-      const seiten = screen.width / screen.height;
-      const wieTv = Math.abs(seiten - 16 / 9) < 0.03 && screen.width >= 1280 && !navigator.maxTouchPoints &&
-        outerWidth >= screen.width - 4 && innerHeight >= screen.height * 0.8;
-      try {
-        localStorage.setItem(LANGSAM, "1");
-        if (wieTv && !localStorage.getItem("hityear-tv")) localStorage.setItem("hityear-tv", "1");
-      } catch { /* nur für diesen Aufruf */ }
+      // ab dem nächsten Aufruf dauerhaft ruhig; sieht das Gerät aus wie ein Fernseher (wieTv), gilt es dann als TV
+      try { localStorage.setItem(LANGSAM, "1"); } catch { /* nur für diesen Aufruf */ }
       document.documentElement.classList.add("sparsam", "schlicht");
       document.querySelector(".hintergrund")?.replaceWith(el("div", { class: "hintergrund ruhig", "aria-hidden": "true" }));
     };
@@ -1374,8 +1372,9 @@ function taktSimulieren(eq, balken) {
   document.addEventListener("keydown", (ev) => { if (RICHTUNG[ev.key]) tasten = true; }, true);
   document.addEventListener("pointerdown", (ev) => { if (ev.pointerType !== "mouse" || !fernseher) tasten = false; }, true);
 
-  // in dieser Reihenfolge: ausdrücklich vorgewählt, im Setup die gewählte Kachel, sonst die erste Kachel
-  const VORSCHLAG = ["[data-tv-fokus]", "#schritt-inhalt [aria-pressed='true']", "#schritt-inhalt button:not(.galerie-pfeil)"];
+  // in dieser Reihenfolge: ausdrücklich vorgewählt, im Setup der Hauptknopf („Weiter“, „Weiter mit allen“,
+  // „Spiel starten“), wo es keinen gibt die gewählte Kachel, sonst die erste Kachel
+  const VORSCHLAG = ["[data-tv-fokus]", "#starten", "#schritt-weiter", "#schritt-inhalt [aria-pressed='true']", "#schritt-inhalt button:not(.galerie-pfeil)"];
   const vorschlag = () => {
     for (const sel of VORSCHLAG) {
       const e = [...document.querySelectorAll(sel)].find((x) => !x.disabled && sichtbar(x));
@@ -1383,9 +1382,26 @@ function taktSimulieren(eq, balken) {
     }
     return null;
   };
+  // TV: Ziffern an den Kacheln (1–9) und am Hauptknopf (0) – dieselbe Auswahl wie die Zifferntasten unten
+  const kachelnJetzt = () => [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e));
+  const hauptknopf = () => ["#schritt-weiter", "#starten"].map((s) => document.querySelector(s)).find((e) => e && !e.disabled && sichtbar(e));
+  const zifferMarken = () => {
+    if (!fernseher || !document.querySelector("#schritt-inhalt")) return;
+    const soll = new Map(kachelnJetzt().slice(0, 9).map((e, i) => [e, String(i + 1)]));
+    const knopf = hauptknopf();
+    if (knopf) soll.set(knopf, "0");
+    for (const e of document.querySelectorAll("[data-ziffer]")) if (!soll.has(e)) e.removeAttribute("data-ziffer");
+    for (const [e, z] of soll) if (e.dataset.ziffer !== z) e.dataset.ziffer = z;
+    const assistent = document.querySelector("#assistent");
+    if (assistent && !document.querySelector(".ziffern-hinweis")) {
+      assistent.after(el("p", { class: "ziffern-hinweis", "aria-hidden": "true" },
+        "Fernbedienung: ", el("b", { text: "1" }), el("b", { text: "2" }), el("b", { text: "3" }), " … wählt die Kachel · ", el("b", { text: "0" }), " = Weiter / Start"));
+    }
+  };
   let geplant = 0;
   const fokusHalten = () => {
     geplant = 0;
+    zifferMarken();
     const aktiv = document.activeElement;
     if (!tasten || (aktiv && aktiv !== document.body && aktiv.isConnected && sichtbar(aktiv))) return;
     const ziel = vorschlag();
@@ -1402,8 +1418,7 @@ function taktSimulieren(eq, balken) {
   document.addEventListener("keydown", (ev) => {
     if (!/^[0-9]$/.test(ev.key) || ev.altKey || ev.ctrlKey || ev.metaKey || ev.defaultPrevented) return;
     if (document.activeElement?.matches?.("input, textarea, select")) return;
-    const kacheln = [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e));
-    const ziel = ev.key === "0" ? ["#schritt-weiter", "#starten"].map((s) => document.querySelector(s)).find((e) => e && !e.disabled && sichtbar(e)) : kacheln[Number(ev.key) - 1];
+    const ziel = ev.key === "0" ? hauptknopf() : kachelnJetzt()[Number(ev.key) - 1];
     if (!ziel) return;
     ev.preventDefault();
     tasten = true;
@@ -1690,7 +1705,7 @@ if (new URLSearchParams(location.search).has("tasten")) {
   const box = el("pre", { class: "tasten-test" });
   const zeilen = [];
   const zeigen = () => {
-    box.textContent = `TV-Modus: ${fernseher ? "ja" : "nein"}${tvVonHand ? ` (von Hand: ${tvVonHand})` : ""}\n${navigator.userAgent}\n` +
+    box.textContent = `TV-Modus: ${fernseher ? "ja" : "nein"}${tvVonHand ? ` (von Hand: ${tvVonHand})` : ""} · langsam: ${gemessenLangsam ? "ja" : "nein"} · wie TV: ${wieTv ? "ja" : "nein"}\n${navigator.userAgent}\n` +
       `Bildschirm ${screen.width}×${screen.height}, Fenster ${innerWidth}×${innerHeight}, Zeiger ${matchMedia("(pointer: fine)").matches ? "fein" : matchMedia("(pointer: coarse)").matches ? "grob" : "keiner"}\n\n` +
       (zeilen.length ? zeilen.join("\n") : "Noch keine Taste empfangen – bitte Pfeiltasten, OK und Ziffern drücken.");
   };
@@ -1699,7 +1714,7 @@ if (new URLSearchParams(location.search).has("tasten")) {
   let melden = 0;
   const senden = (warum) => fetch("/api/geraet", {
     method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
-    body: JSON.stringify({ seite: location.pathname, groesse: `${innerWidth}x${innerHeight}@${devicePixelRatio} tv:${fernseher ? 1 : 0}`, kann: warum, ua: navigator.userAgent, tasten: gemeldet.join(" ") }),
+    body: JSON.stringify({ seite: location.pathname, groesse: `${innerWidth}x${innerHeight}@${devicePixelRatio} screen:${screen.width}x${screen.height} tv:${fernseher ? 1 : 0} langsam:${gemessenLangsam ? 1 : 0}`, kann: warum, ua: navigator.userAgent, tasten: gemeldet.join(" ") }),
   }).catch(() => {});
   for (const art of ["keydown", "keyup"]) {
     addEventListener(art, (ev) => {

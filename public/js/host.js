@@ -867,7 +867,8 @@
   function tvFokus() {
     const aktiv = document.activeElement;
     if (aktiv && aktiv !== document.body && aktiv.offsetParent !== null && !aktiv.disabled) return;
-    const k = ["#starten", "#schritt-inhalt [aria-pressed=true]", "#schritt-weiter", "#revanche"].map((id) => $(id)).find((b) => b && !b.disabled && b.offsetParent !== null);
+    const k = ["#starten", "#schritt-weiter", "#schritt-inhalt [aria-pressed=true]", "#revanche"].map((id) => $(id))
+      .find((b) => b && !b.disabled && b.offsetParent !== null && getComputedStyle(b).visibility !== "hidden");
     k?.focus({ preventScroll: true });
   }
 
@@ -1125,6 +1126,7 @@
   }
 
   let vorherGelegt = new Set();
+  const strahlCache = new Map(); // Spieler-ID → { schluessel, ol }: unveränderte Zeitstrahle (mit Covern) wiederverwenden
   let sterneGezeigt = null;
   // Stand je Spieler vom letzten Zeichnen – wächst Karten- oder ⭐-Zahl, hüpft sie mit „+1“
   const standVorher = new Map();
@@ -1159,6 +1161,19 @@
       return gelegt.has(p.id) ? null : el("span", { class: "tipp-status", text: "überlegt …" });
     };
     // Auflösung: der Tipp steht im Zeitstrahl – richtig = neue Karte leuchtet grün, falsch = rote Karte an der getippten Stelle
+    // Zeitstrahl samt Covern nur neu bauen, wenn er sich geändert hat: sonst laden alte TV-Browser bei jedem
+    // Zustands-Update (z. B. „eingeloggt“) alle Cover neu und der ganze Bildschirm flackert
+    const neueOls = [];
+    const strahlOl = (p) => {
+      const r = ergebnisse.find((x) => x.spielerId === p.id);
+      const schluessel = JSON.stringify([p.zeitstrahl.map((k) => k.songId), r ? [r.richtig, r.position, r.karte?.songId] : null]);
+      const alt = strahlCache.get(p.id);
+      if (alt?.schluessel === schluessel) return alt.ol;
+      const ol = el("ol", {}, tippZeitstrahl(p));
+      strahlCache.set(p.id, { schluessel, ol });
+      neueOls.push(ol);
+      return ol;
+    };
     const tippZeitstrahl = (p) => {
       const r = ergebnisse.find((x) => x.spielerId === p.id);
       const lis = p.zeitstrahl.map((k) => {
@@ -1207,7 +1222,8 @@
           : null,
       );
     };
-    queueMicrotask(() => { for (const ol of document.querySelectorAll("#zeitstrahle ol")) zeitstrahlBuendeln(ol); });
+    queueMicrotask(() => { for (const ol of neueOls) zeitstrahlBuendeln(ol); });
+    for (const id of strahlCache.keys()) if (!z.spieler.some((p) => p.id === id)) strahlCache.delete(id);
     $("#zeitstrahle").replaceChildren(
       ...z.spieler.map((p) =>
         el(
@@ -1220,7 +1236,7 @@
             balken.style.width = `${Math.min(100, (100 * p.zeitstrahl.length) / z.einstellungen.zielKarten)}%`;
             return el("div", { class: "fortschritt" }, balken);
           })(),
-          el("ol", {}, tippZeitstrahl(p)),
+          strahlOl(p),
           bonus(p),
         ),
       ),
