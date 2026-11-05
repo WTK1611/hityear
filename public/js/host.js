@@ -876,7 +876,8 @@
     if (aktiv && aktiv !== document.body && aktiv.offsetParent !== null && !aktiv.disabled) return;
     const k = ["#starten", "#schritt-weiter", "#schritt-inhalt [aria-pressed=true]", "#revanche"].map((id) => $(id))
       .find((b) => b && !b.disabled && b.offsetParent !== null && getComputedStyle(b).visibility !== "hidden");
-    k?.focus({ preventScroll: true, focusVisible: true }); // ohne focusVisible malt der TV-Browser keinen Rahmen
+    // ohne focusVisible malt der TV-Browser keinen Rahmen; nach Tipp/Klick (Handy, PC mit Maus) bleibt der Rahmen weg
+    k?.focus({ preventScroll: true, focusVisible: document.body.classList.contains("tasten-aktiv") });
   }
 
   const name = (id) => zustand.spieler.find((p) => p.id === id)?.name ?? "?";
@@ -901,6 +902,7 @@
       qrFuer = qrSchluessel;
     }
     $("#ende").classList.toggle("versteckt", z.phase !== "ende");
+    document.documentElement.classList.toggle("drehen-frei", z.phase !== "lobby"); // Handy darf erst im Spiel quer (unten)
     if (z.phase === "lobby") lobby(z);
     else if (z.phase === "ende") ende(z);
     else spiel(z);
@@ -1378,8 +1380,10 @@
   document.fonts?.ready.then(bald);
 }
 
-// Handy quer: wie ein Fernseher darstellen – das Layout ist mindestens 1280 px breit und der Browser skaliert es auf den Bildschirm.
-// So greifen Fernseher-Ansicht und --skala (unten), und alles passt ohne Scrollen. Hochkant bleibt die Handy-Ansicht.
+// Handy quer im laufenden Spiel: wie ein Fernseher darstellen – das Layout ist mindestens 1280 px breit und der Browser skaliert es
+// auf den Bildschirm. So greifen Fernseher-Ansicht und --skala (unten), und alles passt ohne Scrollen. Hochkant bleibt die Handy-Ansicht.
+// In der Einrichtung (Phase „lobby“, ohne html.drehen-frei) bleibt die Handy-Ansicht auch quer – dort deckt der Hinweis
+// „Bitte halte dein Handy hochkant“ (gemeinsam.js) die Seite ab.
 {
   const meta = document.querySelector('meta[name="viewport"]');
   const hochkant = meta?.content;
@@ -1399,13 +1403,15 @@
     }
     const lang = Math.max(screen.width, screen.height), kurz = Math.min(screen.width, screen.height);
     const breite = Math.max(1280, Math.round((860 * lang) / kurz)); // ~860 px Höhe wie ein kleiner Fernseher (Handys sind sehr breit)
-    const soll = quer() ? `width=${breite}, initial-scale=${(lang / breite).toFixed(3)}, viewport-fit=cover` : hochkant;
+    const frei = document.documentElement.classList.contains("drehen-frei");
+    const soll = quer() && frei ? `width=${breite}, initial-scale=${(lang / breite).toFixed(3)}, viewport-fit=cover` : hochkant;
     if (meta.content !== soll) meta.content = soll;
   };
   if (meta && handy) {
     anpassen(false);
     screen.orientation?.addEventListener?.("change", anpassen);
     addEventListener("orientationchange", anpassen);
+    new MutationObserver(() => anpassen(false)).observe(document.documentElement, { attributeFilter: ["class"] });
   }
 }
 

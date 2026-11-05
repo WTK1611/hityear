@@ -1790,15 +1790,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Handys nur hochkant: im Browser lässt sich das Drehen nicht sperren – im Querformat deckt ein Hinweis die Seite ab
 // (CSS .drehen-hinweis). Als installierte App klappt die echte Sperre, Tablets und Fernseher bleiben frei.
-// Ausnahme: der Host (Spielfeld) darf quer – host.js stellt ihn dann wie auf dem Fernseher dar.
+// Ausnahme: der Hauptbildschirm (host.html) darf im laufenden Spiel quer – host.js setzt dann html.drehen-frei und stellt
+// ihn wie auf dem Fernseher dar. In der Einrichtung bleibt auch er hochkant.
 (() => {
-  if (location.pathname.startsWith("/host")) return;
   const hinweis = el("div", { class: "drehen-hinweis", "aria-live": "polite" },
     el("div", { class: "drehen-handy", "aria-hidden": "true", text: "📱" }),
     el("p", { text: "Bitte halte dein Handy hochkant." }));
   document.body.append(hinweis);
   const handy = matchMedia("(pointer: coarse) and (max-width: 500px), (pointer: coarse) and (max-height: 500px)");
-  if (handy.matches) screen.orientation?.lock?.("portrait").catch(() => {});
+  if (handy.matches && !location.pathname.startsWith("/host")) screen.orientation?.lock?.("portrait").catch(() => {});
 })();
 
 // Tasten-Test für Fernseher: ?tasten zeigt Browser-Kennung, Bildschirm und die zuletzt gedrückten Tasten

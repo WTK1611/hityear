@@ -1832,7 +1832,10 @@ main:not(.breit) .zeitstrahl::before { content: none; }
 }
 /* Schmaler Hauptbildschirm: alle Kacheln auf einen Blick – zwei quadratische Kacheln je Reihe statt Karussell */
 @media (max-width: 700px) {
-  .deck-raster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; scroll-snap-type: none; gap: 12px; padding: 4px 2px 20px; }
+  /* ohne negativen Seitenrand: .assistent schneidet ab, sonst fehlen links und rechts je 10px der Kacheln */
+  .deck-raster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; scroll-snap-type: none; gap: 12px; padding: 4px 0 20px; margin: -4px 0 0; }
+  /* Fokus am Handy schmal und ohne Vergrößern, damit der Rahmen nicht über den Rand ragt (sichtbar nur mit Tasten) */
+  .deck-raster button.deck-knopf:focus-visible, body.tasten-aktiv .deck-raster button.deck-knopf:focus { outline-offset: -4px; transform: none; box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.7); }
   .deck-raster > :first-child, .deck-raster > :last-child { margin: 0; }
   .deck-raster button.deck-knopf, .deck-raster.vermessen button.deck-knopf { flex: none; width: 100%; }
   .deck-raster .deck-name small { font-size: 0.75rem; padding: 3px 8px; }
