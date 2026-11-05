@@ -920,11 +920,12 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 .code-reihe button { width: 14cqw; height: 14cqw; min-height: 0; padding: 0; border-radius: 50%; background: #fff; color: #160c26; box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.6); }
 .code-reihe button:hover:not(:disabled) { background: #fff; box-shadow: 0 8px 18px -6px rgba(0, 0, 0, 0.7); }
 .code-reihe button svg { width: 55%; height: 55%; }
-.start-karte .fehler {
-  position: absolute; left: 7cqw; right: 7cqw; bottom: 24cqw; z-index: 1; margin: 0; min-height: 0; padding: 1.6cqw 3cqw; border-radius: 3cqw;
-  background: rgba(22, 12, 38, 0.88); color: #fff; font-size: 4cqw;
+/* Fehler beim Beitreten: groß und gut lesbar unter den beiden Kacheln */
+.code-fehler {
+  max-width: 624px; margin: 16px auto 0; padding: 12px 18px; border-radius: 14px; text-align: center;
+  background: rgba(255, 61, 110, 0.18); border: 2px solid var(--schlecht, #ff3d6e); color: #fff; font-size: 1.1rem; font-weight: 800;
 }
-.start-karte .fehler:empty { display: none; }
+.code-fehler:empty { display: none; }
 .code-feld { text-align: center; font-weight: 900; }
 .start-wahl > .start-karte.wackeln { animation: wackeln 0.45s; }
 @media (prefers-reduced-motion: reduce) { .start-bild, .start-wahl > .start-karte.wackeln { animation: none; } }
@@ -936,14 +937,12 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 #beitreten-form .code-feld { flex: 1; width: auto; min-width: 0; height: 18cqw; font-size: 9cqw; }
 .code-reihe button { flex: none; width: 18cqw; height: 18cqw; }
 #beitreten-form .start-bild { width: 24cqw; bottom: 28cqw; }
-.start-karte .fehler { bottom: 29cqw; }
 /* schmale Kachel (Handy): Code-Feld breiter und mit 16px (sonst zoomt iOS beim Tippen), Bild darüber */
 @container (max-width: 240px) {
   .code-reihe { right: 7cqw; }
   #beitreten-form .code-feld { flex: 1; width: auto; min-width: 0; height: 20cqw; font-size: 16px; letter-spacing: 0.12em; text-indent: 0.12em; }
   .code-reihe button { flex: none; width: 20cqw; height: 20cqw; }
   #beitreten-form .start-bild { width: 26cqw; bottom: 28cqw; }
-  .start-karte .fehler { bottom: 30cqw; font-size: 11px; }
 }
 
 /* Apple-Music-Vorschauen (Admin) */
@@ -1991,6 +1990,7 @@ html.tasten-hinweise #schritt-inhalt button[data-ziffer]::before, html.tasten-hi
   font: 900 1rem/1 inherit; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 html.tasten-hinweise .start-karte[data-ziffer]::before { top: 12px; left: auto; right: 12px; }
+html.tasten-hinweise #schritt-inhalt button.galerie-pfeil[data-ziffer]::before { top: -10px; right: -10px; width: 26px; height: 26px; font-size: 0.85rem; }
 /* gewählte Mehrfach-Kachel: der Haken rückt links neben die Ziffer */
 html.tasten-hinweise #schritt-inhalt button.deck-knopf.mehrfach[data-ziffer]::after { right: 46px; }
 html.tasten-hinweise #schritt-weiter[data-ziffer]::before, html.tasten-hinweise #starten[data-ziffer]::before, html.tasten-hinweise #schritt-zurueck[data-ziffer]::before, html.tasten-hinweise #ende .reihe > [data-ziffer]::before {

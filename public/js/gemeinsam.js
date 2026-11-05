@@ -1415,6 +1415,11 @@ function taktSimulieren(eq, balken) {
       if (haupt) { m.set(haupt, "1"); reihe(imBlick, 2); }
       else if (gewaehlt) { m.set(gewaehlt, "1"); reihe(imBlick.filter((e) => e !== gewaehlt), 2); }
       else reihe(imBlick, 1);
+      // Galerie: die nächste freie Ziffer blättert – vorwärts, am Ende wieder zurück
+      const pfeile = [...document.querySelectorAll("#schritt-inhalt button.galerie-pfeil")].filter((e) => !e.disabled && sichtbar(e));
+      const pfeil = pfeile.find((e) => e.classList.contains("rechts")) ?? pfeile[0];
+      const frei = m.size + 1;
+      if (pfeil && frei <= 9) m.set(pfeil, String(frei));
       const zurueck = document.querySelector("#schritt-zurueck");
       if (zurueck && sichtbar(zurueck)) m.set(zurueck, "0");
       return m;
@@ -1476,6 +1481,7 @@ function taktSimulieren(eq, balken) {
     // Startseite „Spielen mit Code“: ins Codefeld springen statt das Formular abzuschicken
     const feld = ziel.matches("form") ? ziel.querySelector("input") : null;
     if (feld) return void feld.focus({ focusVisible: true });
+    if (ziel.matches(".galerie-pfeil")) return void ziel.click();
     ziel.focus({ preventScroll: true, focusVisible: true });
     ziel.scrollIntoView({ block: "nearest", inline: "nearest" });
     ziel.click();
