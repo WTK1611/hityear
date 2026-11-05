@@ -103,7 +103,7 @@ Ein Musik-Partyspiel im Browser. Der Fernseher spielt einen Song, alle legen ihn
 Was mich daran gereizt hat:
 • Echtzeit für bis zu sechs Handys und einen Bildschirm mit Socket.IO
 • Hörproben direkt von Deezer streamen, statt Musik zu speichern
-• eine installierbare Web-App in sechs Sprachen, ohne Framework
+• eine installierbare Web-App in 29 Sprachen, ohne Framework
 • Open Source auf GitHub
 
 Kostenlos ausprobieren: ${LINK}
@@ -117,7 +117,7 @@ A music party game in the browser. The TV plays a song, everyone places it in th
 What I enjoyed building:
 • real time for up to six phones and one screen with Socket.IO
 • streaming previews straight from Deezer instead of storing music
-• an installable web app in six languages, no framework
+• an installable web app in 29 languages, no framework
 • open source on GitHub
 
 Try it for free: ${LINK}
@@ -162,10 +162,10 @@ I'd love feedback, especially on the decks and the phone controls.`,
     hinweis: "Titel in die Titelzeile, Link auf hityear.app, Text als ersten Kommentar.",
     de: `Show HN: HitYear – Musik-Partyspiel im Browser, Handys als Controller
 
-Ein Bildschirm spielt eine 30-Sekunden-Hörprobe, jeder Spieler legt den Song auf dem Handy nach Erscheinungsjahr in seinen Zeitstrahl. Node.js/TypeScript mit Socket.IO, Frontend ohne Framework, Hörproben kommen direkt von Deezer (Apple Music als Ersatz), der Server speichert keine Musik. Installierbare PWA, sechs Sprachen, Bots für freie Plätze. Quellcode: ${REPO}`,
+Ein Bildschirm spielt eine 30-Sekunden-Hörprobe, jeder Spieler legt den Song auf dem Handy nach Erscheinungsjahr in seinen Zeitstrahl. Node.js/TypeScript mit Socket.IO, Frontend ohne Framework, Hörproben kommen direkt von Deezer (Apple Music als Ersatz), der Server speichert keine Musik. Installierbare PWA, 29 Sprachen, Bots für freie Plätze. Quellcode: ${REPO}`,
     en: `Show HN: HitYear – a music party game in the browser, phones as controllers
 
-One screen plays a 30-second preview, every player places the song by release year into their own timeline on their phone. Node.js/TypeScript with Socket.IO, framework-free frontend, previews stream straight from Deezer (Apple Music as a fallback), the server stores no music. Installable PWA, six languages, bots for free seats. Source: ${REPO}`,
+One screen plays a 30-second preview, every player places the song by release year into their own timeline on their phone. Node.js/TypeScript with Socket.IO, framework-free frontend, previews stream straight from Deezer (Apple Music as a fallback), the server stores no music. Installable PWA, 29 languages, bots for free seats. Source: ${REPO}`,
   },
   {
     titel: "WhatsApp / Telegram (Einladung)",
@@ -195,8 +195,8 @@ const KURZ = [
   },
   {
     titel: "Etwa 50 Wörter",
-    de: "HitYear ist ein Musik-Partyspiel für 1–6 Personen. Der Fernseher oder Laptop spielt einen 30-Sekunden-Ausschnitt, alle legen den Song auf dem Handy vor, zwischen oder hinter ihre Karten. Richtig gelegt heißt: Karte behalten. Kostenlos, ohne App und Konto, in sechs Sprachen und Open Source.",
-    en: "HitYear is a music party game for 1–6 people. The TV or laptop plays a 30-second preview, and everyone places the song before, between or after their cards on their phone. Placed correctly means you keep the card. Free, no app or account, six languages and open source.",
+    de: "HitYear ist ein Musik-Partyspiel für 1–6 Personen. Der Fernseher oder Laptop spielt einen 30-Sekunden-Ausschnitt, alle legen den Song auf dem Handy vor, zwischen oder hinter ihre Karten. Richtig gelegt heißt: Karte behalten. Kostenlos, ohne App und Konto, in 29 Sprachen und Open Source.",
+    en: "HitYear is a music party game for 1–6 people. The TV or laptop plays a 30-second preview, and everyone places the song before, between or after their cards on their phone. Placed correctly means you keep the card. Free, no app or account, 29 languages and open source.",
   },
 ];
 

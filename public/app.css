@@ -1090,6 +1090,20 @@ html:not([lang="de"]) #geschichte { display: none !important; }
   transform-origin: top right; animation: sprache-auf .28s cubic-bezier(.3, 1.5, .5, 1);
 }
 .sprache-liste[hidden] { display: none; }
+/* viele Sprachen: eine Spalte, 8 Sprachen sichtbar (je 46px + 6px Abstand), der Rest scrollt */
+.sprache-liste {
+  max-height: min(70vh, calc(8 * 46px + 7 * 6px + 20px + 30px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+}
+.sprache-liste { width: max-content; max-width: calc(100vw - 32px); }
+.sprache-liste > button { white-space: nowrap; }
+/* ▼ unten im Menü: blättert weiter (am Ende wieder nach oben) – Zifferntaste 9 */
+.sprache-liste .sprache-mehr {
+  position: sticky; bottom: -10px; margin: 0 -10px -10px; padding: 4px 0 6px; justify-content: center; border-radius: 0 0 20px 20px;
+  background: rgba(28, 18, 48, 0.97); color: var(--leise); font-size: 0.9rem; animation: none;
+}
+.sprache-liste .sprache-hoch { top: -10px; bottom: auto; margin: -10px -10px 0; padding: 6px 0 4px; border-radius: 20px 20px 0 0; z-index: 2; }
+.sprache-liste .sprache-hoch[hidden] { display: none; }
+.sprache-liste .sprache-mehr:hover { color: var(--text); }
 @keyframes sprache-auf { from { opacity: 0; transform: scale(.6) rotate(6deg); } }
 .sprache-liste button {
   all: unset; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 6px 10px 6px 6px; border-radius: 999px;
@@ -1937,6 +1951,16 @@ html.sparsam .ambient { display: none; }
 html.sparsam .jetzt-laeuft { background: radial-gradient(120% 140% at 15% 20%, rgba(255, 61, 154, 0.35), transparent 60%), radial-gradient(120% 140% at 90% 90%, rgba(61, 216, 255, 0.3), transparent 60%), #1a0f2e; }
 html.sparsam .platte.laeuft { scale: none; translate: none; }
 html.sparsam .equalizer { contain: layout paint; }
+/* Sparmodus, Stufe 2: alle übrigen Endlos-Animationen (Glanz, Wippen, Wackeln, Pulsieren, Wellen …) laufen nur einmal.
+   Was etwas mitteilt, läuft weiter: Equalizer ohne Analyse, knappe Zeit, Verbindung weg, Laden vor dem Songstart. */
+html.sparsam *, html.sparsam *::before, html.sparsam *::after { animation-iteration-count: 1 !important; }
+html.sparsam .equalizer.laeuft i, html.sparsam .frist-uhr.knapp, html.sparsam .verbindung-weg, html.sparsam .sanduhr.knapp .led-matrix,
+html.sparsam .tipp-status:not(.fertig), html.sparsam .leiste .aufladen, html.sparsam .drehen-handy { animation-iteration-count: infinite !important; }
+/* Leuchten und Weichzeichner werden bei jedem Bild neu berechnet – im Sparmodus flach (Equalizer, Platte, Ladebalken, QR-Glanz) */
+html.sparsam .equalizer, html.sparsam .equalizer *, html.sparsam .equalizer *::before, html.sparsam .equalizer *::after,
+html.sparsam .platte.laeuft, html.sparsam .leiste .aufladen, html.sparsam .qr::before { filter: none !important; }
+html.sparsam .equalizer * { mix-blend-mode: normal !important; }
+html.sparsam .qr::before { opacity: 0.45; }
 
 button.hier-mitspielen { display: block; margin: 14px auto 0; }
 
@@ -1997,10 +2021,15 @@ html.tasten-hinweise .sprache-knopf[data-ziffer]::before {
   display: grid; place-items: center; background: rgba(22, 12, 38, 0.9); color: var(--gelb); border: 2px solid var(--gelb);
   font: 900 0.75rem/1 inherit;
 }
+/* im Menü hat jede Zeile links eine eigene Spalte für die Ziffer – so bleiben alle Zeilen bündig und die Flagge frei */
+html.tasten-hinweise .sprache-liste > button[role="radio"] { position: relative; padding-left: 38px; }
 html.tasten-hinweise .sprache-liste button[data-ziffer]::before {
-  content: attr(data-ziffer); display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 50%;
-  background: rgba(22, 12, 38, 0.85); color: var(--gelb); border: 2px solid var(--gelb); font: 900 0.85rem/1 inherit;
+  content: attr(data-ziffer); position: absolute; left: 6px; top: 50%; transform: translateY(-50%); display: grid; place-items: center;
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(22, 12, 38, 0.85); color: var(--gelb); border: 2px solid var(--gelb);
+  box-sizing: border-box; font: 900 0.8rem/1 inherit;
 }
+html.tasten-hinweise .sprache-liste button.sprache-mehr[data-ziffer] { position: sticky; }
+html.tasten-hinweise .sprache-liste button.sprache-mehr[data-ziffer]::before { position: static; margin-right: 8px; }
 html.tasten-hinweise #schritt-inhalt button.galerie-pfeil[data-ziffer]::before { top: -10px; right: -10px; width: 26px; height: 26px; font-size: 0.85rem; }
 /* gewählte Mehrfach-Kachel: der Haken rückt links neben die Ziffer */
 html.tasten-hinweise #schritt-inhalt button.deck-knopf.mehrfach[data-ziffer]::after { right: 46px; }

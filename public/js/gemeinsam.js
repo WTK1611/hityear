@@ -1324,7 +1324,7 @@ function taktSimulieren(eq, balken) {
 // jedem Neuzeichnen, damit der Fokus nicht verloren geht. Die Zurück-Taste der Fernbedienung blättert im Setup zurück.
 (() => {
   // Blätterpfeile der Galerie zählen nicht: der Fokus scrollt die Reihe selbst
-  const AUSWAHL = "a[href], button:not([disabled]):not(.galerie-pfeil), input:not([disabled]):not([type=hidden]), select:not([disabled]), summary, [tabindex]:not([tabindex='-1'])";
+  const AUSWAHL = "a[href], button:not([disabled]):not(.galerie-pfeil):not(.sprache-mehr), input:not([disabled]):not([type=hidden]), select:not([disabled]), summary, [tabindex]:not([tabindex='-1'])";
   const RICHTUNG = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
 
   function sichtbar(e) {
@@ -1365,7 +1365,7 @@ function taktSimulieren(eq, balken) {
     let ziel = start ? naechstes(start, r) : vorschlag() ?? [...document.querySelectorAll(AUSWAHL)].find(sichtbar);
     // im Menü oben/unten im Kreis: nach der letzten Sprache wieder die erste
     const menue = start?.closest(".sprache-liste");
-    if (!ziel && menue && r[1]) ziel = [...menue.querySelectorAll("button")].filter(sichtbar).at(r[1] > 0 ? 0 : -1);
+    if (!ziel && menue && r[1]) ziel = [...menue.querySelectorAll("button[role=radio]")].filter(sichtbar).at(r[1] > 0 ? 0 : -1);
     if (!ziel && menue) return void ev.preventDefault();
     if (!ziel) return;
     ev.preventDefault();
@@ -1412,10 +1412,15 @@ function taktSimulieren(eq, balken) {
   const belegung = () => {
     const m = new Map();
     const reihe = (liste, ab) => liste.slice(0, 10 - ab).forEach((e, i) => m.set(e, String(ab + i)));
-    // Sprachwahl offen: 1, 2, 3 … = Sprachen, 0 = Menü schließen (der Flaggen-Knopf klappt es zu)
+    // Sprachwahl offen: 1–8 = die gerade sichtbaren Sprachen (nach dem Blättern neu gezählt), 9 = weiterblättern,
+    // 0 = Menü schließen (der Flaggen-Knopf klappt es zu)
     const sprachen = document.querySelector(".sprache-liste");
     if (sprachen && !sprachen.hidden) {
-      reihe([...sprachen.querySelectorAll("button")].filter(sichtbar), 1);
+      const b = sprachen.getBoundingClientRect();
+      const imMenue = (e) => { const r = e.getBoundingClientRect(); return r.top + r.height / 2 > b.top + (sprachen.scrollTop > 4 ? 24 : 0) && r.top + r.height / 2 < b.bottom - 24; };
+      reihe([...sprachen.querySelectorAll("button[role=radio]")].filter((e) => sichtbar(e) && imMenue(e)).slice(0, 8), 1);
+      const mehr = sprachen.querySelector(".sprache-mehr:not(.sprache-hoch)");
+      if (mehr && sprachen.scrollHeight > sprachen.clientHeight) m.set(mehr, "9");
       const knopf = document.querySelector(".sprache-knopf");
       if (knopf) m.set(knopf, "0");
       return m;
@@ -1498,7 +1503,7 @@ function taktSimulieren(eq, balken) {
     // Startseite „Spielen mit Code“: ins Codefeld springen statt das Formular abzuschicken
     const feld = ziel.matches("form") ? ziel.querySelector("input") : null;
     if (feld) return void feld.focus({ focusVisible: true });
-    if (ziel.matches(".galerie-pfeil")) return void ziel.click();
+    if (ziel.matches(".galerie-pfeil, .sprache-mehr")) return void ziel.click();
     ziel.focus({ preventScroll: true, focusVisible: true });
     ziel.scrollIntoView({ block: "nearest", inline: "nearest" });
     ziel.click();

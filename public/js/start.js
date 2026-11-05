@@ -102,22 +102,59 @@ document.fonts?.ready.then(startTitelEinpassen);
       knopf.disabled = false;
     }
   });
+  // Spielcodes sind lateinisch (A–Z, Ziffern). Mit kyrillischer, griechischer, japanischer, arabischer … Tastatur kämen sonst
+  // gar keine Zeichen an: gleich aussehende Buchstaben werden zum lateinischen Gegenstück, Vollbreiten-Zeichen (Japanisch) und
+  // arabisch-indische Ziffern zu normalen. Bleibt etwas übrig, das sich nicht lesen lässt, gibt es den Hinweis zum Umschalten.
+  const GLEICH = {
+    А: "A", В: "B", Е: "E", К: "K", М: "M", Н: "H", О: "O", Р: "P", С: "C", Т: "T", У: "Y", Х: "X", Ѕ: "S", І: "I", Ј: "J", Ү: "Y",
+    Α: "A", Β: "B", Ε: "E", Ζ: "Z", Η: "H", Ι: "I", Κ: "K", Μ: "M", Ν: "N", Ο: "O", Ρ: "P", Τ: "T", Υ: "Y", Χ: "X",
+  };
+  const codeLatein = (s) => s.normalize("NFKC").normalize("NFD").replace(/\p{M}/gu, "").toUpperCase()
+    .replace(/[٠-٩۰-۹]/g, (d) => String(d.charCodeAt(0) & 0xF))
+    .replace(/./gu, (z) => GLEICH[z] ?? z);
   $("#raumcode").addEventListener("input", (e) => {
-    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-    $("#code-fehler").textContent = "";
+    const lesbar = codeLatein(e.target.value);
+    const sauber = lesbar.replace(/[^A-Z0-9]/g, "").slice(0, 4);
+    const fremd = /[^\sA-Z0-9]/u.test(lesbar.replace(/[\p{P}\p{S}]/gu, ""));
+    if (e.target.value !== sauber) e.target.value = sauber;
+    $("#code-fehler").textContent = fremd ? "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐" : "";
   });
 
 })();
 
 // ---------- Sprachumschalter (nur hier auf der Startseite) ----------
 (() => {
+  // vereinfachte runde Flaggen (viewBox 30×30); Arabisch: Schriftzeichen statt einer Landesflagge
   const FLAGGEN = {
-    de: '<rect width="30" height="10" fill="#000"/><rect y="10" width="30" height="10" fill="#dd0000"/><rect y="20" width="30" height="10" fill="#ffce00"/>',
+    de: '<rect y="0.00" width="30" height="10.10" fill="#000"/><rect y="10.00" width="30" height="10.10" fill="#dd0000"/><rect y="20.00" width="30" height="10.10" fill="#ffce00"/>',
     en: '<rect width="30" height="30" fill="#012169"/><path d="M0 0L30 30M30 0L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0L30 30M30 0L0 30" stroke="#c8102e" stroke-width="2"/><path d="M15 0V30M0 15H30" stroke="#fff" stroke-width="10"/><path d="M15 0V30M0 15H30" stroke="#c8102e" stroke-width="6"/>',
-    fr: '<rect width="10" height="30" fill="#0055a4"/><rect x="10" width="10" height="30" fill="#fff"/><rect x="20" width="10" height="30" fill="#ef4135"/>',
-    it: '<rect width="10" height="30" fill="#009246"/><rect x="10" width="10" height="30" fill="#fff"/><rect x="20" width="10" height="30" fill="#ce2b37"/>',
+    fr: '<rect x="0.00" width="10.10" height="30" fill="#0055a4"/><rect x="10.00" width="10.10" height="30" fill="#fff"/><rect x="20.00" width="10.10" height="30" fill="#ef4135"/>',
+    it: '<rect x="0.00" width="10.10" height="30" fill="#009246"/><rect x="10.00" width="10.10" height="30" fill="#fff"/><rect x="20.00" width="10.10" height="30" fill="#ce2b37"/>',
     es: '<rect width="30" height="30" fill="#aa151b"/><rect y="7.5" width="30" height="15" fill="#f1bf00"/>',
     "pt-BR": '<rect width="30" height="30" fill="#009c3b"/><path d="M15 4L28 15L15 26L2 15Z" fill="#ffdf00"/><circle cx="15" cy="15" r="6.5" fill="#002776"/><path d="M8.7 13.6Q15 12 21.4 16" stroke="#fff" stroke-width="1.3" fill="none"/>',
+    "pt-PT": '<rect width="12" height="30" fill="#046a38"/><rect x="12" width="18" height="30" fill="#da291c"/><circle cx="12" cy="15" r="5.5" fill="#ffe900"/><rect x="9.5" y="12" width="5" height="6.5" rx="1.5" fill="#da291c" stroke="#fff" stroke-width="0.8"/>',
+    nl: '<rect y="0.00" width="30" height="10.10" fill="#ae1c28"/><rect y="10.00" width="30" height="10.10" fill="#fff"/><rect y="20.00" width="30" height="10.10" fill="#21468b"/>',
+    pl: '<rect y="0.00" width="30" height="15.10" fill="#fff"/><rect y="15.00" width="30" height="15.10" fill="#dc143c"/>',
+    tr: '<rect width="30" height="30" fill="#e30a17"/><circle cx="12.5" cy="15" r="7" fill="#fff"/><circle cx="14.3" cy="15" r="5.6" fill="#e30a17"/><path d="M19.2 15l4.6-1.5-2.8 3.9V12.6l2.8 3.9z" fill="#fff"/>',
+    ru: '<rect y="0.00" width="30" height="10.10" fill="#fff"/><rect y="10.00" width="30" height="10.10" fill="#0039a6"/><rect y="20.00" width="30" height="10.10" fill="#d52b1e"/>',
+    uk: '<rect y="0.00" width="30" height="15.10" fill="#0057b7"/><rect y="15.00" width="30" height="15.10" fill="#ffd700"/>',
+    sv: '<rect width="30" height="30" fill="#006aa7"/><rect x="9" width="5" height="30" fill="#fecc00"/><rect y="12.5" width="30" height="5" fill="#fecc00"/>',
+    nb: '<rect width="30" height="30" fill="#ba0c2f"/><rect x="8" width="7" height="30" fill="#fff"/><rect y="11.5" width="30" height="7" fill="#fff"/><rect x="10" width="3" height="30" fill="#00205b"/><rect y="13.5" width="30" height="3" fill="#00205b"/>',
+    da: '<rect width="30" height="30" fill="#c8102e"/><rect x="9" width="5" height="30" fill="#fff"/><rect y="12.5" width="30" height="5" fill="#fff"/>',
+    fi: '<rect width="30" height="30" fill="#fff"/><rect x="9" width="5" height="30" fill="#002f6c"/><rect y="12.5" width="30" height="5" fill="#002f6c"/>',
+    cs: '<rect y="0.00" width="30" height="15.10" fill="#fff"/><rect y="15.00" width="30" height="15.10" fill="#d7141a"/><path d="M0 0L15 15L0 30Z" fill="#11457e"/>',
+    sk: '<rect y="0.00" width="30" height="10.10" fill="#fff"/><rect y="10.00" width="30" height="10.10" fill="#0b4ea2"/><rect y="20.00" width="30" height="10.10" fill="#ee1c25"/><rect x="6" y="9" width="8" height="11" rx="2" fill="#ee1c25" stroke="#fff" stroke-width="1"/><rect x="9.25" y="11" width="1.5" height="7" fill="#fff"/><rect x="7.5" y="13" width="5" height="1.5" fill="#fff"/>',
+    hu: '<rect y="0.00" width="30" height="10.10" fill="#ce2939"/><rect y="10.00" width="30" height="10.10" fill="#fff"/><rect y="20.00" width="30" height="10.10" fill="#477050"/>',
+    ro: '<rect x="0.00" width="10.10" height="30" fill="#002b7f"/><rect x="10.00" width="10.10" height="30" fill="#fcd116"/><rect x="20.00" width="10.10" height="30" fill="#ce1126"/>',
+    bg: '<rect y="0.00" width="30" height="10.10" fill="#fff"/><rect y="10.00" width="30" height="10.10" fill="#00966e"/><rect y="20.00" width="30" height="10.10" fill="#d62612"/>',
+    el: '<rect width="30" height="30" fill="#0d5eaf"/><rect y="3.33" width="30" height="3.34" fill="#fff"/><rect y="10.00" width="30" height="3.34" fill="#fff"/><rect y="16.67" width="30" height="3.34" fill="#fff"/><rect y="23.33" width="30" height="3.34" fill="#fff"/><rect width="16.7" height="16.7" fill="#0d5eaf"/><rect x="6.7" width="3.3" height="16.7" fill="#fff"/><rect y="6.7" width="16.7" height="3.3" fill="#fff"/>',
+    hr: '<rect y="0.00" width="30" height="10.10" fill="#ff0000"/><rect y="10.00" width="30" height="10.10" fill="#fff"/><rect y="20.00" width="30" height="10.10" fill="#171796"/><rect x="11" y="9" width="8" height="10" fill="#fff" stroke="#ff0000" stroke-width="0.6"/><rect x="11" y="9" width="2" height="2" fill="#ff0000"/><rect x="15" y="9" width="2" height="2" fill="#ff0000"/><rect x="13" y="11" width="2" height="2" fill="#ff0000"/><rect x="17" y="11" width="2" height="2" fill="#ff0000"/><rect x="11" y="13" width="2" height="2" fill="#ff0000"/><rect x="15" y="13" width="2" height="2" fill="#ff0000"/><rect x="13" y="15" width="2" height="2" fill="#ff0000"/><rect x="17" y="15" width="2" height="2" fill="#ff0000"/><rect x="11" y="17" width="2" height="2" fill="#ff0000"/><rect x="15" y="17" width="2" height="2" fill="#ff0000"/>',
+    sr: '<rect y="0.00" width="30" height="10.10" fill="#c6363c"/><rect y="10.00" width="30" height="10.10" fill="#0c4076"/><rect y="20.00" width="30" height="10.10" fill="#fff"/><rect x="7" y="9" width="8" height="11" rx="2" fill="#c6363c" stroke="#fff" stroke-width="1"/><rect x="10.25" y="11" width="1.5" height="7" fill="#fff"/><rect x="8.5" y="13" width="5" height="1.5" fill="#fff"/>',
+    sq: '<rect width="30" height="30" fill="#e41e20"/><path d="M15 7l2.6 3.6 4.4-2.2-1.8 4.8 3.4 2.6-4.2 1.2-.6 4.6-3.8-2.8-3.8 2.8-.6-4.6-4.2-1.2 3.4-2.6-1.8-4.8 4.4 2.2z" fill="#000"/>',
+    ca: '<rect width="30" height="30" fill="#fcdd09"/><rect y="3.33" width="30" height="3.34" fill="#da121a"/><rect y="10.00" width="30" height="3.34" fill="#da121a"/><rect y="16.67" width="30" height="3.34" fill="#da121a"/><rect y="23.33" width="30" height="3.34" fill="#da121a"/>',
+    ja: '<rect width="30" height="30" fill="#fff"/><circle cx="15" cy="15" r="7.5" fill="#bc002d"/>',
+    he: '<rect width="30" height="30" fill="#fff"/><rect y="4" width="30" height="3.5" fill="#0038b8"/><rect y="22.5" width="30" height="3.5" fill="#0038b8"/><path d="M15 9.6l4.7 8.1h-9.4z M15 20.4l-4.7-8.1h9.4z" fill="none" stroke="#0038b8" stroke-width="1.3"/>',
+    ar: '<rect width="30" height="30" fill="#007a3d"/><text x="15" y="20.5" font-size="15" font-weight="700" text-anchor="middle" fill="#fff" font-family="sans-serif">ع</text>',
   };
   const flagge = (code) => {
     const s = el("span", { class: "flagge", "aria-hidden": "true" });
@@ -129,6 +166,25 @@ document.fonts?.ready.then(startTitelEinpassen);
       type: "button", role: "radio", lang: s.code, "aria-checked": String(s.code === SPRACHE),
       onclick: () => (s.code === SPRACHE ? zu() : spracheSetzen(s.code)),
     }, flagge(s.code), s.name)));
+  // ▼ blättert um die sichtbaren 8 Sprachen weiter, am Ende zurück nach oben (Maus, Touch, Zifferntaste 9)
+  const mehr = el("button", { type: "button", class: "sprache-mehr", tabindex: "-1", "aria-hidden": "true", text: "▼" });
+  mehr.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const amEnde = liste.scrollTop + liste.clientHeight >= liste.scrollHeight - 4;
+    liste.scrollTo({ top: amEnde ? 0 : liste.scrollTop + liste.clientHeight - 40, behavior: "smooth" });
+  });
+  // ▲ oben: erscheint, sobald gescrollt ist, und blättert zurück
+  const hoch = el("button", { type: "button", class: "sprache-mehr sprache-hoch", tabindex: "-1", "aria-hidden": "true", text: "▲", hidden: true });
+  hoch.addEventListener("click", (e) => {
+    e.stopPropagation();
+    liste.scrollTo({ top: Math.max(0, liste.scrollTop - liste.clientHeight + 40), behavior: "smooth" });
+  });
+  liste.addEventListener("scroll", () => {
+    mehr.textContent = liste.scrollTop + liste.clientHeight >= liste.scrollHeight - 4 ? "▲" : "▼";
+    hoch.hidden = liste.scrollTop < 4;
+  }, { passive: true });
+  liste.prepend(hoch);
+  liste.append(mehr);
   const knopf = el("button", { type: "button", class: "sprache-knopf", "aria-haspopup": "true", "aria-expanded": "false", title: "Sprache wählen", "aria-label": "Sprache wählen" }, flagge(SPRACHE));
   const zu = () => {
     // Fokus stand im Menü (Fernbedienung/Tastatur): zurück auf die Flagge, sonst wäre er weg
@@ -154,7 +210,8 @@ document.fonts?.ready.then(startTitelEinpassen);
 // Bewegt werden nur transform/opacity und die Breite weniger Elemente, damit es auch auf Handys billig bleibt.
 (async () => {
   const reihe = document.querySelector(".held .platten");
-  if (!reihe || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Sparmodus (TV, alte Geräte): die Reihe bleibt stehen – fliegende Cover kosten dort zu viel Rechenzeit
+  if (!reihe || matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.classList.contains("sparsam")) return;
   let songs = [];
   try {
     songs = await (await fetch("/api/schaufenster")).json();
