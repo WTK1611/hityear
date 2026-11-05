@@ -1361,18 +1361,6 @@ function taktSimulieren(eq, balken) {
     if (textfeld && r[0] !== 0) return;
     const start = aktiv && aktiv !== document.body ? aktiv : null;
     const ziel = start ? naechstes(start, r) : vorschlag() ?? [...document.querySelectorAll(AUSWAHL)].find(sichtbar);
-    // Textseiten (So geht's, Impressum …): liegt das nächste Ziel mehr als eine Bildschirmhöhe weg, erst ein Stück
-    // scrollen, damit ▲/▼ den Text dazwischen nicht überspringen; ohne Ziel scrollt der Browser selbst
-    if (r[1] !== 0) {
-      const b = ziel?.getBoundingClientRect();
-      const weit = !b || (r[1] > 0 ? b.top > innerHeight * 1.1 : b.bottom < -innerHeight * 0.1);
-      const kannScrollen = r[1] > 0 ? scrollY + innerHeight < document.documentElement.scrollHeight - 2 : scrollY > 0;
-      if (weit && kannScrollen) {
-        ev.preventDefault();
-        scrollBy({ top: r[1] * innerHeight * 0.6, behavior: "smooth" });
-        return;
-      }
-    }
     if (!ziel) return;
     ev.preventDefault();
     ziel.focus({ preventScroll: true, focusVisible: true });
