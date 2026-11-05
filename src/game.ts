@@ -251,6 +251,8 @@ export interface Spiel {
   botPlan?: BotVorschau[];
   /** Spielende schon in die Bestenliste eingetragen (siehe bestenliste.ts) */
   bestenlisteEingetragen?: boolean;
+  /** Demo-Modus am TV: nur Bots, zufälliges Deck, Code „DEMO“ angezeigt, niemand kann beitreten */
+  demo?: boolean;
   erstellt: number;
   geaendert: number;
 }
@@ -702,6 +704,7 @@ export function revanche(s: Spiel): void {
 /** Öffentliche Sicht auf den Zustand – ohne Geheimnisse, ohne verdeckte Karte. */
 export interface Sicht {
   code: string;
+  demo: boolean;
   phase: Phase;
   einstellungen: Einstellungen;
   runde: number;
@@ -737,6 +740,7 @@ const verdecken = (e: Ergebnis): Ergebnis => ({ ...e, karte: VERDECKT, abstand: 
 export function sicht(s: Spiel): Sicht {
   return {
     code: s.code,
+    demo: Boolean(s.demo),
     phase: s.phase,
     einstellungen: s.einstellungen,
     runde: s.runde,

@@ -365,7 +365,7 @@ const UEBERSETZUNGEN = [
   ["Für den Gastgeber", "For the host", "Pour l'hôte", "Per chi ospita", "Para el anfitrión", "Para o anfitrião"],
   ["Bitte halte dein Handy hochkant.", "Please hold your phone upright.", "Tiens ton téléphone à la verticale.", "Tieni il telefono in verticale.", "Pon el móvil en vertical.", "Segure o celular na vertical."],
   ["Bitte zuerst den Code eingeben.", "Please enter the code first.", "Saisis d'abord le code.", "Inserisci prima il codice.", "Introduce primero el código.", "Digite o código primeiro."],
-  ["Eure Startkarte", "Your starting card", "Votre carte de départ", "La vostra carta iniziale", "Vuestra carta inicial", "Sua carta inicial"],
+  ["Deine Startkarte", "Your starting card", "Ta carte de départ", "La tua carta iniziale", "Tu carta inicial", "Sua carta inicial"],
   ["Alle beginnen ihren Zeitstrahl mit diesem Song.", "Everyone starts their timeline with this song.", "Tout le monde commence sa frise avec cette chanson.", "Tutti iniziano la loro linea del tempo con questa canzone.", "Todos empiezan su línea del tiempo con esta canción.", "Todos começam a linha do tempo com esta música."],
   ["Gleich geht's los", "Get ready", "C'est parti dans", "Si parte tra", "Prepárate", "Prepare-se"],
   ["Nächster Song", "Next song", "Chanson suivante", "Prossima canzone", "Siguiente canción", "Próxima música"],

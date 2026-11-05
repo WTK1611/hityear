@@ -678,7 +678,7 @@ function startsongZeigen(v, spieler) {
     el(
       "div",
       { class: "startsong-karte" },
-      el("div", { class: "startsong-kicker", text: "Eure Startkarte" }),
+      el("div", { class: "startsong-kicker", text: "Deine Startkarte" }),
       el("div", { class: "startsong-buehne" }, cover, reihe),
       jahr,
       el("div", { class: "startsong-titel", text: k.titel }),
@@ -1034,7 +1034,15 @@ if (grosserBildschirm && (hauptbildschirm || startseite)) {
       const schnitt = zeiten.reduce((a, b) => a + b, 0) / zeiten.length;
       const ruckler = zeiten.filter((d) => d > 50).length / zeiten.length;
       if (schnitt < 28 && ruckler < 0.15) return;
-      try { localStorage.setItem(LANGSAM, "1"); } catch { /* nur für diesen Aufruf */ }
+      // Sieht das langsame Gerät aus wie ein Fernseher – Bildschirm 16:9 ab 1280 px, kein Touch, Browser füllt den
+      // ganzen Bildschirm –, gilt es ab dem nächsten Aufruf als TV (Tasten-Modus, Demo); ?tv=0 nimmt das zurück
+      const seiten = screen.width / screen.height;
+      const wieTv = Math.abs(seiten - 16 / 9) < 0.03 && screen.width >= 1280 && !navigator.maxTouchPoints &&
+        outerWidth >= screen.width - 4 && innerHeight >= screen.height * 0.8;
+      try {
+        localStorage.setItem(LANGSAM, "1");
+        if (wieTv && !localStorage.getItem("hityear-tv")) localStorage.setItem("hityear-tv", "1");
+      } catch { /* nur für diesen Aufruf */ }
       document.documentElement.classList.add("sparsam", "schlicht");
       document.querySelector(".hintergrund")?.replaceWith(el("div", { class: "hintergrund ruhig", "aria-hidden": "true" }));
     };

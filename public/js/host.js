@@ -821,8 +821,41 @@
   });
   socket.on("beendet", () => {
     speicher("zs_host", null);
-    location.href = "/";
+    location.href = demoVerlassen ? "/host.html?neu" : "/";
   });
+
+  // ---------- Demo-Modus (nur Fernseher) ----------
+  // Steht der TV 5 min unberührt in einer leeren Lobby, spielen Bots ein zufälliges Deck. Angezeigt wird der Code
+  // „DEMO“ ohne QR-Code (der Server lässt niemanden beitreten). Jede Taste, jeder Klick und jede Mausbewegung beendet
+  // die Demo und öffnet ein frisches Setup. Zum Testen: ?demo=<Sekunden>.
+  const demoTest = Number(new URLSearchParams(location.search).get("demo"));
+  const DEMO_NACH_MS = demoTest > 0 ? demoTest * 1000 : 5 * 60_000;
+  let letzteAktion = Date.now();
+  let demoVerlassen = false;
+  let zeigerVon = null;
+  for (const art of ["keydown", "pointerdown", "pointermove", "wheel"]) {
+    addEventListener(art, (ev) => {
+      // Mausbewegung zählt erst ab 20 px – ein zitternder TV-Zeiger soll die Demo nicht beenden
+      if (art === "pointermove") {
+        zeigerVon ??= { x: ev.clientX, y: ev.clientY };
+        if (Math.hypot(ev.clientX - zeigerVon.x, ev.clientY - zeigerVon.y) < 20) return;
+      }
+      zeigerVon = null;
+      letzteAktion = Date.now();
+      if (!zustand?.demo || demoVerlassen) return;
+      ev.preventDefault?.();
+      demoVerlassen = true;
+      speicher("zs_host", null);
+      void tun("host:beenden").finally(() => setTimeout(() => (location.href = "/host.html?neu"), 1500));
+    }, { capture: true, passive: art === "pointermove" || art === "wheel" });
+  }
+  setInterval(() => {
+    if ((!fernseher && !(demoTest > 0)) || !zustand || zustand.demo || zustand.phase !== "lobby") return;
+    if (zustand.spieler.some((p) => !p.bot) || document.hidden) return;
+    if (Date.now() - letzteAktion < DEMO_NACH_MS) return;
+    letzteAktion = Date.now(); // nicht im Sekundentakt nachfragen, falls der Server ablehnt
+    void tun("host:demo");
+  }, 2000);
   socket.on("zustand", (z) => {
     zustand = z;
     darstellen();
@@ -845,11 +878,19 @@
     void wachHalten(z.phase !== "ende"); // Host-Bildschirm (Laptop/Tablet) soll während der Party nicht dunkel werden
     $("#lobby").classList.toggle("versteckt", z.phase !== "lobby");
     $("#spiel").classList.toggle("versteckt", z.phase !== "hoeren" && z.phase !== "aufloesung");
-    if (qrFuer !== z.code) {
-      $("#qr").src = $("#qr-spiel").src = $("#qr-unten").src = `/api/qr?raum=${encodeURIComponent(z.code)}`;
+    const qrSchluessel = z.demo ? `${z.code}:demo` : z.code;
+    if (qrFuer !== qrSchluessel) {
+      // Demo: kein QR-Code (Beitritt gesperrt), statt des Codes nur „DEMO“
+      for (const id of ["#qr", "#qr-spiel", "#qr-unten"]) {
+        $(id).classList.toggle("versteckt", z.demo);
+        if (!z.demo) $(id).src = `/api/qr?raum=${encodeURIComponent(z.code)}`;
+        const hinweis = $(id).parentElement.querySelector("span");
+        hinweis.dataset.text ??= hinweis.textContent;
+        hinweis.textContent = z.demo ? "Taste drücken zum Spielen" : hinweis.dataset.text;
+      }
       // Code hier setzen, nicht nur in der Lobby: wird die Seite mitten im Spiel neu geladen, fehlte er sonst
-      $("#code").textContent = $("#code-spiel").textContent = $("#code-unten").textContent = z.code;
-      qrFuer = z.code;
+      $("#code").textContent = $("#code-spiel").textContent = $("#code-unten").textContent = z.demo ? "DEMO" : z.code;
+      qrFuer = qrSchluessel;
     }
     $("#ende").classList.toggle("versteckt", z.phase !== "ende");
     if (z.phase === "lobby") lobby(z);

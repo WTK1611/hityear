@@ -12,7 +12,7 @@ import { ausschnittFreigeben, freigabeEntziehen } from "./audio.ts";
 import { clientIp, rolleAusCookie } from "./auth.ts";
 import { dienstName } from "./vorschau.ts";
 import { beiNeuenSongs, fehlendeNachladen } from "./apple.ts";
-import { listenSongIds } from "./listen.ts";
+import { listenSongIds, listenUebersicht } from "./listen.ts";
 import { bestenliste, spielEintragen } from "./bestenliste.ts";
 import { diagnose } from "./log.ts";
 
@@ -24,12 +24,14 @@ const CODE_ZEICHEN = "ACDEFGHJKLMNPQRTUVWXY2345679";
 const VERWECHSLER: Record<string, string> = { S: "5", Z: "2", B: "8", O: "0", I: "1" };
 
 /** Sucht einen Raum zum eingegebenen Code – verzeiht S/5, Z/2, B/8. */
+/** Raum für Mitspieler (Beitritt, Einladung, Status) – Demo-Räume gibt es für sie nicht */
 function raumFinden(code: unknown): Spiel | undefined {
   const c = String(code ?? "").toUpperCase().trim();
-  const s = raeume.get(c);
-  if (s) return s;
-  const kandidaten = [c.replace(/[SZBOI]/g, (z) => VERWECHSLER[z]), c.replace(/[52801]/g, (z) => Object.keys(VERWECHSLER).find((k) => VERWECHSLER[k] === z)!)];
-  for (const k of kandidaten) if (raeume.has(k)) return raeume.get(k);
+  const kandidaten = [c, c.replace(/[SZBOI]/g, (z) => VERWECHSLER[z]), c.replace(/[52801]/g, (z) => Object.keys(VERWECHSLER).find((k) => VERWECHSLER[k] === z)!)];
+  for (const k of kandidaten) {
+    const s = raeume.get(k);
+    if (s) return s.demo ? undefined : s;
+  }
   return undefined;
 }
 const FARBEN = ["#ff5d73", "#ffb347", "#ffe066", "#4cd4a0", "#4db8ff", "#b48cff"];
@@ -245,6 +247,61 @@ async function alleBereit(s: Spiel, aktuell: () => boolean): Promise<void> {
   if (angezeigt || dauer > 1000) diagnose("bereit", `${s.code} weiter nach ${dauer} ms${bestaetigt.size ? "" : " (ohne Bestätigung)"}`);
 }
 
+/** Spiel starten; freie Plätze übernehmen Bots (Option „auffüllen“) – genau die, die die Lobby angekündigt hat */
+function mitBotsStarten(s: Spiel): void {
+  const stapel = stapelZiehen(auswahl(s));
+  const neueBots: string[] = [];
+  for (const b of botsDazu(s)) neueBots.push(botHinzufuegen(s, b.stufe, crypto.randomBytes(6).toString("base64url"), freieFarbe(s), Math.random, b).id);
+  try {
+    starten(s, stapel);
+  } catch (err) {
+    for (const id of neueBots) spielerEntfernen(s, id); // Start klappt nicht → Lobby wie vorher
+    throw err;
+  }
+  vorspielPlanen(s);
+  zugVorbereiten(s);
+  senden(s);
+}
+
+// ---------- Demo-Modus ----------
+// Zufälliges Deck mit genug spielbaren Songs (oder alle Songs), Bots füllen alle Plätze, Revanche nach dem Ende.
+const DEMO_NEUSTART_MS = 25_000;
+const demoTimer = new Map<string, ReturnType<typeof setTimeout>>();
+
+function demoStarten(s: Spiel): void {
+  const decks = listenUebersicht().filter((l) => l.treffer >= 60);
+  const deck = Math.random() < 1 / (decks.length + 1) ? null : decks[Math.floor(Math.random() * decks.length)]?.id ?? null;
+  for (const p of s.spieler.filter((q) => q.bot)) spielerEntfernen(s, p.id);
+  s.einstellungen = grenzen({
+    ...s.einstellungen, liste: deck, jahrzehnte: [], genres: [], nurChartHits: false, modus: "alle", warten: "alle",
+    zeitlimit: true, raten: false, auffuellen: true, ohneBots: [], wiedergabe: "host", zielKarten: 10,
+  });
+  s.botPlan = undefined;
+  s.geaendert = Date.now();
+  diagnose("demo", `${s.code} startet mit ${deck ?? "allen Songs"}`);
+  mitBotsStarten(s);
+}
+
+function demoNeustartPlanen(s: Spiel): void {
+  if (demoTimer.has(s.code)) return;
+  const t = setTimeout(async () => {
+    demoTimer.delete(s.code);
+    if (raeume.get(s.code) !== s || !s.demo || s.phase !== "ende") return;
+    // läuft am TV nichts mehr (Seite zu), endet die Demo
+    const socks = await io.in(s.code).fetchSockets();
+    if (!socks.some((k) => (k.data as SocketDaten).host)) return void raumWeg(s);
+    revanche(s);
+    try {
+      demoStarten(s);
+    } catch (err) {
+      diagnose("demo", `${s.code} Neustart fehlgeschlagen: ${(err as Error).message}`, true);
+      senden(s);
+    }
+  }, DEMO_NEUSTART_MS);
+  t.unref();
+  demoTimer.set(s.code, t);
+}
+
 // Laufende Nummer je Raum: jedes Senden zählt hoch – Geräte gleichen sie ab und holen Verpasstes nach
 const staende = new Map<string, number>();
 
@@ -275,7 +332,8 @@ beiNeuenSongs.add(() => {
 
 function senden(s: Spiel): void {
   autoWeiter(s);
-  spielEintragen(s);
+  if (!s.demo) spielEintragen(s);
+  if (s.demo && s.phase === "ende") demoNeustartPlanen(s);
   speichern(s);
   staende.set(s.code, (staende.get(s.code) ?? 0) + 1);
   const basis = { ...sicht(s), bestenliste: s.phase === "ende" ? bestenliste(5) : null };
@@ -651,20 +709,19 @@ export function socketsEinrichten(server: Server): void {
       "host:starten",
       sicher(() => {
         const s = hostRaum();
-        // Option „auffüllen“: bis 6 Mitspieler übernehmen Bots – Name und Stufe wählt die App
-        const stapel = stapelZiehen(auswahl(s));
-        const neueBots: string[] = [];
-        // genau die Bots, die die Lobby angekündigt hat
-        for (const b of botsDazu(s)) neueBots.push(botHinzufuegen(s, b.stufe, crypto.randomBytes(6).toString("base64url"), freieFarbe(s), Math.random, b).id);
-        try {
-          starten(s, stapel);
-        } catch (err) {
-          for (const id of neueBots) spielerEntfernen(s, id); // Start klappt nicht → Lobby wie vorher
-          throw err;
-        }
-        vorspielPlanen(s);
-        zugVorbereiten(s);
-        senden(s);
+        if (s.demo) throw new SpielFehler("Die Demo startet von selbst.");
+        mitBotsStarten(s);
+      }),
+    );
+
+    // Demo-Modus: Der TV stand 5 min unberührt in der Lobby – Bots spielen ein zufälliges Deck
+    socket.on(
+      "host:demo",
+      sicher(() => {
+        const s = hostRaum();
+        if (s.phase !== "lobby" || s.spieler.some((p) => !p.bot)) throw new SpielFehler("Demo nur in einer leeren Lobby.");
+        s.demo = true;
+        demoStarten(s);
       }),
     );
 
@@ -817,17 +874,18 @@ export function socketsEinrichten(server: Server): void {
   });
 }
 
+/** Anzahl laufender Spiele (gerade ein Song oder eine Auflösung, nicht Lobby, Endseite oder Demo) – für /healthz */
+export function laufendeSpiele(): number {
+  let n = 0;
+  for (const s of raeume.values()) if (!s.demo && (s.phase === "hoeren" || s.phase === "aufloesung")) n++;
+  return n;
+}
+
 /**
  * Cover, Details und Quelle (/api/cover, /api/details, /api/quelle) nur für Songs, die in einem offenen Spiel
  * aufgedeckt sind: in einem Zeitstrahl oder gerade in der Auflösung. Sonst ließe sich die ganze Bibliothek abfragen –
  * die Song-ID folgt aus der Deezer-/Apple-ID (Schlüssel steht im öffentlichen Repo).
  */
-/** Anzahl laufender Spiele (gerade ein Song oder eine Auflösung, nicht Lobby oder Endseite) – für /healthz */
-export function laufendeSpiele(): number {
-  let n = 0;
-  for (const s of raeume.values()) if (s.phase === "hoeren" || s.phase === "aufloesung") n++;
-  return n;
-}
 
 export function songIstAufgedeckt(songId: string): boolean {
   let offen = false;
