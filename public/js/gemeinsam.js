@@ -1397,45 +1397,52 @@ function taktSimulieren(eq, balken) {
     const r = e.getBoundingClientRect(), b = reihe.getBoundingClientRect();
     return r.left + r.width / 2 > b.left && r.left + r.width / 2 < b.right;
   };
-  const kachelnJetzt = () => {
-    const setup = [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e) && imBild(e));
-    if (setup.length) return setup;
-    const ende = [...document.querySelectorAll("#ende .reihe > button, #ende .reihe > a")].filter((e) => !e.disabled && sichtbar(e));
-    return ende.length ? ende : [...document.querySelectorAll(".start-wahl > .start-karte")].filter(sichtbar);
-  };
   const hauptknopf = () => ["#schritt-weiter", "#starten"].map((s) => document.querySelector(s)).find((e) => e && !e.disabled && sichtbar(e));
   const wer = fernseher ? "Fernbedienung" : "Tastatur";
   const taste = (text) => el("b", { text });
+  // Ziffernbelegung – mit „1“ allein kommt man vom Setup bis zum Spielstart:
+  //   Setup: 1 = Empfehlung (die vorgewählte Kachel) bzw. „Weiter (mit allen)“ / „Spiel starten“, die übrigen Kacheln 2, 3 …,
+  //          0 = Zurück. Siegerseite: 1 Revanche · 2 Neues Spiel · 3 Beenden. Startseite: 1 Spielen mit Code · 2 Party starten.
+  const belegung = () => {
+    const m = new Map();
+    const reihe = (liste, ab) => liste.slice(0, 10 - ab).forEach((e, i) => m.set(e, String(ab + i)));
+    const assistent = document.querySelector("#assistent");
+    if (assistent && sichtbar(assistent)) {
+      const alle = [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e));
+      const imBlick = alle.filter(imBild);
+      const haupt = hauptknopf();
+      const gewaehlt = alle.find((e) => e.getAttribute("aria-pressed") === "true");
+      if (haupt) { m.set(haupt, "1"); reihe(imBlick, 2); }
+      else if (gewaehlt) { m.set(gewaehlt, "1"); reihe(imBlick.filter((e) => e !== gewaehlt), 2); }
+      else reihe(imBlick, 1);
+      const zurueck = document.querySelector("#schritt-zurueck");
+      if (zurueck && sichtbar(zurueck)) m.set(zurueck, "0");
+      return m;
+    }
+    const ende = [...document.querySelectorAll("#ende .reihe > button, #ende .reihe > a")].filter((e) => !e.disabled && sichtbar(e));
+    if (ende.length) return reihe(ende, 1), m;
+    reihe([...document.querySelectorAll(".start-wahl > .start-karte")].filter(sichtbar), 1);
+    return m;
+  };
+  // Ziffern stehen immer im DOM (data-ziffer, für die Zifferntasten); sichtbar sind die Marken nur mit html.tasten-hinweise
   const zifferMarken = () => {
     const setup = document.querySelector("#schritt-inhalt");
     const start = document.querySelector(".start-wahl");
     const spiel = document.querySelector("#zeitstrahle");
     const endeBox = document.querySelector("#ende .buehne");
-    if (!marken || (!setup && !start)) return;
-    // Siegerseite: 1 Revanche · 2 Neues Spiel · 3 Beenden
-    if (endeBox && !document.querySelector(".ende-hinweis")) {
-      endeBox.after(el("p", { class: "ziffern-hinweis ende-hinweis", "aria-hidden": "true" },
-        `${wer}: `, taste("1"), taste("2"), taste("3"), " wählt · ", taste("◀"), taste("▶"), " wählen, ", taste("OK"), " bestätigt"));
-    }
-    // Spielbildschirm: unter den Spielerkarten, was die Fernbedienung dort kann (host.js: ←/→ schalten den Equalizer)
-    if (spiel && !document.querySelector(".spiel-hinweis")) {
-      spiel.after(el("p", { class: "ziffern-hinweis spiel-hinweis", "aria-hidden": "true" },
-        `${wer}: `, taste("◀"), taste("▶"), " Equalizer wechseln"));
-    }
-    const soll = new Map(kachelnJetzt().slice(0, 9).map((e, i) => [e, String(i + 1)]));
-    const knopf = setup && !document.querySelector("#ende .reihe [data-ziffer], #ende:not(.versteckt)") && hauptknopf();
-    if (knopf) soll.set(knopf, "0");
+    if (!setup && !start) return;
+    const soll = belegung();
     for (const e of document.querySelectorAll("[data-ziffer]")) if (!soll.has(e)) e.removeAttribute("data-ziffer");
     for (const [e, z] of soll) if (e.dataset.ziffer !== z) e.dataset.ziffer = z;
-    if (document.querySelector(".ziffern-hinweis:not(.spiel-hinweis):not(.ende-hinweis)")) return;
-    const assistent = document.querySelector("#assistent");
-    if (assistent) {
-      assistent.after(el("p", { class: "ziffern-hinweis", "aria-hidden": "true" },
-        `${wer}: `, taste("◀"), taste("▶"), " blättern · ", taste("1"), taste("2"), taste("3"), " … wählt · ", taste("OK"), " bestätigt · ", taste("0"), " = Weiter / Start"));
-    } else if (start) {
-      start.after(el("p", { class: "ziffern-hinweis", "aria-hidden": "true" },
-        `${wer}: `, taste("1"), " Spielen mit Code · ", taste("2"), " Party starten · ", taste("◀"), taste("▶"), " wählen, ", taste("OK"), " bestätigt"));
-    }
+    if (!marken) return;
+    const hinweis = (nach, klasse, ...teile) => {
+      if (nach && !document.querySelector(`.${klasse}`)) nach.after(el("p", { class: `ziffern-hinweis ${klasse}`, "aria-hidden": "true" }, `${wer}: `, ...teile));
+    };
+    hinweis(document.querySelector("#assistent"), "setup-hinweis",
+      taste("1"), " Empfehlung / Weiter / Start · ", taste("2"), taste("3"), " … wählen · ", taste("0"), " Zurück · ", taste("◀"), taste("▶"), " blättern");
+    hinweis(spiel, "spiel-hinweis", taste("◀"), taste("▶"), " Equalizer wechseln");
+    hinweis(endeBox, "ende-hinweis", taste("1"), " Revanche · ", taste("2"), " Neues Spiel · ", taste("3"), " Beenden");
+    hinweis(start, "start-hinweis", taste("1"), " Spielen mit Code · ", taste("2"), " Party starten");
   };
   // nach dem Blättern in der Galerie neu nummerieren
   document.addEventListener("scroll", () => planen(), { capture: true, passive: true });
@@ -1456,12 +1463,13 @@ function taktSimulieren(eq, balken) {
   new MutationObserver(planen).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
   addEventListener("load", planen);
 
-  // Zifferntasten 1–9 wählen im Setup direkt die n-te Kachel, 0 drückt „Weiter“ (Jahrzehnte, Genres, Start) –
-  // sie kommen auch bei TV-Browsern an, deren Pfeiltasten nur einen Mauszeiger schieben
+  // Zifferntasten drücken, was die Marke trägt (Belegung siehe belegung() oben) – sie kommen auch bei TV-Browsern an,
+  // deren Pfeiltasten nur einen Mauszeiger schieben
   document.addEventListener("keydown", (ev) => {
     if (!/^[0-9]$/.test(ev.key) || ev.altKey || ev.ctrlKey || ev.metaKey || ev.defaultPrevented) return;
     if (document.activeElement?.matches?.("input, textarea, select")) return;
-    const ziel = ev.key === "0" ? hauptknopf() : kachelnJetzt()[Number(ev.key) - 1];
+    zifferMarken();
+    const ziel = [...document.querySelectorAll(`[data-ziffer="${ev.key}"]`)].find((e) => !e.disabled && sichtbar(e));
     if (!ziel) return;
     ev.preventDefault();
     tastenModus(true);

@@ -931,6 +931,12 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 @media (max-width: 700px) {
   .start-wahl { gap: 12px; } /* auch am Handy zwei Kacheln nebeneinander, so groß wie in der Einrichtung */
 }
+/* Code-Feld groß über die ganze Kachelbreite (gut lesbar am Fernseher), das Bild rückt darüber */
+.code-reihe { right: 7cqw; }
+#beitreten-form .code-feld { flex: 1; width: auto; min-width: 0; height: 18cqw; font-size: 9cqw; }
+.code-reihe button { flex: none; width: 18cqw; height: 18cqw; }
+#beitreten-form .start-bild { width: 24cqw; bottom: 28cqw; }
+.start-karte .fehler { bottom: 29cqw; }
 /* schmale Kachel (Handy): Code-Feld breiter und mit 16px (sonst zoomt iOS beim Tippen), Bild darüber */
 @container (max-width: 240px) {
   .code-reihe { right: 7cqw; }
@@ -1980,12 +1986,14 @@ body.solo .qr-lobby { display: none !important; }
 /* Ziffern-Marken für Fernbedienung und Tastatur (gemeinsam.js zifferMarken) – am TV und am PC, nicht auf Touch-Geräten */
 html.tasten-hinweise #schritt-inhalt button[data-ziffer], html.tasten-hinweise .start-karte[data-ziffer] { position: relative; }
 html.tasten-hinweise #schritt-inhalt button[data-ziffer]::before, html.tasten-hinweise .start-karte[data-ziffer]::before {
-  content: attr(data-ziffer); position: absolute; top: 8px; left: 8px; z-index: 1; width: 30px; height: 30px; border-radius: 50%;
+  content: attr(data-ziffer); position: absolute; top: 8px; right: 8px; z-index: 1; width: 30px; height: 30px; border-radius: 50%;
   display: grid; place-items: center; background: rgba(22, 12, 38, 0.85); color: var(--gelb); border: 2px solid var(--gelb);
   font: 900 1rem/1 inherit; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 html.tasten-hinweise .start-karte[data-ziffer]::before { top: 12px; left: auto; right: 12px; }
-html.tasten-hinweise #schritt-weiter[data-ziffer]::before, html.tasten-hinweise #starten[data-ziffer]::before, html.tasten-hinweise #ende .reihe > [data-ziffer]::before {
+/* gewählte Mehrfach-Kachel: der Haken rückt links neben die Ziffer */
+html.tasten-hinweise #schritt-inhalt button.deck-knopf.mehrfach[data-ziffer]::after { right: 46px; }
+html.tasten-hinweise #schritt-weiter[data-ziffer]::before, html.tasten-hinweise #starten[data-ziffer]::before, html.tasten-hinweise #schritt-zurueck[data-ziffer]::before, html.tasten-hinweise #ende .reihe > [data-ziffer]::before {
   content: attr(data-ziffer); display: inline-grid; place-items: center; width: 1.5em; height: 1.5em; margin-right: 0.5em; border-radius: 50%;
   background: rgba(22, 12, 38, 0.85); color: var(--gelb); font-weight: 900; font-size: 0.85em; vertical-align: 0.1em;
 }
