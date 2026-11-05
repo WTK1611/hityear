@@ -150,10 +150,10 @@ input, select {
 }
 input:focus, select:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(61, 216, 255, 0.2); }
 /* gut sichtbarer Fokus – wichtig für die TV-Fernbedienung */
-button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visible, input[type=checkbox]:focus-visible {
+button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visible, input[type=checkbox]:focus-visible, body.tasten-aktiv button:focus, body.tasten-aktiv a:focus, body.tasten-aktiv summary:focus, body.tasten-aktiv select:focus, body.tasten-aktiv input[type=checkbox]:focus {
   outline: 4px solid var(--gelb); outline-offset: 4px; box-shadow: 0 0 0 10px rgba(255, 217, 61, 0.18);
 }
-button:focus-visible, .knopf:focus-visible { transform: scale(1.04); }
+button:focus-visible, .knopf:focus-visible, body.tasten-aktiv button:focus, body.tasten-aktiv .knopf:focus { transform: scale(1.04); }
 #raumcode { font-size: 1.6rem; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; text-align: center; }
 
 button, .knopf {
@@ -310,7 +310,7 @@ main.breit > .fehler:empty { min-height: 0; margin: 0; }
 @keyframes drehen { to { transform: rotate(360deg); } }
 /* Hauptbildschirm: Platte dreht per Skript (bremst ab, läuft an) und ist der Play/Pause-Knopf */
 .platte.handgedreht { animation: none; cursor: pointer; transition: box-shadow 0.2s; }
-.platte.handgedreht:hover, .platte.handgedreht:focus-visible { box-shadow: 0 0 0 10px #120a20, 0 0 0 12px var(--cyan), 0 30px 80px -20px var(--pink); outline: none; }
+.platte.handgedreht:hover, .platte.handgedreht:focus-visible, body.tasten-aktiv .platte.handgedreht:focus { box-shadow: 0 0 0 10px #120a20, 0 0 0 12px var(--cyan), 0 30px 80px -20px var(--pink); outline: none; }
 .platte.handgedreht.gesperrt { cursor: default; }
 .platte.handgedreht.gesperrt:hover { box-shadow: 0 0 0 10px #120a20, 0 0 0 11px var(--rand), 0 30px 80px -20px var(--pink); }
 .equalizer { display: flex; justify-content: center; align-items: flex-end; gap: 4px; height: 72px; width: clamp(160px, 100%, 440px); margin: 6px auto 14px; overflow: hidden; }
@@ -325,9 +325,9 @@ main.breit > .fehler:empty { min-height: 0; margin: 0; }
 .equalizer.takt i, .equalizer.simuliert i { animation: none !important; transition: height 0.12s ease-out; } /* Höhe setzt taktSimulieren() */
 .equalizer.versteckt { display: none; }
 .equalizer[role="button"] { cursor: pointer; border-radius: 10px; }
-.equalizer[role="button"]:focus-visible { outline: 2px solid var(--cyan); outline-offset: 6px; }
+.equalizer[role="button"]:focus-visible, body.tasten-aktiv .equalizer[role="button"]:focus { outline: 2px solid var(--cyan); outline-offset: 6px; }
 /* am Fernseher ist der Equalizer immer vorgewählt (←/→ wechselt den Stil): dort ohne Rahmen */
-main.tv-ansicht .equalizer[role="button"]:focus-visible { outline: none; }
+main.tv-ansicht .equalizer[role="button"]:focus-visible, body.tasten-aktiv main.tv-ansicht .equalizer[role="button"]:focus { outline: none; }
 /* Stile (Klick wechselt): Spiegel wächst aus der Mitte, Punkte springen, Neon leuchtet */
 .equalizer.eq-spiegel { align-items: center; }
 .equalizer.eq-punkte i { background: none; position: relative; }
@@ -603,7 +603,7 @@ main.tv-ansicht .equalizer[role="button"]:focus-visible { outline: none; }
 .schalter-bahn::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); transition: transform .3s cubic-bezier(.5,1.6,.4,1); }
 .schalter input:checked + .schalter-bahn { background: linear-gradient(90deg, #ff4fa3, #ffb347); border-color: transparent; }
 .schalter input:checked + .schalter-bahn::after { transform: translateX(22px); }
-.schalter input:focus-visible + .schalter-bahn { outline: 2px solid #fff; outline-offset: 2px; }
+.schalter input:focus-visible + .schalter-bahn, body.tasten-aktiv .schalter input:focus + .schalter-bahn { outline: 2px solid #fff; outline-offset: 2px; }
 .bot-marke { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; vertical-align: middle; background: rgba(155, 92, 255, 0.25); color: #d9c4ff; white-space: nowrap; }
 .bot-marke.leicht { background: rgba(61, 255, 176, 0.18); color: #9dffd6; }
 .bot-marke.profi { background: rgba(255, 61, 154, 0.22); color: #ffb3d6; }
@@ -896,7 +896,7 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 }
 .start-wahl > .box.start-karte + .start-karte { --farbton: 190; }
 .start-wahl > .start-karte:hover, .start-wahl > .start-karte:focus-within { transform: translateY(-3px); }
-.start-wahl > a.start-karte:focus-visible { outline: 4px solid var(--gelb); outline-offset: 4px; transform: scale(1.05); filter: brightness(1.12); box-shadow: 0 0 0 10px rgba(255, 217, 61, 0.18), 0 16px 34px -10px rgba(0, 0, 0, 0.75); }
+.start-wahl > a.start-karte:focus-visible, body.tasten-aktiv .start-wahl > a.start-karte:focus { outline: 4px solid var(--gelb); outline-offset: 4px; transform: scale(1.05); filter: brightness(1.12); box-shadow: 0 0 0 10px rgba(255, 217, 61, 0.18), 0 16px 34px -10px rgba(0, 0, 0, 0.75); }
 .start-karte h2 { margin: 0; font-weight: 900; letter-spacing: 0; }
 .start-karte h2 label { font: inherit; color: inherit; margin: 0; text-transform: none; letter-spacing: inherit; cursor: inherit; }
 .start-gross { position: absolute; left: 8cqw; top: 6.5cqw; font-size: 26cqw; line-height: 1; white-space: nowrap; }
@@ -1049,7 +1049,7 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 /* Live-Spiele: Zahl hinter „Cookies“, gleiche Größe, etwas blasser */
 .credits .live-zahl { opacity: 0.6; font-variant-numeric: tabular-nums; }
 .credits .live-zahl:empty { display: none; }
-.credits a:hover, .credits a:focus-visible { color: var(--text); text-decoration: underline; }
+.credits a:hover, .credits a:focus-visible, body.tasten-aktiv .credits a:focus { color: var(--text); text-decoration: underline; }
 @media (max-width: 560px) { .credits { gap: 8px; font-size: 0.68rem; } }
 
 /* Rechtstexte */
@@ -1074,7 +1074,7 @@ html:not([lang="de"]) #geschichte { display: none !important; }
   all: unset; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 999px;
   animation: flagge-wackeln 4s ease-in-out infinite;
 }
-.sprache-knopf:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+.sprache-knopf:focus-visible, body.tasten-aktiv .sprache-knopf:focus { outline: 3px solid var(--text); outline-offset: 3px; }
 .sprache-knopf:hover .flagge { transform: rotate(-10deg) scale(1.12); }
 .flagge { transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
 @keyframes flagge-wackeln { 0%, 86%, 100% { transform: rotate(0); } 89% { transform: rotate(-12deg); } 92% { transform: rotate(10deg); } 95% { transform: rotate(-6deg); } }
@@ -1094,8 +1094,8 @@ html:not([lang="de"]) #geschichte { display: none !important; }
 .sprache-liste button:nth-child(4) { animation-delay: .12s; } .sprache-liste button:nth-child(5) { animation-delay: .16s; }
 .sprache-liste button:nth-child(6) { animation-delay: .2s; }
 @keyframes sprache-hupf { from { opacity: 0; transform: translateX(14px); } }
-.sprache-liste button:hover, .sprache-liste button:focus-visible { background: rgba(255, 255, 255, 0.12); }
-.sprache-liste button:hover .flagge, .sprache-liste button:focus-visible .flagge { transform: rotate(-14deg) scale(1.15); }
+.sprache-liste button:hover, .sprache-liste button:focus-visible, body.tasten-aktiv .sprache-liste button:focus { background: rgba(255, 255, 255, 0.12); }
+.sprache-liste button:hover .flagge, .sprache-liste button:focus-visible .flagge, body.tasten-aktiv .sprache-liste button:focus .flagge { transform: rotate(-14deg) scale(1.15); }
 .sprache-liste button[aria-checked="true"] { background: linear-gradient(90deg, rgba(255, 61, 154, 0.35), rgba(255, 179, 71, 0.25)); }
 @media (prefers-reduced-motion: reduce) { .sprache-knopf, .sprache-liste, .sprache-liste button { animation: none; } }
 
@@ -1223,7 +1223,7 @@ div.startsong-cover { display: grid; place-items: center; font-size: 5rem; color
 .quelle-live:empty { display: none; }
 .quelle-hinweis { display: block; color: var(--leise); font-size: 0.8rem; font-weight: 600; }
 .quelle-link { color: var(--leise); text-decoration: underline dotted; text-underline-offset: 3px; }
-.quelle-link:hover, .quelle-link:focus-visible { color: var(--text); }
+.quelle-link:hover, .quelle-link:focus-visible, body.tasten-aktiv .quelle-link:focus { color: var(--text); }
 
 /* Startseite: Einstellungen für den Admin */
 .einstellungen-zeile { display: flex; justify-content: center; margin: 18px 0 0; }
@@ -1321,7 +1321,7 @@ button.deck-knopf.tipp { animation: tipp 0.38s var(--feder); }
 /* Schallplatte rutscht beim Zeigen ein Stück aus der Hülle und dreht sich */
 .deck-cover .platte { transform-box: view-box; transform-origin: 77px 66px; /* Mitte der Platte (host.js platteSvg) */ transition: transform 0.5s var(--feder); }
 .deck-cover .platte.im-stapel { transform-origin: 77px 68px; }
-.deck-knopf:hover .deck-cover .platte, .deck-knopf:focus-visible .deck-cover .platte, .deck-knopf[aria-pressed="true"] .deck-cover .platte { transform: translateX(5px) rotate(200deg); }
+.deck-knopf:hover .deck-cover .platte, .deck-knopf:focus-visible .deck-cover .platte, .deck-knopf[aria-pressed="true"] .deck-cover .platte, body.tasten-aktiv .deck-knopf:focus .deck-cover .platte { transform: translateX(5px) rotate(200deg); }
 @media (prefers-reduced-motion: reduce) { .deck-cover .platte { transition: none; } }
 .deck-cover .deck-titel { fill: #fff; font-size: 11px; font-weight: 900; }
 .deck-cover .kachel-fussnote { font-size: 4.8px; font-weight: 700; opacity: 0.9; }
@@ -1377,7 +1377,7 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 }
 /* Fokus (Fernbedienung/Tastatur): gelber Rahmen wie bei den Knöpfen, dazu hebt sich die Kachel und leuchtet auf –
    am Fernseher muss auf Abstand klar sein, welche Kachel gewählt ist */
-.deck-raster button.deck-knopf:focus-visible {
+.deck-raster button.deck-knopf:focus-visible, body.tasten-aktiv .deck-raster button.deck-knopf:focus {
   outline: 4px solid var(--gelb); outline-offset: 4px;
   box-shadow: 0 0 0 10px rgba(255, 217, 61, 0.18), 0 16px 34px -10px rgba(0, 0, 0, 0.75); filter: brightness(1.12); transform: scale(1.05);
 }
@@ -1450,9 +1450,9 @@ button.deck-knopf.mehrfach[aria-pressed="true"]::after { transform: scale(1); }
 .platz-raster .platz-weg::after { transform: rotate(-45deg); }
 .platz-raster button.platz-weg:hover, .platz-raster > .platz.bot:hover .platz-weg { background: #ff3d6e; transform: scale(1.1); }
 .platz-raster > .platz.klickbar { cursor: pointer; transition: transform 0.15s, filter 0.15s; }
-.platz-raster > .platz.klickbar:hover, .platz-raster > .platz.klickbar:focus-visible { transform: scale(1.03); filter: brightness(1.15); outline: none; }
+.platz-raster > .platz.klickbar:hover, .platz-raster > .platz.klickbar:focus-visible, body.tasten-aktiv .platz-raster > .platz.klickbar:focus { transform: scale(1.03); filter: brightness(1.15); outline: none; }
 .platz-raster > .platz.bot .platz-weg { opacity: 0; }
-.platz-raster > .platz.bot:hover .platz-weg, .platz-raster > .platz.bot:focus-visible .platz-weg { opacity: 1; }
+.platz-raster > .platz.bot:hover .platz-weg, .platz-raster > .platz.bot:focus-visible .platz-weg, body.tasten-aktiv .platz-raster > .platz.bot:focus .platz-weg { opacity: 1; }
 @media (hover: none) { .platz-raster > .platz.bot .platz-weg { opacity: 1; } }
 .platz-raster > .platz.frei.zurueckholen { opacity: 0.8; }
 .assistent-fuss { min-height: 60px; } /* so hoch wie „Spiel starten“ – der Rahmen springt auf der letzten Seite nicht */
@@ -1894,7 +1894,7 @@ main.recht { padding-bottom: 72px; }
   color: var(--leise); opacity: 0.7; transition: opacity .2s, transform .3s cubic-bezier(.3, 1.6, .5, 1);
 }
 .github-link svg { width: 100%; height: 100%; display: block; }
-.github-link:hover, .github-link:focus-visible { opacity: 1; color: var(--text); transform: rotate(-12deg) scale(1.2); }
+.github-link:hover, .github-link:focus-visible, body.tasten-aktiv .github-link:focus { opacity: 1; color: var(--text); transform: rotate(-12deg) scale(1.2); }
 main.recht ~ .credits {
   left: 0; right: 0; bottom: 0; z-index: 30; justify-content: flex-end; opacity: 1;
   padding: 18px 12px max(10px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(20, 14, 34, 0), #140e22 45%);
@@ -1985,15 +1985,15 @@ html.tasten-hinweise #schritt-inhalt button[data-ziffer]::before, html.tasten-hi
   font: 900 1rem/1 inherit; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 html.tasten-hinweise .start-karte[data-ziffer]::before { top: 12px; left: auto; right: 12px; }
-html.tasten-hinweise #schritt-weiter[data-ziffer]::before, html.tasten-hinweise #starten[data-ziffer]::before {
+html.tasten-hinweise #schritt-weiter[data-ziffer]::before, html.tasten-hinweise #starten[data-ziffer]::before, html.tasten-hinweise #ende .reihe > [data-ziffer]::before {
   content: attr(data-ziffer); display: inline-grid; place-items: center; width: 1.5em; height: 1.5em; margin-right: 0.5em; border-radius: 50%;
   background: rgba(22, 12, 38, 0.85); color: var(--gelb); font-weight: 900; font-size: 0.85em; vertical-align: 0.1em;
 }
 .ziffern-hinweis { display: none; }
-html.tasten-hinweise #lobby .ziffern-hinweis, html.tasten-hinweise .start-wahl + .ziffern-hinweis, html.tasten-hinweise #zeitstrahle + .ziffern-hinweis {
+html.tasten-hinweise #lobby .ziffern-hinweis, html.tasten-hinweise .start-wahl + .ziffern-hinweis, html.tasten-hinweise #zeitstrahle + .ziffern-hinweis, html.tasten-hinweise #ende .ziffern-hinweis {
   display: block; margin: 0; text-align: center; font-size: 0.95rem; font-weight: 700; color: var(--leise);
 }
-html.tasten-hinweise .start-wahl + .ziffern-hinweis, html.tasten-hinweise #zeitstrahle + .ziffern-hinweis { margin-top: 18px; }
+html.tasten-hinweise .start-wahl + .ziffern-hinweis, html.tasten-hinweise #zeitstrahle + .ziffern-hinweis, html.tasten-hinweise #ende .ziffern-hinweis { margin-top: 18px; }
 html.tasten-hinweise .ziffern-hinweis b {
   display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; padding: 0 4px; margin: 0 2px; border-radius: 999px;
   border: 2px solid var(--gelb); color: var(--gelb); font-size: 0.8em;

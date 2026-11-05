@@ -869,7 +869,7 @@
     if (aktiv && aktiv !== document.body && aktiv.offsetParent !== null && !aktiv.disabled) return;
     const k = ["#starten", "#schritt-weiter", "#schritt-inhalt [aria-pressed=true]", "#revanche"].map((id) => $(id))
       .find((b) => b && !b.disabled && b.offsetParent !== null && getComputedStyle(b).visibility !== "hidden");
-    k?.focus({ preventScroll: true });
+    k?.focus({ preventScroll: true, focusVisible: true }); // ohne focusVisible malt der TV-Browser keinen Rahmen
   }
 
   const name = (id) => zustand.spieler.find((p) => p.id === id)?.name ?? "?";

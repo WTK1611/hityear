@@ -1361,6 +1361,18 @@ function taktSimulieren(eq, balken) {
     if (textfeld && r[0] !== 0) return;
     const start = aktiv && aktiv !== document.body ? aktiv : null;
     const ziel = start ? naechstes(start, r) : vorschlag() ?? [...document.querySelectorAll(AUSWAHL)].find(sichtbar);
+    // Textseiten (So geht's, Impressum …): liegt das nächste Ziel mehr als eine Bildschirmhöhe weg, erst ein Stück
+    // scrollen, damit ▲/▼ den Text dazwischen nicht überspringen; ohne Ziel scrollt der Browser selbst
+    if (r[1] !== 0) {
+      const b = ziel?.getBoundingClientRect();
+      const weit = !b || (r[1] > 0 ? b.top > innerHeight * 1.1 : b.bottom < -innerHeight * 0.1);
+      const kannScrollen = r[1] > 0 ? scrollY + innerHeight < document.documentElement.scrollHeight - 2 : scrollY > 0;
+      if (weit && kannScrollen) {
+        ev.preventDefault();
+        scrollBy({ top: r[1] * innerHeight * 0.6, behavior: "smooth" });
+        return;
+      }
+    }
     if (!ziel) return;
     ev.preventDefault();
     ziel.focus({ preventScroll: true, focusVisible: true });
@@ -1368,9 +1380,13 @@ function taktSimulieren(eq, balken) {
   });
 
   // Tastatur-Modus: am Fernseher von Anfang an, sonst ab der ersten Pfeiltaste; ein Klick/Tipp beendet ihn
-  let tasten = fernseher;
-  document.addEventListener("keydown", (ev) => { if (RICHTUNG[ev.key]) tasten = true; }, true);
-  document.addEventListener("pointerdown", (ev) => { if (ev.pointerType !== "mouse" || !fernseher) tasten = false; }, true);
+  // body.tasten-aktiv (app.css): Fokus-Rahmen auch dann, wenn der Browser :focus-visible nicht setzt – manche
+  // TV-Browser schieben mit den Pfeiltasten zugleich einen Mauszeiger und zählen den Fokus dann als „Maus“
+  let tasten = false;
+  const tastenModus = (an) => { tasten = an; document.body.classList.toggle("tasten-aktiv", an); };
+  tastenModus(fernseher);
+  document.addEventListener("keydown", (ev) => { if (RICHTUNG[ev.key] || ev.key === "Enter") tastenModus(true); }, true);
+  document.addEventListener("pointerdown", (ev) => { if (ev.pointerType !== "mouse" || !fernseher) tastenModus(false); }, true);
 
   // in dieser Reihenfolge: ausdrücklich vorgewählt, im Setup der Hauptknopf („Weiter“, „Weiter mit allen“,
   // „Spiel starten“), wo es keinen gibt die gewählte Kachel, sonst die erste Kachel
@@ -1395,7 +1411,9 @@ function taktSimulieren(eq, balken) {
   };
   const kachelnJetzt = () => {
     const setup = [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e) && imBild(e));
-    return setup.length ? setup : [...document.querySelectorAll(".start-wahl > .start-karte")].filter(sichtbar);
+    if (setup.length) return setup;
+    const ende = [...document.querySelectorAll("#ende .reihe > button, #ende .reihe > a")].filter((e) => !e.disabled && sichtbar(e));
+    return ende.length ? ende : [...document.querySelectorAll(".start-wahl > .start-karte")].filter(sichtbar);
   };
   const hauptknopf = () => ["#schritt-weiter", "#starten"].map((s) => document.querySelector(s)).find((e) => e && !e.disabled && sichtbar(e));
   const wer = fernseher ? "Fernbedienung" : "Tastatur";
@@ -1404,18 +1422,24 @@ function taktSimulieren(eq, balken) {
     const setup = document.querySelector("#schritt-inhalt");
     const start = document.querySelector(".start-wahl");
     const spiel = document.querySelector("#zeitstrahle");
+    const endeBox = document.querySelector("#ende .buehne");
     if (!marken || (!setup && !start)) return;
+    // Siegerseite: 1 Revanche · 2 Neues Spiel · 3 Beenden
+    if (endeBox && !document.querySelector(".ende-hinweis")) {
+      endeBox.after(el("p", { class: "ziffern-hinweis ende-hinweis", "aria-hidden": "true" },
+        `${wer}: `, taste("1"), taste("2"), taste("3"), " wählt · ", taste("◀"), taste("▶"), " wählen, ", taste("OK"), " bestätigt"));
+    }
     // Spielbildschirm: unter den Spielerkarten, was die Fernbedienung dort kann (host.js: ←/→ schalten den Equalizer)
     if (spiel && !document.querySelector(".spiel-hinweis")) {
       spiel.after(el("p", { class: "ziffern-hinweis spiel-hinweis", "aria-hidden": "true" },
         `${wer}: `, taste("◀"), taste("▶"), " Equalizer wechseln"));
     }
     const soll = new Map(kachelnJetzt().slice(0, 9).map((e, i) => [e, String(i + 1)]));
-    const knopf = setup && hauptknopf();
+    const knopf = setup && !document.querySelector("#ende .reihe [data-ziffer], #ende:not(.versteckt)") && hauptknopf();
     if (knopf) soll.set(knopf, "0");
     for (const e of document.querySelectorAll("[data-ziffer]")) if (!soll.has(e)) e.removeAttribute("data-ziffer");
     for (const [e, z] of soll) if (e.dataset.ziffer !== z) e.dataset.ziffer = z;
-    if (document.querySelector(".ziffern-hinweis:not(.spiel-hinweis)")) return;
+    if (document.querySelector(".ziffern-hinweis:not(.spiel-hinweis):not(.ende-hinweis)")) return;
     const assistent = document.querySelector("#assistent");
     if (assistent) {
       assistent.after(el("p", { class: "ziffern-hinweis", "aria-hidden": "true" },
@@ -1452,7 +1476,7 @@ function taktSimulieren(eq, balken) {
     const ziel = ev.key === "0" ? hauptknopf() : kachelnJetzt()[Number(ev.key) - 1];
     if (!ziel) return;
     ev.preventDefault();
-    tasten = true;
+    tastenModus(true);
     // Startseite „Spielen mit Code“: ins Codefeld springen statt das Formular abzuschicken
     const feld = ziel.matches("form") ? ziel.querySelector("input") : null;
     if (feld) return void feld.focus({ focusVisible: true });
