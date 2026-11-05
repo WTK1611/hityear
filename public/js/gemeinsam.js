@@ -979,7 +979,16 @@ function funken(von) {
 // Bildschirmen ohne Touch (Laptop, Desktop) und nur am Hauptbildschirm und auf der Startseite. Handys, Tablets
 // und Fernseher bekommen immer den ruhenden Verlauf ohne Animation und ohne Weichzeichner: Der teure Hintergrund
 // hat iPhones bei jedem Rundenwechsel sekundenlang eingefroren, und TV-Browser haben noch weniger Rechenleistung.
-const fernseher = /SMART-?TV|SmartTV|Tizen|Web0S|webOS|NetCast|VIDAA|Hisense|HbbTV|BRAVIA|PhilipsTV|Android TV|GoogleTV|AFT[A-Z]|CrKey|Roku|AppleTV|TV Safari|\bTV\b/i.test(navigator.userAgent);
+// TV-Modus von Hand: ?tv=1 schaltet ihn auf diesem Gerät dauerhaft ein, ?tv=0 wieder aus (für TV-Browser, die sich
+// wie ein Desktop-Browser melden, z. B. manche Hisense/VIDAA-Browser)
+const tvVonHand = (() => {
+  const wert = new URLSearchParams(location.search).get("tv");
+  try {
+    if (wert === "1" || wert === "0") localStorage.setItem("hityear-tv", wert);
+    return localStorage.getItem("hityear-tv");
+  } catch { return wert; }
+})();
+const fernseher = tvVonHand === "1" || (tvVonHand !== "0" && /SMART-?TV|SmartTV|Tizen|Web0S|webOS|NetCast|VIDAA|Hisense|HbbTV|BRAVIA|PhilipsTV|Android TV|GoogleTV|AFT[A-Z]|CrKey|Roku|AppleTV|TV Safari|\bTV\b/i.test(navigator.userAgent));
 const grosserBildschirm = !fernseher && matchMedia("(min-width: 1024px)").matches && !matchMedia("(pointer: coarse)").matches;
 // Sparmodus (app.css: html.sparsam): keine Dauer-Animationen, die jedes Bild neu malen. Immer auf Fernsehern,
 // sonst nur auf alten Geräten (höchstens 2 Kerne oder 2 GB Speicher) – aktuelle Tablets und Handys behalten alles.
@@ -1347,6 +1356,21 @@ function taktSimulieren(eq, balken) {
   new MutationObserver(planen).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
   addEventListener("load", planen);
 
+  // Zifferntasten 1–9 wählen im Setup direkt die n-te Kachel, 0 drückt „Weiter“ (Jahrzehnte, Genres, Start) –
+  // sie kommen auch bei TV-Browsern an, deren Pfeiltasten nur einen Mauszeiger schieben
+  document.addEventListener("keydown", (ev) => {
+    if (!/^[0-9]$/.test(ev.key) || ev.altKey || ev.ctrlKey || ev.metaKey || ev.defaultPrevented) return;
+    if (document.activeElement?.matches?.("input, textarea, select")) return;
+    const kacheln = [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e));
+    const ziel = ev.key === "0" ? ["#schritt-weiter", "#starten"].map((s) => document.querySelector(s)).find((e) => e && !e.disabled && sichtbar(e)) : kacheln[Number(ev.key) - 1];
+    if (!ziel) return;
+    ev.preventDefault();
+    tasten = true;
+    ziel.focus({ preventScroll: true, focusVisible: true });
+    ziel.scrollIntoView({ block: "nearest", inline: "nearest" });
+    ziel.click();
+  });
+
   // Zurück-Taste der Fernbedienung (webOS 461, Tizen 10009, Android TV „GoBack“) – im Setup ein Schritt zurück
   document.addEventListener("keydown", (ev) => {
     const zurueck = ev.keyCode === 461 || ev.keyCode === 10009 || ev.key === "GoBack" || ev.key === "BrowserBack";
@@ -1554,8 +1578,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const FUSS = 30; // Fußzeile (Impressum …) unten frei lassen
   let zoom = 1;
   let geplant = 0;
-  // Unterkante des Inhalts = Unterkante von main (im TV-Modus ohne Innenabstand unten, siehe app.css)
-  const unterkante = () => main.getBoundingClientRect().bottom + scrollY;
+  // Unterkante des Inhalts = Oberkante einer leeren Marke direkt hinter main (im TV-Modus ohne Innenabstand unten,
+  // siehe app.css). Die Marke selbst ist nicht gezoomt: Ältere Chromium-Browser (viele Fernseher, vor Chrome 128)
+  // liefern für ein gezoomtes Element ungezoomte Maße – dann schrumpfte der Zoom Schritt für Schritt bis 0.35.
+  const marke = document.createElement("div");
+  marke.setAttribute("aria-hidden", "true");
+  main.after(marke);
+  const unterkante = () => marke.getBoundingClientRect().top + scrollY;
   const einpassen = () => {
     geplant = 0;
     let ziel = 1;
@@ -1592,3 +1621,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const handy = matchMedia("(pointer: coarse) and (max-width: 500px), (pointer: coarse) and (max-height: 500px)");
   if (handy.matches) screen.orientation?.lock?.("portrait").catch(() => {});
 })();
+
+// Tasten-Test für Fernseher: ?tasten zeigt Browser-Kennung, Bildschirm und die zuletzt gedrückten Tasten
+if (new URLSearchParams(location.search).has("tasten")) {
+  const box = el("pre", { class: "tasten-test" });
+  const zeilen = [];
+  const zeigen = () => {
+    box.textContent = `TV-Modus: ${fernseher ? "ja" : "nein"}${tvVonHand ? ` (von Hand: ${tvVonHand})` : ""}\n${navigator.userAgent}\n` +
+      `Bildschirm ${screen.width}×${screen.height}, Fenster ${innerWidth}×${innerHeight}, Zeiger ${matchMedia("(pointer: fine)").matches ? "fein" : matchMedia("(pointer: coarse)").matches ? "grob" : "keiner"}\n\n` +
+      (zeilen.length ? zeilen.join("\n") : "Noch keine Taste empfangen – bitte Pfeiltasten, OK und Ziffern drücken.");
+  };
+  for (const art of ["keydown", "keyup"]) {
+    addEventListener(art, (ev) => {
+      zeilen.unshift(`${art === "keydown" ? "▼" : "▲"} key=${ev.key} code=${ev.code} keyCode=${ev.keyCode}`);
+      zeilen.length = Math.min(zeilen.length, 12);
+      zeigen();
+    }, true);
+  }
+  zeigen();
+  document.body.append(box);
+}

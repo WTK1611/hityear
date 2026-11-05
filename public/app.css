@@ -1963,3 +1963,7 @@ body.solo .qr-lobby { display: none !important; }
   main.breit:has(> #spiel:not(.versteckt)) > .marke .wortmarke { display: none; }
 }
 #spiel #hinweis:empty { display: none; } /* leer (Song läuft): keine Leerzeile unter dem EQ */
+
+/* Tasten-Test (?tasten): Anzeige oben links über allem */
+.tasten-test { position: fixed; left: 12px; top: 12px; z-index: 9999; max-width: min(92vw, 900px); margin: 0; padding: 14px 16px; border-radius: 12px;
+  background: rgba(10, 6, 20, 0.92); color: #fff; font: 600 16px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; pointer-events: none; }
