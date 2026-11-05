@@ -1336,10 +1336,12 @@ function taktSimulieren(eq, balken) {
   function naechstes(von, [dx, dy]) {
     const a = von.getBoundingClientRect();
     const ax = a.left + a.width / 2, ay = a.top + a.height / 2;
+    // offenes Menü (Sprachwahl): die Pfeile bleiben darin und springen nicht auf die Seite dahinter
+    const menue = von.closest(".sprache-liste");
     let bestes = null, bestWert = Infinity;
     for (const e of document.querySelectorAll(AUSWAHL)) {
       // Fußzeile (Impressum …) nicht per Pfeil anspringen: Sie läge sonst „rechts“ von jeder Kachelreihe
-      if (e === von || !sichtbar(e) || e.closest(".credits")) continue;
+      if (e === von || !sichtbar(e) || e.closest(".credits") || (menue && !menue.contains(e))) continue;
       const b = e.getBoundingClientRect();
       const bx = b.left + b.width / 2, by = b.top + b.height / 2;
       // Abstand in Pfeilrichtung (muss positiv sein) und quer dazu (wird stärker bestraft)
@@ -1360,7 +1362,11 @@ function taktSimulieren(eq, balken) {
     const textfeld = aktiv?.matches?.("input:not([type=checkbox]):not([type=radio]), textarea");
     if (textfeld && r[0] !== 0) return;
     const start = aktiv && aktiv !== document.body ? aktiv : null;
-    const ziel = start ? naechstes(start, r) : vorschlag() ?? [...document.querySelectorAll(AUSWAHL)].find(sichtbar);
+    let ziel = start ? naechstes(start, r) : vorschlag() ?? [...document.querySelectorAll(AUSWAHL)].find(sichtbar);
+    // im Menü oben/unten im Kreis: nach der letzten Sprache wieder die erste
+    const menue = start?.closest(".sprache-liste");
+    if (!ziel && menue && r[1]) ziel = [...menue.querySelectorAll("button")].filter(sichtbar).at(r[1] > 0 ? 0 : -1);
+    if (!ziel && menue) return void ev.preventDefault();
     if (!ziel) return;
     ev.preventDefault();
     ziel.focus({ preventScroll: true, focusVisible: true });
@@ -1406,6 +1412,14 @@ function taktSimulieren(eq, balken) {
   const belegung = () => {
     const m = new Map();
     const reihe = (liste, ab) => liste.slice(0, 10 - ab).forEach((e, i) => m.set(e, String(ab + i)));
+    // Sprachwahl offen: 1, 2, 3 … = Sprachen, 0 = Menü schließen (der Flaggen-Knopf klappt es zu)
+    const sprachen = document.querySelector(".sprache-liste");
+    if (sprachen && !sprachen.hidden) {
+      reihe([...sprachen.querySelectorAll("button")].filter(sichtbar), 1);
+      const knopf = document.querySelector(".sprache-knopf");
+      if (knopf) m.set(knopf, "0");
+      return m;
+    }
     const assistent = document.querySelector("#assistent");
     if (assistent && sichtbar(assistent)) {
       const alle = [...document.querySelectorAll("#schritt-inhalt button:not(.galerie-pfeil)")].filter((e) => !e.disabled && sichtbar(e));
@@ -1427,6 +1441,9 @@ function taktSimulieren(eq, balken) {
     const ende = [...document.querySelectorAll("#ende .reihe > button, #ende .reihe > a")].filter((e) => !e.disabled && sichtbar(e));
     if (ende.length) return reihe(ende, 1), m;
     reihe([...document.querySelectorAll(".start-wahl > .start-karte")].filter(sichtbar), 1);
+    // Startseite: die nächste Ziffer (3) öffnet die Sprachwahl
+    const sprache = document.querySelector(".sprache-knopf");
+    if (m.size && sprache && sichtbar(sprache)) m.set(sprache, String(m.size + 1));
     return m;
   };
   // Ziffern stehen immer im DOM (data-ziffer, für die Zifferntasten); sichtbar sind die Marken nur mit html.tasten-hinweise
@@ -1447,7 +1464,7 @@ function taktSimulieren(eq, balken) {
       taste("1"), " Empfehlung / Weiter / Start · ", taste("2"), taste("3"), " … wählen · ", taste("0"), " Zurück · ", taste("◀"), taste("▶"), " blättern");
     hinweis(spiel, "spiel-hinweis", taste("◀"), taste("▶"), " Equalizer wechseln");
     hinweis(endeBox, "ende-hinweis", taste("1"), " Revanche · ", taste("2"), " Neues Spiel · ", taste("3"), " Beenden");
-    hinweis(start, "start-hinweis", taste("1"), " Spielen mit Code · ", taste("2"), " Party starten");
+    hinweis(start, "start-hinweis", taste("1"), " Spielen mit Code · ", taste("2"), " Party starten · ", taste("3"), " Sprache");
   };
   // nach dem Blättern in der Galerie neu nummerieren
   document.addEventListener("scroll", () => planen(), { capture: true, passive: true });
@@ -1499,6 +1516,12 @@ function taktSimulieren(eq, balken) {
   document.addEventListener("keydown", (ev) => {
     const zurueck = ev.keyCode === 461 || ev.keyCode === 10009 || ev.key === "GoBack" || ev.key === "BrowserBack";
     if (!zurueck) return;
+    // offene Sprachwahl: zuerst nur das Menü schließen
+    const sprachen = document.querySelector(".sprache-liste");
+    if (sprachen && !sprachen.hidden) {
+      ev.preventDefault();
+      return void document.querySelector(".sprache-knopf")?.click();
+    }
     const knopf = document.querySelector("#schritt-zurueck");
     if (knopf && sichtbar(knopf)) {
       ev.preventDefault();

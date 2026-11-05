@@ -131,14 +131,17 @@ document.fonts?.ready.then(startTitelEinpassen);
     }, flagge(s.code), s.name)));
   const knopf = el("button", { type: "button", class: "sprache-knopf", "aria-haspopup": "true", "aria-expanded": "false", title: "Sprache wählen", "aria-label": "Sprache wählen" }, flagge(SPRACHE));
   const zu = () => {
+    // Fokus stand im Menü (Fernbedienung/Tastatur): zurück auf die Flagge, sonst wäre er weg
+    if (!liste.hidden && liste.contains(document.activeElement)) knopf.focus({ focusVisible: true });
     liste.hidden = true;
     knopf.setAttribute("aria-expanded", "false");
   };
   knopf.addEventListener("click", (e) => {
     e.stopPropagation();
-    liste.hidden = !liste.hidden;
-    knopf.setAttribute("aria-expanded", String(!liste.hidden));
-    if (!liste.hidden) liste.querySelector('[aria-checked="true"]')?.focus();
+    if (!liste.hidden) return zu();
+    liste.hidden = false;
+    knopf.setAttribute("aria-expanded", "true");
+    liste.querySelector('[aria-checked="true"]')?.focus({ focusVisible: true });
   });
   document.addEventListener("click", (e) => !liste.contains(e.target) && zu());
   document.addEventListener("keydown", (e) => e.key === "Escape" && zu());

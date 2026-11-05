@@ -1990,6 +1990,17 @@ html.tasten-hinweise #schritt-inhalt button[data-ziffer]::before, html.tasten-hi
   font: 900 1rem/1 inherit; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 html.tasten-hinweise .start-karte[data-ziffer]::before { top: 12px; left: auto; right: 12px; }
+/* Sprachwahl: Ziffer klein an der Flagge (3 öffnet, 0 schließt), im Menü vor jeder Sprache */
+html.tasten-hinweise .sprache-knopf[data-ziffer] { position: relative; }
+html.tasten-hinweise .sprache-knopf[data-ziffer]::before {
+  content: attr(data-ziffer); position: absolute; left: -8px; bottom: -6px; z-index: 1; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center; background: rgba(22, 12, 38, 0.9); color: var(--gelb); border: 2px solid var(--gelb);
+  font: 900 0.75rem/1 inherit;
+}
+html.tasten-hinweise .sprache-liste button[data-ziffer]::before {
+  content: attr(data-ziffer); display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(22, 12, 38, 0.85); color: var(--gelb); border: 2px solid var(--gelb); font: 900 0.85rem/1 inherit;
+}
 html.tasten-hinweise #schritt-inhalt button.galerie-pfeil[data-ziffer]::before { top: -10px; right: -10px; width: 26px; height: 26px; font-size: 0.85rem; }
 /* gewählte Mehrfach-Kachel: der Haken rückt links neben die Ziffer */
 html.tasten-hinweise #schritt-inhalt button.deck-knopf.mehrfach[data-ziffer]::after { right: 46px; }
