@@ -25,7 +25,14 @@ import { dienstLink, dienstName, liveTreffer } from "./vorschau.ts";
 import {
   clientIp, cookieLoeschen, cookieSetzen, istHttps, loginErlaubt, loginFehlschlag, passwortPruefen, rolleAusCookie,
 } from "./auth.ts";
-import { einladungFuer, einladungGueltig, raumPruefenErlaubt, raumStatus, raeumeLaden, socketsEinrichten, songIstAufgedeckt } from "./raeume.ts";
+import { einladungFuer, einladungGueltig, laufendeSpiele, raumPruefenErlaubt, raumStatus, raeumeLaden, socketsEinrichten, songIstAufgedeckt } from "./raeume.ts";
+
+// App-Version für die Fußzeile: package.json-Version und kurzer Commit (meta/STAND aus dem Ausrollen), lokal „dev“
+const VERSION = (() => {
+  const lesen = (datei: string) => { try { return fs.readFileSync(path.join(process.cwd(), datei), "utf8").trim(); } catch { return ""; } };
+  const paket = (() => { try { return String(JSON.parse(lesen("package.json")).version ?? ""); } catch { return ""; } })();
+  return `${paket || "0"}-${lesen("meta/STAND") || "dev"}`;
+})();
 
 // Letzte Absicherung: ein einzelner Fehler (Timer, Stream, Promise) darf nicht alle laufenden Spiele beenden
 process.on("uncaughtException", (err) => console.error("[zeitstrahl] unbehandelter Fehler:", err));
@@ -494,7 +501,7 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   sicherheitsHeader(res, url.pathname);
   try {
-    if (url.pathname === "/healthz") return json(res, 200, { ok: true, songs: statistik().songs });
+    if (url.pathname === "/healthz") return json(res, 200, { ok: true, songs: statistik().songs, spiele: laufendeSpiele(), version: VERSION });
     if (url.pathname.startsWith("/api/")) return await api(req, res, url);
     // Kurzlink aus dem QR-Code → Spielerseite mit Einladung
     const kurz = /^\/s\/([A-Za-z0-9]{4,6})\.([A-Za-z0-9_-]{6,32})$/.exec(url.pathname);

@@ -1510,9 +1510,23 @@ document.addEventListener("DOMContentLoaded", () => {
       el("a", { href: "/datenschutz.html", text: "Datenschutz" }),
       el("a", { href: "/nutzungsbedingungen.html", text: "AGB" }),
       el("a", { href: "/cookies.html", text: "Cookies" }),
+      el("span", { class: "live-zahl", title: "Spiele gerade live · App-Version", "aria-hidden": "true" }),
     ),
     el("a", { class: "github-link", href: "https://github.com/WTK1611/hityear", target: "_blank", rel: "noopener", "aria-label": "Quellcode auf GitHub", title: "Quellcode auf GitHub (Open Source, nicht kommerziell)", tabindex: "-1" }, svg),
   );
+});
+
+// Hinter „Cookies“: wie viele Spiele gerade laufen und die App-Version (aus /healthz), jede Minute neu
+document.addEventListener("DOMContentLoaded", () => {
+  const holen = () => {
+    if (document.hidden) return;
+    fetch("/healthz").then((r) => r.json()).then((d) => {
+      const zahl = document.querySelector(".live-zahl");
+      if (zahl && Number.isFinite(d.spiele)) zahl.textContent = d.version ? `${d.spiele} · ${d.version}` : String(d.spiele);
+    }).catch(() => {});
+  };
+  holen();
+  setInterval(holen, 60_000);
 });
 
 // ---------- Statistik (Matomo, nur nach Einwilligung) ----------

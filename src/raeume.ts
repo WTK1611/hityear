@@ -162,9 +162,30 @@ function autoWeiter(s: Spiel): void {
   const t = setTimeout(async () => {
     const aktuell = () => raeume.get(s.code) === s && s.zug === zug && s.phase === "aufloesung";
     if (!aktuell()) return void weiterTimer.delete(s.code);
-    // niemand (außer Bots) mehr da → pausieren; sobald jemand zurückkommt, geht es per senden() weiter
+    // niemand (außer Bots) mehr da (Handy gesperrt, Safari im Hintergrund): TV zeigt „Warte auf …“ mit Countdown;
+    // kommt jemand zurück, geht es sofort weiter, sonst nach OFFLINE_WARTEN_MS trotzdem. Nach OFFLINE_RUNDEN Runden
+    // ohne einen echten Spieler pausiert das Spiel ganz; sobald jemand zurückkommt, geht es per senden() weiter.
     // (ein reines Bot-Spiel läuft einfach durch)
-    if (s.spieler.some((p) => !p.bot) && !s.spieler.some((p) => !p.bot && p.verbunden)) return void weiterTimer.delete(s.code);
+    const keinerDa = () => s.spieler.some((p) => !p.bot) && !s.spieler.some((p) => !p.bot && p.verbunden);
+    if (keinerDa()) {
+      const runden = offlineRunden.get(s.code) ?? 0;
+      if (runden >= OFFLINE_RUNDEN) {
+        warten.set(s.code, s.spieler.filter((p) => !p.bot).map((p) => `${p.name} (offline)`));
+        wartenBis.delete(s.code);
+        senden(s);
+        return void weiterTimer.delete(s.code);
+      }
+      const bis = Date.now() + OFFLINE_WARTEN_MS;
+      warten.set(s.code, s.spieler.filter((p) => !p.bot).map((p) => `${p.name} (offline)`));
+      wartenBis.set(s.code, bis);
+      diagnose("bereit", `${s.code} alle offline, wartet ${OFFLINE_WARTEN_MS / 1000} s (Runde ${runden + 1}/${OFFLINE_RUNDEN})`);
+      senden(s);
+      while (aktuell() && keinerDa() && Date.now() < bis) await new Promise((r) => setTimeout(r, 300));
+      wartenBis.delete(s.code);
+      warten.delete(s.code);
+      if (!aktuell()) return void weiterTimer.delete(s.code);
+      offlineRunden.set(s.code, keinerDa() ? runden + 1 : 0);
+    } else offlineRunden.delete(s.code);
     // Handshake: Der Eintrag in weiterTimer bleibt währenddessen stehen, damit senden() keinen zweiten Wechsel plant
     await alleBereit(s, aktuell);
     weiterTimer.delete(s.code);
@@ -186,6 +207,12 @@ const BEREIT_MAX_MS = 10_000;
 const BEREIT_ANTWORT_MS = 1500;
 /** Raum → Namen der Spieler, auf die gerade gewartet wird */
 const warten = new Map<string, string[]>();
+/** Raum → bis wann auf offline Spieler gewartet wird (Countdown am TV), danach geht es ohne sie weiter */
+const wartenBis = new Map<string, number>();
+/** Raum → Runden in Folge, die ohne einen verbundenen echten Spieler weitergingen */
+const offlineRunden = new Map<string, number>();
+const OFFLINE_WARTEN_MS = Number(process.env.ZEITSTRAHL_OFFLINE_MS) || 15_000;
+const OFFLINE_RUNDEN = 3;
 
 async function alleBereit(s: Spiel, aktuell: () => boolean): Promise<void> {
   const start = Date.now();
@@ -226,6 +253,7 @@ function zustandFuer(s: Spiel, d: SocketDaten, basis = { ...sicht(s), bestenlist
     ...basis,
     stand,
     wartetAuf: s.phase === "aufloesung" ? warten.get(s.code) ?? null : null,
+    wartenBis: s.phase === "aufloesung" ? wartenBis.get(s.code) ?? null : null,
     um: Date.now(), // Sendezeit (Serveruhr): Geräte melden damit zu späte Zustände
     ich: d.spielerId ?? null,
     host: Boolean(d.host),
@@ -794,6 +822,13 @@ export function socketsEinrichten(server: Server): void {
  * aufgedeckt sind: in einem Zeitstrahl oder gerade in der Auflösung. Sonst ließe sich die ganze Bibliothek abfragen –
  * die Song-ID folgt aus der Deezer-/Apple-ID (Schlüssel steht im öffentlichen Repo).
  */
+/** Anzahl laufender Spiele (gerade ein Song oder eine Auflösung, nicht Lobby oder Endseite) – für /healthz */
+export function laufendeSpiele(): number {
+  let n = 0;
+  for (const s of raeume.values()) if (s.phase === "hoeren" || s.phase === "aufloesung") n++;
+  return n;
+}
+
 export function songIstAufgedeckt(songId: string): boolean {
   let offen = false;
   for (const s of raeume.values()) {

@@ -902,8 +902,9 @@
   }
 
   // ---------- Spiel ----------
-  // Der Server hält nach der Auflösung an, solange kein echter Mitspieler verbunden ist (Handy gesperrt, Safari im
-  // Hintergrund). Dann zeigt die Uhr, auf wen gewartet wird – sonst sähe das Spiel am TV einfach eingefroren aus.
+  // Ist kein echter Mitspieler verbunden (Handy gesperrt, Safari im Hintergrund), wartet der Server nach der Auflösung
+  // mit Countdown (wartenBis) und spielt dann ohne sie weiter; nach 3 solchen Runden hält er ganz an. Auch dann zeigt
+  // die Uhr, auf wen gewartet wird – sonst sähe das Spiel am TV einfach eingefroren aus.
   const pauseWegen = (z) => {
     const menschen = z.spieler.filter((p) => !p.bot);
     return menschen.length && !menschen.some((p) => p.verbunden) ? menschen.map((p) => `${p.name} (offline)`) : null;
@@ -923,7 +924,8 @@
     // Abschnitte der Sanduhr: Zeit zum Einordnen (alle haben getippt → bis zur Auflösung), nächster Song; vor dem Songstart keine Uhr
     sanduhr($("#sanduhr"), hoeren
       ? [{ ab: z.startUm, bis: z.frist ?? z.aufloesungUm, label: z.frist ? "Zeit zum Einordnen" : "Auflösung kommt" }]
-      : [{ bis: z.weiterUm, label: "Nächster Song" }], hoeren ? null : z.wartetAuf ?? pauseWegen(z));
+      : [{ bis: z.weiterUm, label: "Nächster Song" }, ...(z.wartenBis && z.wartetAuf ? [{ bis: z.wartenBis, label: `Warte auf ${z.wartetAuf.join(" & ")} …` }] : [])],
+      hoeren ? null : z.wartetAuf ?? pauseWegen(z));
     $("#jahr-gross").classList.toggle("versteckt", hoeren);
     leisteAufladen($("#t-leiste").parentElement, hoeren ? z.startUm : null);
 

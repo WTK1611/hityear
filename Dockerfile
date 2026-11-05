@@ -10,6 +10,8 @@ RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
 COPY src ./src
 COPY public ./public
 COPY data ./data
+# Stand (kurzer Commit, schreibt deploy/ausrollen.sh) für die Versionsanzeige; das Dockerfile nur, damit COPY nie leer ist
+COPY Dockerfile STAND* ./meta/
 
 ENV NODE_ENV=production \
     PORT=3700 \
