@@ -849,10 +849,17 @@
       void tun("host:beenden").finally(() => setTimeout(() => (location.href = "/host.html?neu"), 1500));
     }, { capture: true, passive: art === "pointermove" || art === "wheel" });
   }
+  // Ebenso, wenn das Spiel 5 min angehalten ist, weil kein echter Spieler mehr verbunden ist (Server: nach 3 Runden
+  // ohne jemanden ganz angehalten – „Warte auf …“ ohne Countdown). Sonst stünde der TV endlos still.
+  let pauseSeit = 0;
   setInterval(() => {
-    if ((!fernseher && !(demoTest > 0)) || !zustand || zustand.demo || zustand.phase !== "lobby") return;
-    if (zustand.spieler.some((p) => !p.bot) || document.hidden) return;
-    if (Date.now() - letzteAktion < DEMO_NACH_MS) return;
+    const z = zustand;
+    const pausiert = Boolean(z && !z.demo && z.phase === "aufloesung" && z.wartetAuf && !z.wartenBis && pauseWegen(z));
+    pauseSeit = pausiert ? pauseSeit || Date.now() : 0;
+    if ((!fernseher && !(demoTest > 0)) || !z || z.demo || document.hidden) return;
+    if (pausiert) {
+      if (Date.now() - Math.max(pauseSeit, letzteAktion) < DEMO_NACH_MS) return;
+    } else if (z.phase !== "lobby" || z.spieler.some((p) => !p.bot) || Date.now() - letzteAktion < DEMO_NACH_MS) return;
     letzteAktion = Date.now(); // nicht im Sekundentakt nachfragen, falls der Server ablehnt
     void tun("host:demo");
   }, 2000);

@@ -20,7 +20,7 @@ const server = spawn(process.execPath, ["--disable-warning=ExperimentalWarning",
   env: { ...process.env, PORT: String(PORT), HOST: "127.0.0.1", ZEITSTRAHL_DATEN: daten, ZEITSTRAHL_MUSIK: musik, NODE_ENV: "test",
     // mit Passwortpflicht (prüft auch die Zugangssperre); Runden stark verkürzt
     ZEITSTRAHL_ZUGANG: "passwort", ZEITSTRAHL_PASSWORT: "", ZEITSTRAHL_ADMIN_PASSWORT: "",
-    ZEITSTRAHL_WEITER_MS: "300", ZEITSTRAHL_VORLAUF_MS: "300", ZEITSTRAHL_AUSSCHNITT_MS: "1500" },
+    ZEITSTRAHL_WEITER_MS: "300", ZEITSTRAHL_VORLAUF_MS: "300", ZEITSTRAHL_AUSSCHNITT_MS: "1500", ZEITSTRAHL_OFFLINE_MS: "300" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 let log = "";
@@ -218,6 +218,25 @@ try {
   // Pfad-Traversal im statischen Teil
   assert.equal((await fetch(`${BASIS}/..%2f..%2fpackage.json`)).status, 404);
 
+  // Pause → Demo: Ist der einzige echte Spieler weg, hält der Raum nach 3 Runden an; der TV darf ihn dann zur Demo machen
+  const host3 = client(admin);
+  const cleo = client(cookie);
+  await bis(() => host3.connected && cleo.connected);
+  const r3 = await host3.frag("host:erstellen", { einstellungen: { zielKarten: 10, auffuellen: true } });
+  await cleo.frag("spieler:beitreten", { code: r3.code, name: "Cleo" });
+  await host3.frag("host:starten");
+  await bis(() => host3.letzter?.phase === "hoeren", 15_000);
+  await assert.rejects(host3.frag("host:demo"), /leeren Lobby/, "laufendes Spiel mit Spieler: keine Demo");
+  cleo.close();
+  const pausiert = await bis(() => host3.letzter?.phase === "aufloesung" && host3.letzter.wartetAuf && !host3.letzter.wartenBis && host3.letzter, 40_000);
+  assert.deepEqual(pausiert.wartetAuf, ["Cleo (offline)"]);
+  await host3.frag("host:demo");
+  const demo = await bis(() => host3.letzter?.demo && host3.letzter.phase !== "lobby" && host3.letzter, 15_000);
+  assert.ok(demo.spieler.every((p: { bot?: string }) => p.bot), "Demo nur mit Bots");
+  assert.equal(demo.wartetAuf, null);
+  console.log(`  Pause nach ${pausiert.runde} Runden → Demo (${demo.spieler.length} Bots)`);
+  await host3.frag("host:beenden");
+
   // Grenzen je IP: falsche Codes und Code-Prüfung über HTTP werden gebremst
   const rater = client(cookie);
   await bis(() => rater.connected);
@@ -232,7 +251,7 @@ try {
   console.log("  Grenzen: falsche Codes und /api/raum gebremst");
 
   await host.frag("host:beenden");
-  for (const s of [host, anna, ben, anna2, host2, rater]) s.close();
+  for (const s of [host, anna, ben, anna2, host2, rater, host3, cleo]) s.close();
   console.log("E2E: alles grün");
 } catch (err) {
   console.error("E2E FEHLER:", err, "\n--- Server-Log ---\n" + log.slice(-6000));

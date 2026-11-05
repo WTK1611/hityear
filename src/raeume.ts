@@ -628,7 +628,10 @@ export function socketsEinrichten(server: Server): void {
 
     const hostRaum = (): Spiel => {
       if (!d.host || !d.code) throw new SpielFehler("Nur der Host darf das.");
-      return raum(d.code);
+      // direkt, nicht über raumFinden: das blendet Demo-Räume aus, der TV muss seine Demo aber beenden können
+      const s = raeume.get(d.code);
+      if (!s) throw new SpielFehler("Raum nicht gefunden. Code prüfen.");
+      return s;
     };
 
     socket.on(
@@ -736,7 +739,25 @@ export function socketsEinrichten(server: Server): void {
       "host:demo",
       sicher(() => {
         const s = hostRaum();
-        if (s.phase !== "lobby" || s.spieler.some((p) => !p.bot)) throw new SpielFehler("Demo nur in einer leeren Lobby.");
+        // … oder 5 min in der Pause, weil kein echter Spieler mehr da ist (siehe autoWeiter): Das Spiel ist dann
+        // verwaist, die Demo ersetzt es (sonst stünde der TV endlos auf „Warte auf …“)
+        const menschen = s.spieler.filter((p) => !p.bot);
+        const pausiert = !s.demo && s.phase === "aufloesung" && menschen.length > 0 && !menschen.some((p) => p.verbunden)
+          && (offlineRunden.get(s.code) ?? 0) >= OFFLINE_RUNDEN;
+        if (pausiert) {
+          diagnose("demo", `${s.code} ersetzt pausiertes Spiel (Runde ${s.runde})`);
+          fristStoppen(s);
+          const lauf = weiterTimer.get(s.code);
+          if (lauf) clearTimeout(lauf.t);
+          weiterTimer.delete(s.code);
+          warten.delete(s.code);
+          wartenBis.delete(s.code);
+          offlineRunden.delete(s.code);
+          freigabeEntziehen(ausschnitte.get(s.code));
+          ausschnitte.delete(s.code);
+          revanche(s);
+          for (const p of menschen) spielerEntfernen(s, p.id);
+        } else if (s.phase !== "lobby" || menschen.length) throw new SpielFehler("Demo nur in einer leeren Lobby.");
         s.demo = true;
         demoStarten(s);
       }),
