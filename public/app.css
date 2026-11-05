@@ -1983,7 +1983,7 @@ body.solo .qr-lobby { display: none !important; }
   background: rgba(10, 6, 20, 0.92); color: #fff; font: 600 16px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; pointer-events: none; }
 
 /* Ziffern-Marken für Fernbedienung und Tastatur (gemeinsam.js zifferMarken) – am TV und am PC, nicht auf Touch-Geräten */
-html.tasten-hinweise #schritt-inhalt button[data-ziffer], html.tasten-hinweise .start-karte[data-ziffer] { position: relative; }
+html.tasten-hinweise #schritt-inhalt button[data-ziffer]:not(.galerie-pfeil), html.tasten-hinweise .start-karte[data-ziffer] { position: relative; }
 html.tasten-hinweise #schritt-inhalt button[data-ziffer]::before, html.tasten-hinweise .start-karte[data-ziffer]::before {
   content: attr(data-ziffer); position: absolute; top: 8px; right: 8px; z-index: 1; width: 30px; height: 30px; border-radius: 50%;
   display: grid; place-items: center; background: rgba(22, 12, 38, 0.85); color: var(--gelb); border: 2px solid var(--gelb);
