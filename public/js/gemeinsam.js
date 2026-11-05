@@ -1383,10 +1383,9 @@ function taktSimulieren(eq, balken) {
     return null;
   };
   // Ziffern an den Kacheln (1–9) und am Hauptknopf (0) – dieselbe Auswahl wie die Zifferntasten unten. Sichtbar am
-  // Fernseher und am PC mit Maus/Tastatur (nicht auf Touch-Geräten). In der Galerie zählen nur die Kacheln im Bild,
+  // Fernseher (auch mit Touchscreen) und am PC mit Maus/Tastatur, nicht auf Handys und Tablets. In der Galerie zählen nur die Kacheln im Bild,
   // nach dem Blättern wird neu nummeriert. Startseite: 1 = Spielen mit Code, 2 = Party starten.
-  const marken = !matchMedia("(pointer: coarse)").matches &&
-    (fernseher || (matchMedia("(hover: hover) and (pointer: fine)").matches && !navigator.maxTouchPoints));
+  const marken = fernseher || (matchMedia("(hover: hover) and (pointer: fine)").matches && !navigator.maxTouchPoints);
   document.documentElement.classList.toggle("tasten-hinweise", marken);
   const imBild = (e) => {
     const reihe = e.closest(".deck-raster");
@@ -1404,13 +1403,19 @@ function taktSimulieren(eq, balken) {
   const zifferMarken = () => {
     const setup = document.querySelector("#schritt-inhalt");
     const start = document.querySelector(".start-wahl");
+    const spiel = document.querySelector("#zeitstrahle");
     if (!marken || (!setup && !start)) return;
+    // Spielbildschirm: unter den Spielerkarten, was die Fernbedienung dort kann (host.js: ←/→ schalten den Equalizer)
+    if (spiel && !document.querySelector(".spiel-hinweis")) {
+      spiel.after(el("p", { class: "ziffern-hinweis spiel-hinweis", "aria-hidden": "true" },
+        `${wer}: `, taste("◀"), taste("▶"), " Equalizer wechseln"));
+    }
     const soll = new Map(kachelnJetzt().slice(0, 9).map((e, i) => [e, String(i + 1)]));
     const knopf = setup && hauptknopf();
     if (knopf) soll.set(knopf, "0");
     for (const e of document.querySelectorAll("[data-ziffer]")) if (!soll.has(e)) e.removeAttribute("data-ziffer");
     for (const [e, z] of soll) if (e.dataset.ziffer !== z) e.dataset.ziffer = z;
-    if (document.querySelector(".ziffern-hinweis")) return;
+    if (document.querySelector(".ziffern-hinweis:not(.spiel-hinweis)")) return;
     const assistent = document.querySelector("#assistent");
     if (assistent) {
       assistent.after(el("p", { class: "ziffern-hinweis", "aria-hidden": "true" },
