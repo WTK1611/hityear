@@ -989,11 +989,19 @@ const tvVonHand = (() => {
   } catch { return wert; }
 })();
 const fernseher = tvVonHand === "1" || (tvVonHand !== "0" && /SMART-?TV|SmartTV|Tizen|Web0S|webOS|NetCast|VIDAA|Hisense|HbbTV|BRAVIA|PhilipsTV|Android TV|GoogleTV|AFT[A-Z]|CrKey|Roku|AppleTV|TV Safari|\bTV\b/i.test(navigator.userAgent));
-const grosserBildschirm = !fernseher && matchMedia("(min-width: 1024px)").matches && !matchMedia("(pointer: coarse)").matches;
+// Gemessen zu langsam (siehe Bildraten-Messung unten): Gerät bekommt dauerhaft den ruhigen Hintergrund; ?tv=0 setzt zurück
+const LANGSAM = "hityear-langsam";
+const gemessenLangsam = (() => {
+  try {
+    if (tvVonHand === "0" && new URLSearchParams(location.search).get("tv") === "0") localStorage.removeItem(LANGSAM);
+    return localStorage.getItem(LANGSAM) === "1";
+  } catch { return false; }
+})();
+const grosserBildschirm = !fernseher && !gemessenLangsam && matchMedia("(min-width: 1024px)").matches && !matchMedia("(pointer: coarse)").matches;
 // Sparmodus (app.css: html.sparsam): keine Dauer-Animationen, die jedes Bild neu malen. Immer auf Fernsehern,
 // sonst nur auf alten Geräten (höchstens 2 Kerne oder 2 GB Speicher) – aktuelle Tablets und Handys behalten alles.
 const altesGeraet = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2;
-const sparsam = fernseher || altesGeraet;
+const sparsam = fernseher || altesGeraet || gemessenLangsam;
 document.documentElement.classList.toggle("sparsam", sparsam);
 const hauptbildschirm = location.pathname === "/host.html";
 const startseite = location.pathname === "/" || location.pathname === "/index.html";
@@ -1009,6 +1017,30 @@ document.body.prepend(
       )
     : el("div", { class: "hintergrund ruhig", "aria-hidden": "true" }, ...(startseite && grosserBildschirm ? spots() : [])),
 );
+
+// Bildraten-Messung: Manche Fernseher melden sich wie ein Desktop-Browser (z. B. Hisense) und bekämen sonst den
+// teuren Hintergrund – dort ruckelt dann alles. Läuft der Hintergrund, messen wir nach dem Laden 3 s lang die
+// Bildrate; schafft das Gerät im Schnitt keine ~36 Bilder/s, schaltet es sofort und dauerhaft auf ruhig und sparsam.
+if (grosserBildschirm && (hauptbildschirm || startseite)) {
+  setTimeout(() => {
+    if (document.hidden) return;
+    const zeiten = [];
+    let letzte = 0;
+    const messen = (t) => {
+      if (letzte) zeiten.push(t - letzte);
+      letzte = t;
+      if (document.hidden) return;
+      if (zeiten.length < 120 && zeiten.reduce((a, b) => a + b, 0) < 3000) return void requestAnimationFrame(messen);
+      const schnitt = zeiten.reduce((a, b) => a + b, 0) / zeiten.length;
+      const ruckler = zeiten.filter((d) => d > 50).length / zeiten.length;
+      if (schnitt < 28 && ruckler < 0.15) return;
+      try { localStorage.setItem(LANGSAM, "1"); } catch { /* nur für diesen Aufruf */ }
+      document.documentElement.classList.add("sparsam", "schlicht");
+      document.querySelector(".hintergrund")?.replaceWith(el("div", { class: "hintergrund ruhig", "aria-hidden": "true" }));
+    };
+    requestAnimationFrame(messen);
+  }, 2500);
+}
 
 const zeitText = (s) => (Number.isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}` : "0:00");
 
@@ -1631,13 +1663,26 @@ if (new URLSearchParams(location.search).has("tasten")) {
       `Bildschirm ${screen.width}×${screen.height}, Fenster ${innerWidth}×${innerHeight}, Zeiger ${matchMedia("(pointer: fine)").matches ? "fein" : matchMedia("(pointer: coarse)").matches ? "grob" : "keiner"}\n\n` +
       (zeilen.length ? zeilen.join("\n") : "Noch keine Taste empfangen – bitte Pfeiltasten, OK und Ziffern drücken.");
   };
+  // Gedrückte Tasten (nur keydown) gehen auch an den Server, damit sie ohne Foto im Log stehen
+  const gemeldet = [];
+  let melden = 0;
+  const senden = (warum) => fetch("/api/geraet", {
+    method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
+    body: JSON.stringify({ seite: location.pathname, groesse: `${innerWidth}x${innerHeight}@${devicePixelRatio} tv:${fernseher ? 1 : 0}`, kann: warum, ua: navigator.userAgent, tasten: gemeldet.join(" ") }),
+  }).catch(() => {});
   for (const art of ["keydown", "keyup"]) {
     addEventListener(art, (ev) => {
       zeilen.unshift(`${art === "keydown" ? "▼" : "▲"} key=${ev.key} code=${ev.code} keyCode=${ev.keyCode}`);
       zeilen.length = Math.min(zeilen.length, 12);
       zeigen();
+      if (art !== "keydown") return;
+      gemeldet.push(`${ev.key}/${ev.keyCode}`);
+      gemeldet.splice(0, Math.max(0, gemeldet.length - 40));
+      clearTimeout(melden);
+      melden = setTimeout(() => senden("tasten"), 11_000);
     }, true);
   }
   zeigen();
+  setTimeout(() => senden("start"), 1500);
   document.body.append(box);
 }

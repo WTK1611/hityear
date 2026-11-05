@@ -244,14 +244,16 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
   // Geräteprotokoll (nur Technik, keine Personendaten): welcher Browser, welche Größe, was unterstützt wird –
   // hilft bei Darstellungsproblemen auf Fernsehern. Höchstens eine Meldung pro IP und Minute.
   if (p === "/api/geraet" && req.method === "POST") {
-    const ip = clientIp(req);
+    const d = await body(req, 2_000);
+    // Tasten-Test (?tasten) meldet die empfangenen Tasten: eigenes Limit und immer im Log (Fernbedienungen prüfen)
+    const tastenTest = typeof d.tasten === "string";
+    const ip = clientIp(req) + (tastenTest ? "#tasten" : "");
     const jetzt = Date.now();
-    if ((geraetGemeldet.get(ip) ?? 0) > jetzt - 60_000) return json(res, 200, { ok: true });
+    if ((geraetGemeldet.get(ip) ?? 0) > jetzt - (tastenTest ? 10_000 : 60_000)) return json(res, 200, { ok: true });
     geraetGemeldet.set(ip, jetzt);
     if (geraetGemeldet.size > 500) geraetGemeldet.clear();
-    const d = await body(req, 2_000);
     const text = (x: unknown) => String(x ?? "").replace(/[^\x20-\x7e]/g, "").slice(0, 300);
-    diagnose("geraet", `${text(d.seite)} ${text(d.groesse)} | ${text(d.kann)} | ${text(d.ua)}`);
+    diagnose("geraet", `${text(d.seite)} ${text(d.groesse)} | ${text(d.kann)} | ${text(d.ua)}${tastenTest ? ` | tasten: ${text(d.tasten)}` : ""}`, tastenTest);
     return json(res, 200, { ok: true });
   }
 
