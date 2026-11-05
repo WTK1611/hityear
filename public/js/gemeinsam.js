@@ -1416,10 +1416,10 @@ function taktSimulieren(eq, balken) {
     // 0 = zurückblättern (▲) – ganz oben schließt 0 das Menü (der Flaggen-Knopf klappt es zu)
     const sprachen = document.querySelector(".sprache-liste");
     if (sprachen && !sprachen.hidden) {
-      const b = sprachen.getBoundingClientRect();
+      // ganz sichtbar = unter ▲ und über ▼ (Layout-Positionen, unabhängig von der Aufklapp-Animation)
       const hoch = sprachen.querySelector(".sprache-hoch");
-      const oben = b.top + (hoch && !hoch.hidden ? hoch.offsetHeight : 0);
-      const imMenue = (e) => { const r = e.getBoundingClientRect(); return r.top >= oben - 6 && r.bottom <= b.bottom - 20; };
+      const frei = hoch && !hoch.hidden ? 42 : 0;
+      const imMenue = (e) => { const o = e.offsetTop - sprachen.scrollTop; return o >= frei - 10 && o + e.offsetHeight <= sprachen.clientHeight - 30; };
       reihe([...sprachen.querySelectorAll("button[role=radio]")].filter((e) => sichtbar(e) && imMenue(e)).slice(0, 8), 1);
       const mehr = sprachen.querySelector(".sprache-mehr:not(.sprache-hoch)");
       if (mehr && sprachen.scrollHeight > sprachen.clientHeight) m.set(mehr, "9");
@@ -1558,17 +1558,18 @@ function logoSchutz(laeuft, vorher) {
 function verlassenSchutz(link, laeuft, vorher) {
   const text = link.querySelector("span");
   if (!text) return;
-  const alt = text.textContent;
+  const alt = [...text.childNodes]; // ganze Knoten merken: die Wortmarke hat einen Verlauf-Span
   let bereit = null;
   link.addEventListener("click", async (e) => {
     if (!laeuft()) return;
     e.preventDefault();
     if (!bereit) {
-      text.textContent = vorher ? "Spiel abbrechen? Nochmal klicken" : "Spiel verlassen? Nochmal klicken";
+      // t(): Das Logo steht unter translate="no", der Beobachter übersetzt dort nichts
+      text.textContent = t(vorher ? "Spiel abbrechen? Nochmal klicken" : "Spiel verlassen? Nochmal klicken");
       link.classList.add("nachfrage");
       bereit = setTimeout(() => {
         bereit = null;
-        text.textContent = alt;
+        text.replaceChildren(...alt);
         link.classList.remove("nachfrage");
       }, 4000);
       return;

@@ -168,17 +168,29 @@ document.fonts?.ready.then(startTitelEinpassen);
     }, flagge(s.code), s.name)));
   // ▼ blättert um die sichtbaren 8 Sprachen weiter, am Ende zurück nach oben (Maus, Touch, Zifferntaste 9)
   const mehr = el("button", { type: "button", class: "sprache-mehr", tabindex: "-1", "aria-hidden": "true", text: "▼" });
+  // Geblättert wird zeilenweise: die erste nicht ganz sichtbare Sprache rückt nach oben (unter ▲), so geht keine verloren
+  const OBEN = 42; // Platz für ▲ (app.css .sprache-hoch)
+  const zeilen = () => [...liste.querySelectorAll("button[role=radio]")];
+  // mit Layout-Positionen statt getBoundingClientRect: die Aufklapp-Animation (scale) verfälscht sonst die Maße
+  const ganzSichtbar = (z) => {
+    const oben = z.offsetTop - liste.scrollTop;
+    return oben >= (liste.scrollTop > 0 ? OBEN : 0) - 10 && oben + z.offsetHeight <= liste.clientHeight - mehr.offsetHeight + 4;
+  };
   mehr.addEventListener("click", (e) => {
     e.stopPropagation();
     const amEnde = liste.scrollTop + liste.clientHeight >= liste.scrollHeight - 4;
-    liste.scrollTo({ top: amEnde ? 0 : liste.scrollTop + liste.clientHeight - 40, behavior: "smooth" });
+    const naechste = zeilen().find((z, i, alle) => !ganzSichtbar(z) && alle.slice(0, i).some(ganzSichtbar));
+    liste.scrollTo({ top: amEnde || !naechste ? 0 : naechste.offsetTop - OBEN, behavior: "smooth" });
   });
-  // ▲ oben: erscheint, sobald gescrollt ist, und blättert zurück
+  // ▲ oben: erscheint, sobald gescrollt ist, und blättert eine Seite zurück (kurz vor oben: ganz nach oben, dann schließt 0 wieder)
   const hoch = el("button", { type: "button", class: "sprache-mehr sprache-hoch", tabindex: "-1", "aria-hidden": "true", text: "▲", hidden: true });
   hoch.addEventListener("click", (e) => {
     e.stopPropagation();
-    const ziel = liste.scrollTop - liste.clientHeight + 40;
-    liste.scrollTo({ top: ziel < 60 ? 0 : ziel, behavior: "smooth" }); // kurz vor oben: ganz nach oben, dann schließt 0 wieder
+    const alle = zeilen();
+    const erste = alle.findIndex(ganzSichtbar);
+    const seite = alle.filter(ganzSichtbar).length || 7;
+    const ziel = erste - seite;
+    liste.scrollTo({ top: ziel <= 0 ? 0 : alle[ziel].offsetTop - OBEN, behavior: "smooth" });
   });
   liste.addEventListener("scroll", () => {
     mehr.textContent = liste.scrollTop + liste.clientHeight >= liste.scrollHeight - 4 ? "▲" : "▼";

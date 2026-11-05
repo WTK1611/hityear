@@ -325,9 +325,8 @@ main.breit > .fehler:empty { min-height: 0; margin: 0; }
 .equalizer.takt i, .equalizer.simuliert i { animation: none !important; transition: height 0.12s ease-out; } /* Höhe setzt taktSimulieren() */
 .equalizer.versteckt { display: none; }
 .equalizer[role="button"] { cursor: pointer; border-radius: 10px; }
-.equalizer[role="button"]:focus-visible, body.tasten-aktiv .equalizer[role="button"]:focus { outline: 2px solid var(--cyan); outline-offset: 6px; }
-/* am Fernseher ist der Equalizer immer vorgewählt (←/→ wechselt den Stil): dort ohne Rahmen */
-main.tv-ansicht .equalizer[role="button"]:focus-visible, body.tasten-aktiv main.tv-ansicht .equalizer[role="button"]:focus { outline: none; }
+/* ohne Fokusrahmen: Der Rahmen störte über den Balken; ←/→ bzw. Klick wechseln den Stil ohnehin sichtbar */
+.equalizer[role="button"]:focus, .equalizer[role="button"]:focus-visible { outline: none; }
 /* Stile (Klick wechselt): Spiegel wächst aus der Mitte, Punkte springen, Neon leuchtet */
 .equalizer.eq-spiegel { align-items: center; }
 .equalizer.eq-punkte i { background: none; position: relative; }
@@ -1097,14 +1096,15 @@ html:not([lang="de"]) #geschichte { display: none !important; }
 .sprache-liste { width: max-content; max-width: calc(100vw - 32px); }
 .sprache-liste > button { white-space: nowrap; }
 /* blättern rastet auf ganze Zeilen ein – oben und unten frei für ▲/▼ */
-.sprache-liste { scroll-snap-type: y proximity; scroll-padding: 30px 0; }
+.sprache-liste { scroll-snap-type: y proximity; scroll-padding: 42px 0 30px; }
 .sprache-liste > button[role="radio"] { scroll-snap-align: start; }
 /* ▼ unten im Menü: blättert weiter (am Ende wieder nach oben) – Zifferntaste 9 */
 .sprache-liste .sprache-mehr {
   position: sticky; bottom: -10px; margin: 0 -10px -10px; padding: 4px 0 6px; justify-content: center; border-radius: 0 0 20px 20px;
   background: rgba(28, 18, 48, 0.97); color: var(--leise); font-size: 0.9rem; animation: none;
 }
-.sprache-liste .sprache-hoch { top: -10px; bottom: auto; margin: -10px -10px 0; padding: 6px 0 4px; border-radius: 20px 20px 0 0; z-index: 2; }
+/* ▲ nimmt keinen Platz im Fluss (Höhe 40 = −10 oben −30 unten), sonst springen beim Einblenden alle Zeilen */
+.sprache-liste .sprache-hoch { top: -10px; bottom: auto; height: 40px; box-sizing: border-box; margin: -10px -10px -30px; padding: 12px 0 4px; align-items: center; border-radius: 20px 20px 0 0; z-index: 2; }
 .sprache-liste .sprache-hoch[hidden] { display: none; }
 .sprache-liste .sprache-mehr:hover { color: var(--text); }
 @keyframes sprache-auf { from { opacity: 0; transform: scale(.6) rotate(6deg); } }
