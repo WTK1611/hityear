@@ -448,6 +448,22 @@ function aufloesenNachSong(s: Spiel): void {
   aufloesungen.set(s.code, t);
 }
 
+/**
+ * Jemand steigt in eine Runde ein, in der alle anderen schon getippt haben (Modus „alle“/„alle5“):
+ * Auflösung zurücknehmen, damit der Neue in dieser Runde noch mitspielen kann. Getippt wird dann wie
+ * gewohnt bis zum Ende des Ausschnitts (Zeitlimit) bzw. bis alle fertig sind. Bei „erster“ darf ohnehin
+ * jeder noch 5 s nachtippen; bei zu wenig Restzeit bleibt es bei der Auflösung.
+ */
+function rundeWiederOeffnen(s: Spiel): void {
+  if (s.phase !== "hoeren" || !s.zug?.aufloesungUm || !alleGleichzeitig(s)) return;
+  if (s.einstellungen.warten === "erster" || bereit(s)) return;
+  if (endeUm(s) - Date.now() < 3000) return;
+  clearTimeout(aufloesungen.get(s.code));
+  aufloesungen.delete(s.code);
+  delete s.zug.aufloesungUm;
+  fristStarten(s);
+}
+
 function fristStarten(s: Spiel): void {
   fristStoppen(s);
   if (!s.zug) return;
@@ -780,6 +796,8 @@ export function socketsEinrichten(server: Server): void {
           // hat der neue Mitspieler einen Bot ersetzt, läuft die Runde ohne ihn weiter
           if (s.phase === "hoeren" && s.zug?.karte.songId !== war) zugVorbereiten(s);
           else if (s.phase === "hoeren" && alleGleichzeitig(s) && bereit(s) && !s.zug?.aufloesungUm) aufloesenNachSong(s);
+          // alle anderen haben schon getippt: der Neue darf in dieser Runde noch mitspielen
+          else rundeWiederOeffnen(s);
         }
         p.verbunden = true;
         d.code = s.code;
