@@ -2,6 +2,8 @@
 // HitYear – Dansk (da). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "Den installerede app gemmer dit login på din enhed i op til 14 dage. Den bruger ikke webanalyse.",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "Appen bruger kun kameraet med din tilladelse til at scanne QR-koder. Kamerabilleder gemmes eller overføres ikke. Mikrofonen bruges ikke.",
   "HitYear – Host": "HitYear – Host",
   "HitYear – Mitspielen": "HitYear – Spil med",
   "Zur Startseite": "Til forsiden",

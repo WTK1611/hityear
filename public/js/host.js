@@ -898,7 +898,7 @@
       // Demo: kein QR-Code (Beitritt gesperrt), statt des Codes nur „DEMO“
       for (const id of ["#qr", "#qr-spiel", "#qr-unten"]) {
         $(id).classList.toggle("versteckt", z.demo);
-        if (!z.demo) $(id).src = `/api/qr?raum=${encodeURIComponent(z.code)}`;
+        if (!z.demo) medienSetzen($(id), `/api/qr?raum=${encodeURIComponent(z.code)}`);
         const hinweis = $(id).parentElement.querySelector("span");
         hinweis.dataset.text ??= hinweis.textContent;
         hinweis.textContent = z.demo ? "Taste drücken zum Spielen" : hinweis.dataset.text;

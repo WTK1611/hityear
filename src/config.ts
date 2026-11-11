@@ -47,6 +47,8 @@ export const config = {
   sitzungsSchluessel: geheim("ZEITSTRAHL_SECRET") || crypto.randomBytes(32).toString("hex"),
   /** Öffentliche Basis-URL (für QR-Codes), z. B. https://spiel.example.de */
   basisUrl: (process.env.ZEITSTRAHL_BASIS_URL ?? "").replace(/\/$/, ""),
+  /** Lokale WebView-Ursprünge der installierten Apps; weitere nur ausdrücklich konfigurieren. */
+  appUrspruenge: (process.env.ZEITSTRAHL_APP_ORIGINS ?? "capacitor://localhost,https://localhost").split(",").map((s) => s.trim()).filter(Boolean),
   /** Matomo (Statistik, nur nach Einwilligung im Banner): Adresse der Matomo-Instanz und Website-ID; leer = aus. */
   matomoUrl: /^https:\/\/[a-z0-9.-]+(:\d+)?(\/[\w./-]*)?$/i.test(process.env.ZEITSTRAHL_MATOMO_URL ?? "") ? process.env.ZEITSTRAHL_MATOMO_URL!.replace(/\/$/, "") : "",
   matomoId: /^\d{1,6}$/.test(process.env.ZEITSTRAHL_MATOMO_ID ?? "") ? process.env.ZEITSTRAHL_MATOMO_ID! : "",

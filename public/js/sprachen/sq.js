@@ -2,6 +2,8 @@
 // HitYear – Shqip (sq). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "Aplikacioni i instaluar ruan hyrjen në pajisjen tënde deri në 14 ditë. Nuk përdor analiza të uebit.",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "Aplikacioni përdor kamerën vetëm me lejen tënde për skanimin e kodeve QR. Pamjet e kamerës nuk ruhen dhe nuk transmetohen. Mikrofoni nuk përdoret.",
   "HitYear – Host": "HitYear – Host",
   "HitYear – Mitspielen": "HitYear – Luaj",
   "Zur Startseite": "Te faqja kryesore",

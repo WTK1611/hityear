@@ -14,8 +14,11 @@
     "test": "node --disable-warning=ExperimentalWarning --test test/*.test.ts",
     "test:e2e": "node --disable-warning=ExperimentalWarning test/e2e.ts",
     "test:browser": "node test/browser.mjs",
+    "mobile:prepare": "npm --prefix mobile run prepare:web",
+    "mobile:sync": "npm --prefix mobile run sync",
     "testmusik": "sh test/testmusik.sh",
-    "abgleich": "node --disable-warning=ExperimentalWarning src/abgleich-cli.ts"
+    "abgleich": "node --disable-warning=ExperimentalWarning src/abgleich-cli.ts",
+    "test:mobile": "npm run mobile:prepare && node test/mobile.mjs"
   },
   "dependencies": {
     "music-metadata": "^11.7.0",

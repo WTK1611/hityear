@@ -2,6 +2,8 @@
 // HitYear – Ελληνικά (el). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "Η εγκατεστημένη εφαρμογή αποθηκεύει τη σύνδεσή σου στη συσκευή για έως 14 ημέρες. Δεν χρησιμοποιεί ανάλυση ιστού.",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "Η εφαρμογή χρησιμοποιεί την κάμερα μόνο με την άδειά σου για σάρωση κωδικών QR. Οι εικόνες δεν αποθηκεύονται ούτε μεταδίδονται. Το μικρόφωνο δεν χρησιμοποιείται.",
   "HitYear – Host": "HitYear – Οικοδεσπότης",
   "HitYear – Mitspielen": "HitYear – Παίξε",
   "Zur Startseite": "Στην αρχική",

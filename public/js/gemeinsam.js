@@ -24,6 +24,7 @@ function el(tag, attrs = {}, ...kinder) {
   for (const [k, v] of Object.entries(attrs)) {
     if (v === undefined || v === null || v === false) continue;
     if (k === "class") e.className = v;
+    else if (k === "src" && String(v).startsWith("/api/")) medienSetzen(e, v);
     else if (k === "text") e.textContent = v;
     else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
     else if (k === "farbe") e.style.background = v;
@@ -37,7 +38,7 @@ function el(tag, attrs = {}, ...kinder) {
 }
 
 async function api(pfad, daten) {
-  const res = await fetch(pfad, {
+  const res = await serverAnfrage(pfad, {
     method: daten === undefined ? "GET" : "POST",
     headers: daten === undefined ? {} : { "Content-Type": "application/json" },
     body: daten === undefined ? undefined : JSON.stringify(daten),
@@ -68,6 +69,7 @@ function passwortAbfragen() {
       feld,
       meldung,
       knopf,
+      appScanKnopf(meldung),
       el("p", { class: "zugang-links klein" }, el("a", { href: "/datenschutz.html", text: "Datenschutz" })),
     );
     const huelle = el("div", { class: "zugang", role: "dialog", "aria-modal": "true", "aria-label": "Passwort" }, form);
@@ -250,7 +252,9 @@ function speicher(schluessel, wert) {
 /** Socket mit einfacher Antwort-Promise. */
 function verbinden() {
   // eslint-disable-next-line no-undef
-  const s = io({ transports: ["websocket", "polling"] });
+  const s = io(appServer ?? undefined, { transports: ["websocket", "polling"],
+    ...(appServer ? { auth: (fertig) => appBereit.then(() => fertig({ sitzung: window.HitYearNative?.sitzung })) } : {}),
+  });
   s.anfrage = (ereignis, daten) =>
     new Promise((resolve, reject) => {
       s.timeout(8000).emit(ereignis, daten ?? {}, (err, antwort) => {
@@ -339,6 +343,7 @@ function verbinden() {
   });
   addEventListener("online", aufwachen);
   addEventListener("focus", aufwachen);
+  addEventListener("hityear:aktiv", aufwachen);
   // Verbindung weg → deutlicher Hinweis oben (nach 1,5 s, kurze Wackler bleiben unsichtbar)
   let hinweisUhr = 0;
   const hinweis = el("div", { class: "verbindung-weg", role: "status", text: "🔌 Verbindung weg – verbinde neu …" });
@@ -379,6 +384,10 @@ document.addEventListener("pointerdown", () => wachGewuenscht && !wachSperre && 
 
 function vibrieren(muster) {
   try {
+    if (appServer && window.HitYearNative) {
+      void window.HitYearNative.vibrieren(Array.isArray(muster) ? muster[0] : muster).catch(() => {});
+      return;
+    }
     navigator.vibrate && navigator.vibrate(muster);
   } catch {
     /* egal */
@@ -479,6 +488,7 @@ function audioSpieler() {
     }
   });
   let aktuell = null;
+  let ladenBereit = Promise.resolve();
   let versuch = 0;
   let fehler = null;
   const melden = (art) => {
@@ -519,9 +529,20 @@ function audioSpieler() {
       }
       a.pause();
       if (url) {
-        a.src = url;
-        a.load();
+        if (appServer && url.startsWith("/api/")) {
+          ladenBereit = medienAdresse(url).then((adresse) => {
+            if (aktuell !== url) return;
+            a.src = adresse;
+            a.load();
+          });
+          ladenBereit.catch(() => { if (aktuell === url) melden("quelle"); });
+        } else {
+          ladenBereit = Promise.resolve();
+          a.src = url;
+          a.load();
+        }
       } else {
+        ladenBereit = Promise.resolve();
         a.removeAttribute("src");
         a.load();
       }
@@ -531,13 +552,24 @@ function audioSpieler() {
       const nummer = ++versuch;
       let frist;
       try {
-        if (neuLaden) a.load();
-        a.currentTime = Math.max(0, ab);
-        ausgeblendet = false;
-        blenden(0, 0.01, 0);
+        const starten = async () => {
+          if (appServer && neuLaden && aktuell.startsWith("/api/")) {
+            // Nach Funkloch oder längerer Pause kann die Freigabe abgelaufen sein.
+            ladenBereit = medienAdresse(aktuell, true).then((adresse) => {
+              if (nummer === versuch) a.src = adresse;
+            });
+          }
+          if (appServer) await ladenBereit;
+          if (nummer !== versuch) return;
+          if (neuLaden) a.load();
+          a.currentTime = Math.max(0, ab);
+          ausgeblendet = false;
+          blenden(0, 0.01, 0);
+          await a.play();
+        };
         // Eine hängende Verbindung darf nicht endlos auf play() warten lassen.
         await Promise.race([
-          a.play(),
+          starten(),
           new Promise((_, ablehnen) => { frist = setTimeout(() => ablehnen(new Error("Ladezeit überschritten")), 8000); }),
         ]);
         if (nummer !== versuch) return false;
@@ -547,6 +579,7 @@ function audioSpieler() {
       } catch (err) {
         // Alte Anfragen dürfen beim Songwechsel keine Fehlermeldung für den neuen Song auslösen.
         if (nummer !== versuch) return false;
+        versuch++;
         a.pause();
         melden(err?.name === "NotAllowedError" ? "freigabe" : "quelle");
         return false;
@@ -1714,7 +1747,7 @@ function geraetKuerzel() {
 document.addEventListener("DOMContentLoaded", () => {
   const holen = () => {
     if (document.hidden) return;
-    fetch("/healthz").then((r) => r.json()).then((d) => {
+    serverAnfrage("/healthz").then((r) => r.json()).then((d) => {
       const zahl = document.querySelector(".live-zahl");
       if (zahl && Number.isFinite(d.spiele)) zahl.textContent = [d.spiele, d.version, geraetKuerzel()].filter((x) => x !== undefined && x !== "").join(" · ");
     }).catch(() => {});
@@ -1727,9 +1760,10 @@ document.addEventListener("DOMContentLoaded", () => {
 // Ohne Matomo-Einstellung auf dem Server: kein Banner, nichts geladen. Mit: einmal fragen, Antwort im lokalen Speicher.
 const STATISTIK = "hy_statistik"; // "ja" | "nein"
 async function statistikStarten() {
+  if (appServer) return; // Die erste native Version verwendet keine Web-Statistik.
   let cfg = {};
   try {
-    cfg = await (await fetch("/api/statistik")).json();
+    cfg = await (await serverAnfrage("/api/statistik")).json();
   } catch {
     return;
   }
@@ -1766,6 +1800,7 @@ function statistikWaehlen(ja) {
   if (window._paq) location.reload();
 }
 function statistikBanner() {
+  if (appServer) return;
   if ($(".statistik-banner")) return;
   document.body.append(
     el("div", { class: "statistik-banner", role: "dialog", "aria-label": "Statistik" },
@@ -1786,6 +1821,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cookie-Seite: Einwilligung jederzeit ändern
   const knopf = $("#statistik-aendern");
   const stand = $("#statistik-stand");
+  if (appServer) {
+    knopf?.remove();
+    stand?.remove();
+    return;
+  }
   if (stand) stand.textContent = speicher(STATISTIK) === "ja" ? "Du hast der Statistik zugestimmt." : speicher(STATISTIK) === "nein" ? "Du hast die Statistik abgelehnt." : "Du hast noch nicht entschieden.";
   if (knopf) knopf.addEventListener("click", () => statistikBanner());
 });
@@ -1800,7 +1840,7 @@ setTimeout(() => {
       `font:${document.fonts && document.fonts.check ? (document.fonts.check('16px "Nunito"') ? "1" : "0") : "?"}`,
       `wake:${"wakeLock" in navigator ? 1 : 0}`, `audio:${window.AudioContext || window.webkitAudioContext ? 1 : 0}`,
     ].join(" ");
-    fetch("/api/geraet", {
+    serverAnfrage("/api/geraet", {
       method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
       body: JSON.stringify({ seite: location.pathname, groesse: `${innerWidth}x${innerHeight}@${devicePixelRatio}`, kann, ua: navigator.userAgent }),
     }).catch(() => {});
@@ -1877,7 +1917,7 @@ if (new URLSearchParams(location.search).has("tasten")) {
   // Gedrückte Tasten (nur keydown) gehen auch an den Server, damit sie ohne Foto im Log stehen
   const gemeldet = [];
   let melden = 0;
-  const senden = (warum) => fetch("/api/geraet", {
+  const senden = (warum) => serverAnfrage("/api/geraet", {
     method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
     body: JSON.stringify({ seite: location.pathname, groesse: `${innerWidth}x${innerHeight}@${devicePixelRatio} screen:${screen.width}x${screen.height} tv:${fernseher ? 1 : 0} langsam:${gemessenLangsam ? 1 : 0}`, kann: warum, ua: navigator.userAgent, tasten: gemeldet.join(" ") }),
   }).catch(() => {});

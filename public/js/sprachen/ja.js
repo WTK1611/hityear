@@ -2,6 +2,8 @@
 // HitYear – 日本語 (ja). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "インストールしたアプリは、ログイン情報を端末に最大14日間保存します。ウェブ解析は使用しません。",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "アプリは許可を得た場合にのみ、QRコードの読み取りにカメラを使用します。カメラの画像は保存も送信もされません。マイクは使用しません。",
   "HitYear – Host": "HitYear – ホスト",
   "HitYear – Mitspielen": "HitYear – 参加する",
   "Zur Startseite": "トップへ戻る",

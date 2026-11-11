@@ -989,6 +989,11 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 .audio-hilfe { position: fixed; z-index: 1000; top: max(12px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); width: min(440px, calc(100% - 24px)); max-height: calc(100dvh - 24px); overflow: auto; background: #211331; border: 2px solid var(--gelb); box-shadow: 0 12px 40px #0009; }
 .audio-hilfe p { margin-top: 0; }
 .audio-hilfe .reihe { flex-wrap: wrap; margin-bottom: 8px; }
+.native-app .qr-start { display: none; }
+.nur-app { display: none; }
+.native-app .nur-app { display: revert; }
+.native-app .nur-web { display: none; }
+.app-scannen { display: block; margin: 16px auto; }
 @media (prefers-reduced-motion: reduce) {
   .countdown-zahl { animation: none; }
 }

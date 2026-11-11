@@ -66,10 +66,12 @@ document.fonts?.ready.then(startTitelEinpassen);
     (angemeldet ? form.querySelector("button") : feld).focus();
   }
   const weiter = new URLSearchParams(location.search).get("weiter");
+  const scannen = appScanKnopf($("#code-fehler"));
+  if (scannen) $(".start-wahl").after(scannen);
   // nur auf dieselbe Seite weiter („/\evil.com“ machen Browser sonst zu „//evil.com“)
   if (weiter) {
-    const ziel = new URL(weiter, location.origin);
-    if (ziel.origin === location.origin) return void (location.href = ziel.pathname + ziel.search + ziel.hash);
+    const ziel = new URL(weiter, location.href);
+    if (ziel.protocol === location.protocol && ziel.host === location.host) return void (location.href = ziel.pathname + ziel.search + ziel.hash);
   }
   // Vor dem Wechsel prüfen, ob es das Spiel gibt – sonst landet man auf einer leeren Seite
   $("#beitreten-form").addEventListener("submit", async (e) => {
@@ -88,7 +90,7 @@ document.fonts?.ready.then(startTitelEinpassen);
     const knopf = e.submitter ?? $("#beitreten-form button");
     knopf.disabled = true;
     try {
-      const r = await fetch(`/api/raum?code=${encodeURIComponent(code)}`);
+      const r = await serverAnfrage(`/api/raum?code=${encodeURIComponent(code)}`);
       if (r.status === 404) throw new Error(`Kein Spiel mit dem Code ${code} gefunden – vertippt?`);
       if (!r.ok) throw new Error("Gerade nicht erreichbar – bitte gleich nochmal.");
       // „voll“ oder „vorbei“ entscheidet die Spielerseite – wer schon dabei war, kommt so wieder hinein
@@ -227,7 +229,7 @@ document.fonts?.ready.then(startTitelEinpassen);
   if (!reihe || matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.classList.contains("sparsam")) return;
   let songs = [];
   try {
-    songs = await (await fetch("/api/schaufenster")).json();
+    songs = await (await serverAnfrage("/api/schaufenster")).json();
   } catch {
     return;
   }

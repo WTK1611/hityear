@@ -2,6 +2,8 @@
 // HitYear – Русский (ru). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "Установленное приложение хранит сеанс входа на устройстве до 14 дней. Веб-аналитика не используется.",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "Приложение использует камеру только с твоего разрешения для сканирования QR-кодов. Изображения камеры не сохраняются и не передаются. Микрофон не используется.",
   "HitYear – Host": "HitYear – Хост",
   "HitYear – Mitspielen": "HitYear – Играть",
   "Zur Startseite": "На главную",

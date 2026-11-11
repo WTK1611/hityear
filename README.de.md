@@ -2,6 +2,8 @@
 
 [English](README.md) · **Deutsch**
 
+Android- und iOS-App in Entwicklung: [Einrichtung, Builds und Tests](docs/APP.md).
+
 ![Startseite von HitYear: „Wann kam der Song raus?“ mit den Kacheln „Spielen mit Code“ und „Party starten“](docs/bilder/startseite.jpg)
 
 **Wann kam der Song raus?** Ein Ausschnitt läuft, alle hören rein und sortieren den Song am Handy nach seinem Erscheinungsjahr in den eigenen Zeitstrahl. Wer zuerst genug Karten richtig liegen hat, gewinnt.

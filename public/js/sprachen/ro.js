@@ -2,6 +2,8 @@
 // HitYear – Română (ro). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "Aplicația instalată păstrează autentificarea pe dispozitiv timp de cel mult 14 zile. Nu folosește analiză web.",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "Aplicația folosește camera doar cu permisiunea ta pentru scanarea codurilor QR. Imaginile nu sunt stocate sau transmise. Microfonul nu este folosit.",
   "HitYear – Host": "HitYear – Host",
   "HitYear – Mitspielen": "HitYear – Joacă",
   "Zur Startseite": "Spre pagina de start",

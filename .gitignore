@@ -10,3 +10,17 @@ data/jahrescharts.csv
 CLAUDE.local.md
 docs/lokal/
 .claude/
+
+# Native Apps: reproduzierbare Web-Dateien, lokale SDK-Pfade und Signaturen
+mobile/www/
+mobile/android/.gradle/
+mobile/android/**/build/
+mobile/android/local.properties
+mobile/ios/App/Pods/
+mobile/ios/**/xcuserdata/
+mobile/ios/App/App/public/
+mobile/ios/App/App/capacitor.config.json
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
