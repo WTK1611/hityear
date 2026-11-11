@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   pruefen:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +33,14 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       # Ende-zu-Ende mit echtem Server und Testmusik aus Sinustönen (braucht ffmpeg)
-      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: ffmpeg für den Spieltest bereitstellen
+        timeout-minutes: 4
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update -qq
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install --no-install-recommends -y -qq ffmpeg
+          fi
+          ffmpeg -hide_banner -version | head -n 1
       - run: npm run test:e2e
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
@@ -41,7 +48,7 @@ jobs:
   ausrollen:
     needs: pruefen
     if: github.repository == 'WTK1611/hityear'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
