@@ -76,7 +76,7 @@ npm run test:mobile
 
 Alternativ `CHROMIUM_EXECUTABLE=/pfad/zu/chromium` setzen. Der App-Test liefert das echte gebündelte App-Webpaket auf einer eigenen Origin aus und prüft CORS, Anmeldung ohne Cookies, Website-Host + App-Gast, QR-Einladungsfluss, Socket.IO, geschützte Medien, erneuten Beitritt und Abmelden. Der Kamerascan wird dabei ersetzt; Audio-Hardware und native Plugins werden dadurch nicht auf echten Geräten getestet.
 
-`.github/workflows/apps.yml` prüft auf Pull Requests das Webpaket und baut Android sowie einen unsignierten iOS-Simulatorstand. Dieser Workflow veröffentlicht keine App. Icons bei einer Logoänderung mit `npm --prefix mobile run icons` neu erzeugen.
+`.github/workflows/apps.yml` prüft auf Pull Requests das Webpaket und baut Android sowie einen unsignierten iOS-Simulatorstand. Die iOS-App wird außerdem im iPhone-Simulator installiert und gestartet; ein Bildschirmfoto und das Simulatorpaket werden als Build-Artefakt gespeichert. Dieses Paket läuft im Simulator auf einem Mac, nicht auf einem echten iPhone. Der Workflow verteilt keine App über die Stores. Icons bei einer Logoänderung mit `npm --prefix mobile run icons` neu erzeugen.
 
 ## Vor einer öffentlichen App-Verteilung
 

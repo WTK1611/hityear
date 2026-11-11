@@ -14,6 +14,7 @@ permissions:
 jobs:
   app-web:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,6 +30,7 @@ jobs:
       - run: npm run test:mobile
   android:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,10 +50,30 @@ jobs:
           path: mobile/android/app/build/outputs/apk/debug/app-debug.apk
   ios:
     runs-on: macos-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
       - run: npm ci && npm --prefix mobile ci && npm run mobile:sync
-      - run: xcodebuild -project mobile/ios/App/App.xcodeproj -scheme App -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO -derivedDataPath /tmp/hityear-ios build
+      - run: xcodebuild -project mobile/ios/App/App.xcodeproj -scheme App -destination 'generic/platform=iOS Simulator' -configuration Debug CODE_SIGNING_ALLOWED=NO -derivedDataPath /tmp/hityear-ios build
+      - name: Auf einem iPhone-Simulator starten
+        run: |
+          xcrun simctl list devices available --json > /tmp/hityear-simulatoren.json
+          HITYEAR_SIMULATOR=$(python3 -c 'import json; d=json.load(open("/tmp/hityear-simulatoren.json")); print(next(g["udid"] for laufzeit, geraete in d["devices"].items() if ".iOS-" in laufzeit for g in geraete if g["isAvailable"] and g["name"].startswith("iPhone")))')
+          xcrun simctl boot "$HITYEAR_SIMULATOR"
+          xcrun simctl bootstatus "$HITYEAR_SIMULATOR" -b
+          xcrun simctl install "$HITYEAR_SIMULATOR" /tmp/hityear-ios/Build/Products/Debug-iphonesimulator/App.app
+          xcrun simctl launch "$HITYEAR_SIMULATOR" app.hityear.mobile
+          sleep 5
+          xcrun simctl io "$HITYEAR_SIMULATOR" screenshot /tmp/hityear-ios-start.png
+          xcrun simctl shutdown "$HITYEAR_SIMULATOR"
+      - name: Simulator-App verpacken
+        run: ditto -c -k --sequesterRsrc --keepParent /tmp/hityear-ios/Build/Products/Debug-iphonesimulator/App.app /tmp/hityear-ios-simulator.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hityear-ios-simulator
+          path: |
+            /tmp/hityear-ios-simulator.zip
+            /tmp/hityear-ios-start.png
