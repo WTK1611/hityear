@@ -13,6 +13,8 @@
 
 Play: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · License: [PolyForm Noncommercial 1.0.0](LICENSE.md) (free to use, modify and share – **not commercially**) · [Contributions welcome](CONTRIBUTING.md)
 
+Android and iOS apps are in development: [setup, builds and tests (German)](docs/APP.md).
+
 ## Screenshots
 
 | Setup: where does the music play? | Choosing a deck |

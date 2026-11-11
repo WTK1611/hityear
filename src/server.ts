@@ -8,6 +8,7 @@ import { Server } from "socket.io";
 import QRCode from "qrcode";
 import { parseFile } from "music-metadata";
 import { config } from "./config.ts";
+import { appCors, appMedienFreigeben, appSitzungErstellen, istAppAnfrage, rolleAusAnfrage, rolleAusAppSitzung, rolleAusMedienFreigabe } from "./app.ts";
 import { GENRES, type Genre } from "./game.ts";
 import { db } from "./db.ts";
 import {
@@ -24,7 +25,7 @@ import { ausschnittHolen } from "./audio.ts";
 import { diagnose } from "./log.ts";
 import { dienstLink, dienstName, liveTreffer } from "./vorschau.ts";
 import {
-  clientIp, cookieLoeschen, cookieSetzen, istHttps, loginErlaubt, loginFehlschlag, passwortPruefen, rolleAusCookie,
+  clientIp, cookieLoeschen, cookieSetzen, istHttps, loginErlaubt, loginFehlschlag, passwortPruefen,
 } from "./auth.ts";
 import { einladungFuer, einladungGueltig, laufendeSpiele, raumPruefenErlaubt, raumStatus, raeumeLaden, socketsEinrichten, songIstAufgedeckt } from "./raeume.ts";
 
@@ -230,7 +231,7 @@ function analyse(z: SongZeile): Record<string, unknown> {
 
 async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
   // Ohne Passwortpflicht ist jeder ohne Cookie Mitspieler mit vollen Rechten; mit Pflicht ist er niemand.
-  const rolle = rolleAusCookie(req.headers.cookie) ?? (config.zugangMitPasswort ? null : "spieler");
+  const rolle = rolleAusAnfrage(req) ?? rolleAusMedienFreigabe(req, url) ?? (config.zugangMitPasswort ? null : "spieler");
   const p = url.pathname;
   const ohneAnmeldung = ["/api/login", "/api/logout", "/api/ich", "/api/geraet", "/api/einladung", "/api/statistik"];
   if (!rolle && !ohneAnmeldung.includes(p)) return json(res, 401, { fehler: "Bitte zuerst das Passwort eingeben." });
@@ -244,14 +245,19 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
       loginFehlschlag(ip);
       return json(res, 401, { fehler: "Passwort falsch." });
     }
-    cookieSetzen(res, r, cookieSicher(req));
-    return json(res, 200, { rolle: r });
+    if (!istAppAnfrage(req)) cookieSetzen(res, r, cookieSicher(req));
+    return json(res, 200, { rolle: r, ...(istAppAnfrage(req) ? { appSitzung: appSitzungErstellen(r) } : {}) });
   }
   if (p === "/api/logout" && req.method === "POST") {
     cookieLoeschen(res);
     return json(res, 200, { ok: true });
   }
   if (p === "/api/ich") return json(res, 200, { rolle });
+  if (p === "/api/app/medien" && req.method === "POST" && rolle) {
+    const d = await body(req);
+    const ziel = appMedienFreigeben(d.pfad, rolle);
+    return ziel ? json(res, 200, { url: ziel }) : json(res, 400, { fehler: "Nicht gefunden." });
+  }
   // Statistik (Matomo): nur Adresse und Website-ID; geladen wird erst nach Einwilligung im Banner
   if (p === "/api/statistik") return json(res, 200, config.matomoUrl && config.matomoId ? { url: config.matomoUrl, id: config.matomoId } : {});
 
@@ -283,8 +289,8 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
     }
     // Wer schon angemeldet ist, behält seine Rolle; sonst gilt der QR-Code als Eintrittskarte (Gast)
     if (rolle) return json(res, 200, { rolle, raum });
-    cookieSetzen(res, "gast", cookieSicher(req));
-    return json(res, 200, { rolle: "gast", raum });
+    if (!istAppAnfrage(req)) cookieSetzen(res, "gast", cookieSicher(req));
+    return json(res, 200, { rolle: "gast", raum, ...(istAppAnfrage(req) ? { appSitzung: appSitzungErstellen("gast") } : {}) });
   }
 
   // Code-Eingabe: vorher prüfen, ob es das Spiel gibt (der Code allein reicht ohnehin zum Mitspielen)
@@ -508,6 +514,7 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   sicherheitsHeader(res, url.pathname);
   try {
+    if ((url.pathname.startsWith("/api/") || url.pathname === "/healthz") && appCors(req, res)) return;
     if (url.pathname === "/healthz") return json(res, 200, { ok: true, songs: statistik().songs, spiele: laufendeSpiele(), version: VERSION, commit: COMMIT });
     if (url.pathname.startsWith("/api/")) return await api(req, res, url);
     // Kurzlink aus dem QR-Code → Spielerseite mit Einladung
@@ -530,6 +537,7 @@ const server = http.createServer(async (req, res) => {
 // Verbindungs-Wiederherstellung: nach kurzen Aussetzern (Sperre, WLAN-Wechsel) behält das Gerät Raum und Daten.
 const io = new Server(server, {
   serveClient: true,
+  cors: { origin: config.appUrspruenge, methods: ["GET", "POST"], allowedHeaders: ["Content-Type", "Authorization", "X-Hityear-App"] },
   pingInterval: 5_000,
   pingTimeout: 5_000,
   maxHttpBufferSize: 64_000,
@@ -537,7 +545,7 @@ const io = new Server(server, {
 });
 // Passwortpflicht gilt auch für die Echtzeitverbindung
 io.use((socket, next) => {
-  if (!config.zugangMitPasswort || rolleAusCookie(socket.handshake.headers.cookie)) return next();
+  if (!config.zugangMitPasswort || rolleAusAnfrage(socket.request) || rolleAusAppSitzung(socket.handshake.auth.sitzung)) return next();
   next(new Error("nicht angemeldet"));
 });
 socketsEinrichten(io);

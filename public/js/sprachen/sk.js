@@ -2,6 +2,8 @@
 // HitYear – Slovenčina (sk). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "Nainštalovaná aplikácia uchováva prihlásenie v tvojom zariadení najviac 14 dní. Nepoužíva webovú analytiku.",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "Aplikácia používa kameru iba s tvojím súhlasom na skenovanie QR kódov. Snímky sa neukladajú ani neprenášajú. Mikrofón sa nepoužíva.",
   "HitYear – Host": "HitYear – Host",
   "HitYear – Mitspielen": "HitYear – Hráči",
   "Zur Startseite": "Na úvodnú stránku",

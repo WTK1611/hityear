@@ -2,6 +2,8 @@
 // HitYear – Magyar (hu). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "A telepített alkalmazás legfeljebb 14 napig tárolja a bejelentkezést az eszközödön. Nem használ webes elemzést.",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "Az alkalmazás csak az engedélyeddel használja a kamerát QR-kódok beolvasására. A kamera képeit nem tárolja és nem továbbítja. A mikrofont nem használja.",
   "HitYear – Host": "HitYear – Házigazda",
   "HitYear – Mitspielen": "HitYear – Játék",
   "Zur Startseite": "Vissza a főoldalra",

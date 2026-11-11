@@ -5,12 +5,13 @@ Schön, dass du mitmachen willst. Issues und Pull Requests sind willkommen – F
 ## Regeln
 
 - Code, Kommentare, Commits und Bezeichner auf **Deutsch** (`spielerEntfernen`, `zugVorbereiten`). Issues und PRs gern auch auf Englisch.
-- Kein Build-Schritt, keine Frontend-Frameworks: TypeScript läuft direkt in Node, das Frontend ist Vanilla-JS.
+- Kein Build-Schritt für die Website, keine Frontend-Frameworks: TypeScript läuft direkt in Node, das Frontend ist Vanilla-JS. Die nativen Capacitor-Apps verpacken dieselben Seiten; Einrichtung und Tests stehen in [docs/APP.md](docs/APP.md).
 - Spielregeln gehören als reine Funktionen in `src/game.ts` und bekommen Tests in `test/`.
 - Der Server entscheidet alles; Geräte bekommen nur, was sie sehen dürfen.
 - Neue Texte auf Deutsch schreiben und in jeder Datei unter `public/js/sprachen/` ergänzen (29 Sprachen; `test/i18n.test.ts` prüft, dass keiner fehlt).
 - Vor jedem Push: `npm run typecheck && npm test` (und `npm run test:e2e`, wenn `ffmpeg` installiert ist).
 - Bei Änderungen an Audio oder Bildschirmdarstellung: `npm run test:browser`. Dafür einmal `npx playwright install chromium` ausführen; alternativ ein vorhandenes Chromium mit `CHROMIUM_EXECUTABLE=/pfad/zu/chromium` angeben.
+- Bei Änderungen an App-Anmeldung, Medien oder der nativen Brücke zusätzlich `npm run test:mobile` (vorher `npm --prefix mobile ci`). Native Builds prüfen Android Studio bzw. Xcode und der App-Workflow.
 - Keine Passwörter, Schlüssel, `.env`-Inhalte, Musikdateien oder Chartdaten ins Repo.
 
 ## Lizenz deiner Beiträge

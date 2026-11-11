@@ -10,7 +10,8 @@ import {
 } from "./game.ts";
 import { alsGespieltMarkieren, anzahlVerfuegbar, songHolen, stapelZiehen } from "./bibliothek.ts";
 import { ausschnittFreigeben, freigabeEntziehen } from "./audio.ts";
-import { clientIp, rolleAusCookie } from "./auth.ts";
+import { clientIp } from "./auth.ts";
+import { rolleAusAnfrage, rolleAusAppSitzung } from "./app.ts";
 import { dienstName } from "./vorschau.ts";
 import { beiNeuenSongs, fehlendeNachladen } from "./apple.ts";
 import { listenSongIds, listenUebersicht } from "./listen.ts";
@@ -678,7 +679,7 @@ export function socketsEinrichten(server: Server): void {
         const s: Spiel = {
           code,
           hostSitzung: token(),
-          privat: rolleAusCookie(socket.handshake.headers.cookie) === "admin",
+          privat: (rolleAusAppSitzung(socket.handshake.auth.sitzung) ?? rolleAusAnfrage(socket.request)) === "admin",
           einladung: einladungToken(),
           einstellungen: grenzen({ ...STANDARD_EINSTELLUNGEN, ...(x.einstellungen ?? {}) }),
           spieler: [],

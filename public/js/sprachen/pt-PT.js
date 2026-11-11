@@ -2,6 +2,8 @@
 // HitYear – Português (Portugal) (pt-PT). Schlüssel = deutscher Text auf der Seite (siehe i18n.js), Wert = Übersetzung.
 // {0}, {1} … sind Platzhalter. Neue Texte in allen Sprachdateien ergänzen (test/i18n.test.ts prüft das).
 uebersetzungLaden({
+  "Die installierte App speichert die Anmeldung für bis zu 14 Tage auf deinem Gerät. Sie verwendet keine Web-Statistik.": "A app instalada guarda a tua sessão no dispositivo durante até 14 dias. Não utiliza análise da web.",
+  "Die App nutzt die Kamera nur mit deiner Erlaubnis zum QR-Scannen. Kamerabilder werden nicht gespeichert oder übertragen. Das Mikrofon wird nicht verwendet.": "A app utiliza a câmara apenas com a tua autorização para ler códigos QR. As imagens não são guardadas nem transmitidas. O microfone não é utilizado.",
   "HitYear – Host": "HitYear – Anfitrião",
   "HitYear – Mitspielen": "HitYear – Jogar",
   "Zur Startseite": "Para a página inicial",
