@@ -37,13 +37,18 @@ jobs:
         timeout-minutes: 4
         run: |
           if ! command -v ffmpeg >/dev/null; then
-            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update -qq
-            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install --no-install-recommends -y -qq ffmpeg
+            npm install --prefix "$RUNNER_TEMP/hityear-testwerkzeuge" --no-audit --no-fund --save-exact ffmpeg-static@5.3.0
+            HITYEAR_FFMPEG="$RUNNER_TEMP/hityear-testwerkzeuge/node_modules/ffmpeg-static"
+            echo "$HITYEAR_FFMPEG" >> "$GITHUB_PATH"
+            export PATH="$HITYEAR_FFMPEG:$PATH"
           fi
           ffmpeg -hide_banner -version | head -n 1
       - run: npm run test:e2e
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:browser
+      # Der feste GitHub-Runner enthält Chrome samt Systembibliotheken bereits.
+      - name: Browserdarstellung und Audio prüfen
+        run: |
+          HITYEAR_CHROMIUM="$(command -v google-chrome || command -v chromium)"
+          CHROMIUM_EXECUTABLE="$HITYEAR_CHROMIUM" npm run test:browser
 
   ausrollen:
     needs: pruefen
