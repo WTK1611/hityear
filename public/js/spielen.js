@@ -23,6 +23,12 @@
   let autoGestartet = null;
   let countdownFuer = null;
   let zustand = null;
+  audioFehlerBinden(audio, {
+    aktiv: () => zustand?.phase === "hoeren",
+    position: () => Math.max(0, (Date.now() - lokal(zustand.startUm)) / 1000),
+    darfWechseln: () => Boolean(zustand?.host),
+    wechseln: () => socket.anfrage("host:tauschen", { ausschnitt: audio.url }),
+  });
   let gewaehlt = null;
   let frisch = false; // Lücke gerade angetippt → kurz aufploppen
   let letzteAufloesung = null;
@@ -562,8 +568,7 @@
   $("#abspielen").addEventListener("click", async () => {
     if (!audio.element.paused) return audio.stop();
     const weiter = audio.element.currentTime > 0 && !audio.element.ended;
-    const ok = weiter ? await audio.element.play().then(() => true, () => false) : await audio.abspielen();
-    if (!ok) fehler("Abspielen nicht möglich – bitte noch einmal tippen.");
+    await audio.abspielen(weiter ? audio.element.currentTime : 0);
   });
 })();
 

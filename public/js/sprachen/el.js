@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Μη έγκυρη θέση.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Πολύ λίγα τραγούδια για αυτή την επιλογή ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Ο κωδικός έχει μόνο λατινικά γράμματα (A–Z) και ψηφία – άλλαξε πληκτρολόγιο 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Δεν ήταν δυνατή η φόρτωση του αποσπάσματος.",
+  "Erneut versuchen": "Δοκιμάστε ξανά",
+  "Song wechseln": "Αλλαγή τραγουδιού",
+  "Im Querformat fortfahren": "Συνέχεια σε οριζόντια προβολή",
 });

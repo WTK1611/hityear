@@ -130,7 +130,12 @@ setInterval(() => {
 interface SocketDaten {
   code?: string;
   spielerId?: string;
-  host?: boolean;
+  hostSitzung?: string;
+}
+
+/** Host-Rechte gelten nur mit der bestätigten Sitzung des aktuellen Raums. */
+function istHost(s: Spiel, d: SocketDaten): boolean {
+  return d.code === s.code && d.hostSitzung === s.hostSitzung;
 }
 
 function ausschnittUrlFuer(s: Spiel, d: SocketDaten): string | null {
@@ -138,7 +143,7 @@ function ausschnittUrlFuer(s: Spiel, d: SocketDaten): string | null {
   const t = ausschnitte.get(s.code);
   if (!t) return null;
   const w = s.einstellungen.wiedergabe;
-  if (w === "host" && d.host) return `/api/audio/${t}`;
+  if (w === "host" && istHost(s, d)) return `/api/audio/${t}`;
   if ((w === "alle" || w === "solo") && d.spielerId) return `/api/audio/${t}`;
   // Modus „alle“: „Handy, wer dran ist“ heißt jedes Handy
   if (w === "spieler" && d.spielerId && (alleGleichzeitig(s) || d.spielerId === aktiverSpieler(s)?.id)) return `/api/audio/${t}`;
@@ -290,7 +295,7 @@ function demoNeustartPlanen(s: Spiel): void {
     if (raeume.get(s.code) !== s || !s.demo || s.phase !== "ende") return;
     // läuft am TV nichts mehr (Seite zu), endet die Demo
     const socks = await io.in(s.code).fetchSockets();
-    if (!socks.some((k) => (k.data as SocketDaten).host)) return void raumWeg(s);
+    if (!socks.some((k) => istHost(s, k.data as SocketDaten))) return void raumWeg(s);
     revanche(s);
     try {
       demoStarten(s);
@@ -314,14 +319,14 @@ function zustandFuer(s: Spiel, d: SocketDaten, basis = { ...sicht(s), bestenlist
     wartenBis: s.phase === "aufloesung" ? wartenBis.get(s.code) ?? null : null,
     um: Date.now(), // Sendezeit (Serveruhr): Geräte melden damit zu späte Zustände
     ich: d.spielerId ?? null,
-    host: Boolean(d.host),
+    host: istHost(s, d),
     ausschnitt: ausschnittUrlFuer(s, d),
     // Dienst der laufenden Hörprobe für den Quellenhinweis (Apple/Deezer verlangen ihn auch während des Abspielens)
     quelle: s.phase === "hoeren" && s.zug ? dienstName(songHolen(s.zug.karte.songId)) : null,
     vorspiel: vorspielFuer(s, d),
     // nur die eigene Lücke (bis zur Auflösung sieht niemand die der anderen) – überlebt auch Neuladen
     meinTipp: s.phase === "hoeren" && d.spielerId ? s.zug?.gelegt?.[d.spielerId] ?? null : null,
-    einladung: d.host ? s.einladung : null,
+    einladung: istHost(s, d) ? s.einladung : null,
     verfuegbar,
   };
 }
@@ -345,7 +350,10 @@ function senden(s: Spiel): void {
     .in(s.code)
     .fetchSockets()
     .then((socks) => {
-      for (const sock of socks) sock.emit("zustand", zustandFuer(s, sock.data as SocketDaten, basis, verfuegbar, stand));
+      for (const sock of socks) {
+        const d = sock.data as SocketDaten;
+        if (d.code === s.code) sock.emit("zustand", zustandFuer(s, d, basis, verfuegbar, stand));
+      }
     });
 }
 
@@ -388,7 +396,7 @@ function vorspielFuer(s: Spiel, d: SocketDaten) {
   const v = vorspiele.get(s.code);
   if (!v || s.phase !== "hoeren" || Date.now() > v.bis) return null;
   const w = s.einstellungen.wiedergabe;
-  const hier = w === "host" ? Boolean(d.host) : Boolean(d.spielerId);
+  const hier = w === "host" ? istHost(s, d) : Boolean(d.spielerId);
   return { karte: v.karte, ab: v.ab, bis: v.bis, url: hier ? `/api/audio/${v.token}` : null };
 }
 
@@ -563,6 +571,19 @@ function raum(code: unknown): Spiel {
 
 const verbindungenJeIp = new Map<string, number>();
 
+/** Nach Trennung oder Raumwechsel zählt ein Spieler nur mit einem verbleibenden Socket als verbunden. */
+async function spielerVerbindungPruefen(code: string, spielerId: string): Promise<void> {
+  const s = raeume.get(code);
+  const p = s?.spieler.find((q) => q.id === spielerId);
+  if (!s || !p) return;
+  const socks = await io.in(code).fetchSockets();
+  if (!socks.some((k) => k.data.code === code && k.data.spielerId === p.id)) {
+    p.verbunden = false;
+    if (alleGleichzeitig(s) && bereit(s) && !s.zug?.aufloesungUm) aufloesenNachSong(s);
+    senden(s);
+  }
+}
+
 export function socketsEinrichten(server: Server): void {
   io = server;
 
@@ -570,7 +591,7 @@ export function socketsEinrichten(server: Server): void {
     const d = socket.data as SocketDaten;
     const verbundenSeit = Date.now();
     /** Für das Log: Raum und Spielername (Host = „Host“) */
-    const wer = () => `${d.code ?? "-"} ${d.host ? "Host" : (raumFinden(d.code)?.spieler.find((p) => p.id === d.spielerId)?.name ?? "?")}`;
+    const wer = () => `${d.code ?? "-"} ${d.hostSitzung ? "Host" : (raumFinden(d.code)?.spieler.find((p) => p.id === d.spielerId)?.name ?? "?")}`;
     const transport = () => socket.conn.transport.name;
     const ip = clientIp(socket.request);
     // höchstens 30 gleichzeitige Verbindungen je IP (eine Party im selben WLAN braucht weit weniger)
@@ -626,11 +647,25 @@ export function socketsEinrichten(server: Server): void {
       diagnose("verzug", `${wer()} ${ms} ms (${String(x?.transport ?? transport()).slice(0, 12)}, ${x?.sichtbar ? "sichtbar" : "verborgen"})`, ms >= 5000);
     });
 
+    const raumVerbinden = (s: Spiel): void => {
+      if (d.code !== s.code) {
+        const vorher = d.code;
+        const spielerId = d.spielerId;
+        if (vorher) void socket.leave(vorher);
+        d.hostSitzung = undefined;
+        d.spielerId = undefined;
+        if (vorher && spielerId) void spielerVerbindungPruefen(vorher, spielerId);
+      }
+      d.code = s.code;
+      void socket.join(s.code);
+    };
+
     const hostRaum = (): Spiel => {
-      if (!d.host || !d.code) throw new SpielFehler("Nur der Host darf das.");
+      if (!d.hostSitzung || !d.code) throw new SpielFehler("Nur der Host darf das.");
       // direkt, nicht über raumFinden: das blendet Demo-Räume aus, der TV muss seine Demo aber beenden können
       const s = raeume.get(d.code);
       if (!s) throw new SpielFehler("Raum nicht gefunden. Code prüfen.");
+      if (!istHost(s, d)) throw new SpielFehler("Nur der Host darf das.");
       return s;
     };
 
@@ -638,7 +673,7 @@ export function socketsEinrichten(server: Server): void {
       "host:erstellen",
       sicher<{ einstellungen?: Partial<Einstellungen> }>((x) => {
         if (raeume.size >= MAX_RAEUME) throw new SpielFehler("Gerade sind zu viele Spiele offen. Bitte gleich nochmal versuchen.");
-        if (!erlaubt("raum", ip, 10, 10 * 60_000)) throw new SpielFehler("Zu viele neue Spiele. Bitte in ein paar Minuten nochmal.");
+        if (!erlaubt("raum-erstellen", ip, 10, 10 * 60_000)) throw new SpielFehler("Zu viele neue Spiele. Bitte in ein paar Minuten nochmal.");
         const code = zufallsCode();
         const s: Spiel = {
           code,
@@ -660,9 +695,8 @@ export function socketsEinrichten(server: Server): void {
           geaendert: Date.now(),
         };
         raeume.set(code, s);
-        d.code = code;
-        d.host = true;
-        void socket.join(code);
+        raumVerbinden(s);
+        d.hostSitzung = s.hostSitzung;
         senden(s);
         return { code, hostSitzung: s.hostSitzung };
       }),
@@ -673,9 +707,8 @@ export function socketsEinrichten(server: Server): void {
       sicher<{ code: string; hostSitzung: string }>((x) => {
         const s = raum(x.code);
         if (typeof x.hostSitzung !== "string" || x.hostSitzung !== s.hostSitzung) throw new SpielFehler("Kein Host-Zugang für diesen Raum.");
-        d.code = s.code;
-        d.host = true;
-        void socket.join(s.code);
+        raumVerbinden(s);
+        d.hostSitzung = s.hostSitzung;
         senden(s);
         return { code: s.code };
       }),
@@ -765,8 +798,11 @@ export function socketsEinrichten(server: Server): void {
 
     socket.on(
       "host:tauschen",
-      sicher(() => {
+      sicher<{ ausschnitt?: string }>((x) => {
         const s = hostRaum();
+        if (x.ausschnitt !== undefined && x.ausschnitt !== `/api/audio/${ausschnitte.get(s.code)}`) {
+          throw new SpielFehler("Die Runde ist schon vorbei.");
+        }
         songTauschen(s);
         zugVorbereiten(s);
         senden(s);
@@ -821,9 +857,8 @@ export function socketsEinrichten(server: Server): void {
           else rundeWiederOeffnen(s);
         }
         p.verbunden = true;
-        d.code = s.code;
+        raumVerbinden(s);
         d.spielerId = p.id;
-        void socket.join(s.code);
         senden(s);
         return { code: s.code, spielerId: p.id, sitzung: p.sitzung };
       }),
@@ -891,6 +926,8 @@ export function socketsEinrichten(server: Server): void {
         else if (alleGleichzeitig(s) && bereit(s) && !s.zug?.aufloesungUm) aufloesenNachSong(s);
         void socket.leave(s.code);
         d.spielerId = undefined;
+        d.hostSitzung = undefined;
+        d.code = undefined;
         senden(s);
       }),
     );
@@ -898,18 +935,7 @@ export function socketsEinrichten(server: Server): void {
     socket.on("disconnect", (grund) => {
       if (d.code) diagnose("verbindung", `${wer()} getrennt: ${grund} (${transport()}, nach ${Math.round((Date.now() - verbundenSeit) / 1000)} s)`);
       if (!d.code || !d.spielerId) return;
-      const s = raeume.get(d.code);
-      const p = s?.spieler.find((q) => q.id === d.spielerId);
-      if (!s || !p) return;
-      // nur als getrennt markieren, wenn kein anderer Socket desselben Spielers verbunden ist
-      void io.in(s.code).fetchSockets().then((socks) => {
-        if (!socks.some((k) => (k.data as SocketDaten).spielerId === p.id)) {
-          p.verbunden = false;
-          // Modus „alle“: haben jetzt alle Verbliebenen gelegt → nach dem Song auflösen
-          if (alleGleichzeitig(s) && bereit(s) && !s.zug?.aufloesungUm) aufloesenNachSong(s);
-          senden(s);
-        }
-      });
+      void spielerVerbindungPruefen(d.code, d.spielerId);
     });
   });
 }
@@ -945,7 +971,7 @@ export function songIstAufgedeckt(songId: string): boolean {
 /** Für die Code-Eingabe auf der Startseite: gibt es den Raum, und kann man noch hinein? */
 /** Code-Prüfung über HTTP (/api/raum): auch Treffer zählen, sonst ließen sich Codes ungebremst durchprobieren. */
 export function raumPruefenErlaubt(ip: string): boolean {
-  return erlaubt("raum", ip, 30, 10 * 60_000);
+  return erlaubt("raum-pruefen", ip, 30, 10 * 60_000);
 }
 
 export function raumStatus(code: string): { code: string; phase: Spiel["phase"]; voll: boolean } | null {

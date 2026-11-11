@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "موضع غير صالح.",
   "Zu wenige Songs für diese Auswahl ({0}).": "أغاني قليلة جدًا لهذا الاختيار ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "الرمز يحتوي فقط على حروف لاتينية (A–Z) وأرقام – بدّل لوحة المفاتيح 🌐",
+  "Hörprobe konnte nicht geladen werden.": "تعذّر تحميل المقطع الصوتي.",
+  "Erneut versuchen": "حاول مجددًا",
+  "Song wechseln": "تغيير الأغنية",
+  "Im Querformat fortfahren": "المتابعة بالوضع الأفقي",
 });

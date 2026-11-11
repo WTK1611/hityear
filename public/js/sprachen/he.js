@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "מיקום לא חוקי.",
   "Zu wenige Songs für diese Auswahl ({0}).": "אין מספיק שירים לבחירה הזו ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "בקוד יש רק אותיות לטיניות (A–Z) וספרות – יש להחליף מקלדת 🌐",
+  "Hörprobe konnte nicht geladen werden.": "לא ניתן לטעון את קטע ההשמעה.",
+  "Erneut versuchen": "ניסיון נוסף",
+  "Song wechseln": "החלפת שיר",
+  "Im Querformat fortfahren": "המשך במצב אופקי",
 });

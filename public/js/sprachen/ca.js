@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Posició no vàlida.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Massa poques cançons per a aquesta tria ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "El codi només té lletres llatines (A–Z) i xifres: canvia el teclat 🌐",
+  "Hörprobe konnte nicht geladen werden.": "No s’ha pogut carregar el fragment.",
+  "Erneut versuchen": "Torna-ho a provar",
+  "Song wechseln": "Canvia la cançó",
+  "Im Querformat fortfahren": "Continua en horitzontal",
 });

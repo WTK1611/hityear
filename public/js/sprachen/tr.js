@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Geçersiz konum.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Bu seçim için çok az şarkı var ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Kod yalnızca Latin harfleri (A–Z) ve rakamlardan oluşur – klavyeni değiştir 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Önizleme yüklenemedi.",
+  "Erneut versuchen": "Tekrar dene",
+  "Song wechseln": "Şarkıyı değiştir",
+  "Im Querformat fortfahren": "Yatay modda devam et",
 });

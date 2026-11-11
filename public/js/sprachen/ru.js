@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Недопустимая позиция.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Слишком мало песен для этого выбора ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "В коде только латинские буквы (A–Z) и цифры – переключи клавиатуру 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Не удалось загрузить отрывок.",
+  "Erneut versuchen": "Попробовать снова",
+  "Song wechseln": "Сменить песню",
+  "Im Querformat fortfahren": "Продолжить в альбомной ориентации",
 });

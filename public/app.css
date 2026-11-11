@@ -986,6 +986,9 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
   100% { transform: scale(0.85); opacity: 0; }
 }
 .countdown-knopf { font-size: 1.4rem; padding: 18px 32px; min-height: 64px; }
+.audio-hilfe { position: fixed; z-index: 1000; top: max(12px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); width: min(440px, calc(100% - 24px)); max-height: calc(100dvh - 24px); overflow: auto; background: #211331; border: 2px solid var(--gelb); box-shadow: 0 12px 40px #0009; }
+.audio-hilfe p { margin-top: 0; }
+.audio-hilfe .reihe { flex-wrap: wrap; margin-bottom: 8px; }
 @media (prefers-reduced-motion: reduce) {
   .countdown-zahl { animation: none; }
 }
@@ -1973,7 +1976,7 @@ button.hier-mitspielen { display: block; margin: 14px auto 0; }
 /* „Allein üben“: niemand muss einen QR-Code scannen */
 body.solo .qr-lobby { display: none !important; }
 
-/* Handy im Querformat: Hinweis statt Seite (gemeinsam.js) – nur Touch-Geräte mit wenig Höhe, also keine Tablets/Fernseher */
+/* Spielerseite im Querformat: überspringbare Empfehlung, auch für fest eingebaute Touchscreens. */
 .drehen-hinweis { display: none; }
 @media (orientation: landscape) and (pointer: coarse) and (max-height: 500px) {
   .drehen-hinweis {
@@ -1982,7 +1985,7 @@ body.solo .qr-lobby { display: none !important; }
   }
   .drehen-hinweis p { margin: 0; font-size: 1.2rem; font-weight: 800; }
   .drehen-handy { font-size: 3.5rem; animation: drehen-zurueck 1.8s ease-in-out infinite; }
-  body:has(.drehen-hinweis) { overflow: hidden; }
+  html:not(.drehen-frei):not(.quer-erlaubt) body:has(.drehen-hinweis) { overflow: hidden; }
 }
 @keyframes drehen-zurueck { 0%, 20% { transform: rotate(-90deg); } 55%, 100% { transform: rotate(0deg); } }
 @media (prefers-reduced-motion: reduce) { .drehen-handy { animation: none; } }
@@ -1995,7 +1998,7 @@ body.solo .qr-lobby { display: none !important; }
 .listen-umschalter:not(.versteckt) + .ende-runde > h2 { display: none; }
 
 /* Gastgeber spielt am Handy mit: quer zeigt das Spielfeld (spielen.js), also kein Hochkant-Hinweis */
-.drehen-frei .drehen-hinweis { display: none !important; }
+.drehen-frei .drehen-hinweis, .quer-erlaubt .drehen-hinweis { display: none !important; }
 /* Schmaler Hauptbildschirm: Spielcode-Karte mit fester Breite, der Countdown sitzt links daneben und überlappt nie
    (die Beschriftung „Jetzt mitspielen“ ist je nach Sprache verschieden lang); auf ganz schmalen Handys ohne Schriftzug */
 @media (max-width: 700px) {

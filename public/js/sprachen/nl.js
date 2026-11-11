@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Ongeldige positie.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Te weinig songs voor deze selectie ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "De code heeft alleen Latijnse letters (A–Z) en cijfers – wissel van toetsenbord 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Het fragment kon niet worden geladen.",
+  "Erneut versuchen": "Opnieuw proberen",
+  "Song wechseln": "Ander nummer",
+  "Im Querformat fortfahren": "Doorgaan in liggende stand",
 });

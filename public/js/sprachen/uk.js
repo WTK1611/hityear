@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Недійсна позиція.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Замало треків для цього вибору ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "У коді лише латинські літери (A–Z) і цифри – перемкни клавіатуру 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Не вдалося завантажити уривок.",
+  "Erneut versuchen": "Спробувати ще раз",
+  "Song wechseln": "Змінити пісню",
+  "Im Querformat fortfahren": "Продовжити в альбомній орієнтації",
 });

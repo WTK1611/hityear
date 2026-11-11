@@ -10,6 +10,12 @@
   let zustand = null;
   let bibliothek = null;
   let aufgedeckt = null; // Schlüssel der zuletzt gezeigten Auflösung
+  audioFehlerBinden(audio, {
+    aktiv: () => zustand?.phase === "hoeren",
+    position: () => Math.max(0, (Date.now() - lokal(zustand.startUm)) / 1000),
+    darfWechseln: () => Boolean(zustand?.host),
+    wechseln: () => socket.anfrage("host:tauschen", { ausschnitt: audio.url }),
+  });
 
   // „Keine Verbindung“ meldet schon das gelbe Banner (gemeinsam.js) – nicht doppelt zeigen
   const fehler = (t) => ($("#fehler").textContent = t === "Keine Verbindung zum Server." ? "" : t || "");
@@ -1331,7 +1337,6 @@
     const ok = await audio.abspielen(ab);
     if (!ok) {
       platteDrehen(false);
-      fehler("Abspielen nicht möglich – Ausschnitt noch nicht bereit oder vom Browser blockiert.");
     }
   };
   platte.addEventListener("click", platteKlick);
@@ -1382,8 +1387,7 @@
 
 // Handy quer im laufenden Spiel: wie ein Fernseher darstellen – das Layout ist mindestens 1280 px breit und der Browser skaliert es
 // auf den Bildschirm. So greifen Fernseher-Ansicht und --skala (unten), und alles passt ohne Scrollen. Hochkant bleibt die Handy-Ansicht.
-// In der Einrichtung (Phase „lobby“, ohne html.drehen-frei) bleibt die Handy-Ansicht auch quer – dort deckt der Hinweis
-// „Bitte halte dein Handy hochkant“ (gemeinsam.js) die Seite ab.
+// Die Einrichtung verwendet in beiden Ausrichtungen die tatsächliche Bildschirmbreite und bleibt scrollbar.
 {
   const meta = document.querySelector('meta[name="viewport"]');
   const hochkant = meta?.content;

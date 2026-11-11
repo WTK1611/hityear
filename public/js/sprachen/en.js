@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Invalid position.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Too few songs for this selection ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "The code only uses Latin letters (A–Z) and digits – please switch your keyboard 🌐",
+  "Hörprobe konnte nicht geladen werden.": "The preview could not be loaded.",
+  "Erneut versuchen": "Try again",
+  "Song wechseln": "Change song",
+  "Im Querformat fortfahren": "Continue in landscape",
 });
