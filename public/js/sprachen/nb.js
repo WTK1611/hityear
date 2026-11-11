@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Ugyldig posisjon.",
   "Zu wenige Songs für diese Auswahl ({0}).": "For få sanger til dette utvalget ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Koden har bare latinske bokstaver (A–Z) og sifre – bytt tastatur 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Lydklippet kunne ikke lastes inn.",
+  "Erneut versuchen": "Prøv igjen",
+  "Song wechseln": "Bytt sang",
+  "Im Querformat fortfahren": "Fortsett i liggende modus",
 });

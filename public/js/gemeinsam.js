@@ -479,6 +479,15 @@ function audioSpieler() {
     }
   });
   let aktuell = null;
+  let versuch = 0;
+  let fehler = null;
+  const melden = (art) => {
+    fehler = art;
+    a.dispatchEvent(new Event("tonfehler"));
+  };
+  a.addEventListener("error", () => {
+    if (aktuell) melden("quelle");
+  });
   const freischalten = () => {
     for (const ev of ["pointerdown", "keydown"]) document.removeEventListener(ev, freischalten, true);
     if (aktuell) return; // läuft schon ein Ausschnitt, nichts überschreiben
@@ -492,7 +501,10 @@ function audioSpieler() {
     element: a,
     laden(url) {
       if (url === aktuell) return;
+      versuch++;
+      fehler = null;
       aktuell = url;
+      a.dispatchEvent(new Event("tonwechsel"));
       // Song läuft noch und es kommt keiner nach (Auflösung) → sanft ausblenden statt hart abschneiden
       if (!url && !a.paused) {
         ausgeblendet = true;
@@ -514,21 +526,37 @@ function audioSpieler() {
         a.load();
       }
     },
-    async abspielen(ab = 0) {
+    async abspielen(ab = 0, neuLaden = false) {
       if (!aktuell) return false;
-      a.currentTime = Math.max(0, ab);
-      ausgeblendet = false;
-      blenden(0, 0.01, 0);
+      const nummer = ++versuch;
+      let frist;
       try {
-        await a.play();
+        if (neuLaden) a.load();
+        a.currentTime = Math.max(0, ab);
+        ausgeblendet = false;
+        blenden(0, 0.01, 0);
+        // Eine hängende Verbindung darf nicht endlos auf play() warten lassen.
+        await Promise.race([
+          a.play(),
+          new Promise((_, ablehnen) => { frist = setTimeout(() => ablehnen(new Error("Ladezeit überschritten")), 8000); }),
+        ]);
+        if (nummer !== versuch) return false;
+        fehler = null;
         blenden(1, EIN, 0);
         return true;
-      } catch {
+      } catch (err) {
+        // Alte Anfragen dürfen beim Songwechsel keine Fehlermeldung für den neuen Song auslösen.
+        if (nummer !== versuch) return false;
+        a.pause();
+        melden(err?.name === "NotAllowedError" ? "freigabe" : "quelle");
         return false;
+      } finally {
+        clearTimeout(frist);
       }
     },
     /** Sanft leiser werden und anhalten */
     stop(sek = 0.4) {
+      versuch++;
       if (a.paused) return;
       blenden(0, sek);
       const url = aktuell;
@@ -542,12 +570,64 @@ function audioSpieler() {
     get url() {
       return aktuell;
     },
+    get fehler() {
+      return fehler;
+    },
   };
 }
 
+/** Hilfe bei blockiertem Autoplay, defekten Hörproben und Fehlern während der Wiedergabe. */
+function audioFehlerBinden(audio, { aktiv, position, darfWechseln, wechseln }) {
+  let box = null;
+  let waechter = null;
+  const entfernen = () => {
+    box?.remove();
+    box = null;
+    clearInterval(waechter);
+  };
+  const anzeigen = () => {
+    if (!aktiv() || !audio.url) return entfernen();
+    entfernen();
+    const url = audio.url;
+    const quelle = audio.fehler === "quelle";
+    const meldung = el("p", { role: "alert", text: quelle ? "Hörprobe konnte nicht geladen werden." : "▶ Tippen zum Abspielen" });
+    const versuchen = el("button", {
+      type: "button", text: quelle ? "Erneut versuchen" : "▶ Tippen zum Abspielen",
+      onclick: async () => {
+        if (!aktiv() || audio.url !== url) return entfernen();
+        versuchen.disabled = true;
+        if (await audio.abspielen(position(), quelle)) entfernen();
+        versuchen.disabled = false;
+      },
+    });
+    const knoepfe = [versuchen];
+    if (quelle && darfWechseln()) knoepfe.push(el("button", {
+      type: "button", class: "zweit", text: "Song wechseln",
+      onclick: async (ev) => {
+        if (!aktiv() || audio.url !== url || !darfWechseln()) return entfernen();
+        ev.currentTarget.disabled = true;
+        try {
+          await wechseln();
+          entfernen();
+        } catch (err) {
+          meldung.textContent = err.message;
+          for (const knopf of knoepfe) knopf.disabled = false;
+        }
+      },
+    }));
+    box = el("div", { class: "box audio-hilfe" }, meldung, el("div", { class: "reihe" }, knoepfe),
+      el("button", { type: "button", class: "zweit", text: "Abbrechen", onclick: entfernen }));
+    document.body.append(box);
+    waechter = setInterval(() => { if (!aktiv() || audio.url !== url) entfernen(); }, 300);
+  };
+  audio.element.addEventListener("tonfehler", anzeigen);
+  audio.element.addEventListener("tonwechsel", entfernen);
+  audio.element.addEventListener("playing", entfernen);
+}
+
 /**
- * Countdown 3 · 2 · 1 groß über der Seite, danach abspielen. Lässt der Browser kein Autoplay zu,
- * bleibt ein großer Knopf „Tippen zum Abspielen“. nochAktuell() = false bricht ab (Runde vorbei).
+ * Countdown 3 · 2 · 1 groß über der Seite, danach abspielen. Bei Fehlern zeigt audioFehlerBinden
+ * die passende Hilfe. nochAktuell() = false bricht ab (Runde vorbei).
  */
 /**
  * Synchroner Start auf allen Geräten: 3-2-1 genau vor `startUm` (Serveruhr), dann spielt der
@@ -627,25 +707,7 @@ async function countdownAbspielen(audio, nochAktuell, startUm) {
     return;
   }
   clearTimeout(ausblenden);
-  weg = false;
-  if (!nochAktuell()) return entfernen();
-  // Knopf „Tippen zum Abspielen“ immer groß über der ganzen Seite
-  ov.classList.remove("im-platz");
-  document.body.append(ov);
-  ov.classList.add("tippen");
-  ov.replaceChildren(el("button", {
-    class: "countdown-knopf",
-    text: "▶ Tippen zum Abspielen",
-    onclick: async () => {
-      if (await audio.abspielen(position())) entfernen(); // an die Stelle, an der die anderen gerade sind
-    },
-  }));
-  const spaeter = setInterval(() => {
-    if (!nochAktuell()) {
-      clearInterval(spaeter);
-      entfernen();
-    }
-  }, 500);
+  entfernen(); // audioFehlerBinden zeigt die zum Fehler passende Hilfe.
 }
 
 /**
@@ -1788,17 +1850,19 @@ document.addEventListener("DOMContentLoaded", () => {
   planen();
 });
 
-// Handys nur hochkant: im Browser lässt sich das Drehen nicht sperren – im Querformat deckt ein Hinweis die Seite ab
-// (CSS .drehen-hinweis). Als installierte App klappt die echte Sperre, Tablets und Fernseher bleiben frei.
-// Ausnahme: der Hauptbildschirm (host.html) darf im laufenden Spiel quer – host.js setzt dann html.drehen-frei und stellt
-// ihn wie auf dem Fernseher dar. In der Einrichtung bleibt auch er hochkant.
+// Einrichtung und Startseite bleiben in jeder Ausrichtung bedienbar. Auf der Spielerseite ist
+// Hochkant nur eine Empfehlung: kleine fest eingebaute Touchscreens lassen sich nicht drehen.
 (() => {
+  if (!location.pathname.startsWith("/spielen")) return;
+  if (speicher("zs_quer_erlaubt")) document.documentElement.classList.add("quer-erlaubt");
   const hinweis = el("div", { class: "drehen-hinweis", "aria-live": "polite" },
     el("div", { class: "drehen-handy", "aria-hidden": "true", text: "📱" }),
-    el("p", { text: "Bitte halte dein Handy hochkant." }));
+    el("p", { text: "Bitte halte dein Handy hochkant." }),
+    el("button", { type: "button", text: "Im Querformat fortfahren", onclick: () => {
+      speicher("zs_quer_erlaubt", "1");
+      document.documentElement.classList.add("quer-erlaubt");
+    } }));
   document.body.append(hinweis);
-  const handy = matchMedia("(pointer: coarse) and (max-width: 500px), (pointer: coarse) and (max-height: 500px)");
-  if (handy.matches && !location.pathname.startsWith("/host")) screen.orientation?.lock?.("portrait").catch(() => {});
 })();
 
 // Tasten-Test für Fernseher: ?tasten zeigt Browser-Kennung, Bildschirm und die zuletzt gedrückten Tasten

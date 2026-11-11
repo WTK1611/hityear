@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Poziție nevalidă.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Prea puține melodii pentru această selecție ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Codul are doar litere latine (A–Z) și cifre – schimbă tastatura 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Fragmentul audio nu a putut fi încărcat.",
+  "Erneut versuchen": "Încearcă din nou",
+  "Song wechseln": "Schimbă melodia",
+  "Im Querformat fortfahren": "Continuă în modul peisaj",
 });

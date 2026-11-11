@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Érvénytelen pozíció.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Túl kevés dal ehhez a választáshoz ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "A kódban csak latin betűk (A–Z) és számok vannak – válts billentyűzetet 🌐",
+  "Hörprobe konnte nicht geladen werden.": "A zenei részlet nem tölthető be.",
+  "Erneut versuchen": "Újrapróbálkozás",
+  "Song wechseln": "Dal cseréje",
+  "Im Querformat fortfahren": "Folytatás fekvő módban",
 });

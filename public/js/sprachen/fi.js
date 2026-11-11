@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Virheellinen paikka.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Liian vähän biisejä tähän valintaan ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Koodissa on vain latinalaisia kirjaimia (A–Z) ja numeroita – vaihda näppäimistö 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Ääninäytettä ei voitu ladata.",
+  "Erneut versuchen": "Yritä uudelleen",
+  "Song wechseln": "Vaihda kappale",
+  "Im Querformat fortfahren": "Jatka vaaka-asennossa",
 });

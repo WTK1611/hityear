@@ -10,6 +10,7 @@ Schön, dass du mitmachen willst. Issues und Pull Requests sind willkommen – F
 - Der Server entscheidet alles; Geräte bekommen nur, was sie sehen dürfen.
 - Neue Texte auf Deutsch schreiben und in jeder Datei unter `public/js/sprachen/` ergänzen (29 Sprachen; `test/i18n.test.ts` prüft, dass keiner fehlt).
 - Vor jedem Push: `npm run typecheck && npm test` (und `npm run test:e2e`, wenn `ffmpeg` installiert ist).
+- Bei Änderungen an Audio oder Bildschirmdarstellung: `npm run test:browser`. Dafür einmal `npx playwright install chromium` ausführen; alternativ ein vorhandenes Chromium mit `CHROMIUM_EXECUTABLE=/pfad/zu/chromium` angeben.
 - Keine Passwörter, Schlüssel, `.env`-Inhalte, Musikdateien oder Chartdaten ins Repo.
 
 ## Lizenz deiner Beiträge

@@ -49,13 +49,19 @@ async function login(passwort: string): Promise<string> {
   return (r.headers.get("set-cookie") ?? "").split(";")[0];
 }
 
+let raumErstellungen = 0;
 function client(cookie: string): Socket & { frag: (e: string, d?: unknown) => Promise<any>; letzter: any } {
   const s = ioClient(BASIS, { transports: ["websocket"], extraHeaders: { Cookie: cookie } }) as any;
   s.letzter = null;
   s.on("zustand", (z: unknown) => (s.letzter = z));
   s.on("bereit", (antwort: unknown) => typeof antwort === "function" && antwort(true)); // Handshake vor dem nächsten Song
   s.frag = (e: string, d?: unknown) =>
-    new Promise((res, rej) => s.timeout(5000).emit(e, d ?? {}, (err: Error, a: any) => (err ? rej(err) : a.ok ? res(a) : rej(new Error(a.fehler)))));
+    new Promise((res, rej) => s.timeout(5000).emit(e, d ?? {}, (err: Error, a: any) => {
+      if (err) return rej(err);
+      if (!a.ok) return rej(new Error(a.fehler));
+      if (e === "host:erstellen") raumErstellungen++;
+      res(a);
+    }));
   return s;
 }
 
@@ -94,6 +100,49 @@ try {
 
   const { code, hostSitzung } = await host.frag("host:erstellen", { einstellungen: { zielKarten: 10, auffuellen: false, nichtErraten: "weg" } });
   assert.match(code, /^[A-Z0-9]{4}$/);
+
+  // Raumwechsel: eigene Host-Rechte dürfen weder Befehle noch Host-Daten in fremden Räumen freischalten.
+  const wechsler = client(cookie);
+  const eigenerHost = client(cookie);
+  await bis(() => wechsler.connected && eigenerHost.connected);
+  const eigenerRaum = await wechsler.frag("host:erstellen");
+  await eigenerHost.frag("host:verbinden", eigenerRaum);
+  const fremderSpieler = await wechsler.frag("spieler:beitreten", { code, name: "Wechsler" });
+  const fremdeSicht = await bis(() => wechsler.letzter?.code === code && wechsler.letzter);
+  assert.equal(fremdeSicht.host, false, "keine Host-Rechte im fremden Raum");
+  assert.equal(fremdeSicht.einladung, null, "keine fremde Host-Einladung");
+  await assert.rejects(wechsler.frag("host:einstellungen", { zielKarten: 20 }), /Nur der Host/);
+  await assert.rejects(wechsler.frag("host:beenden"), /Nur der Host/);
+  await assert.rejects(wechsler.frag("host:verbinden", { code, hostSitzung: eigenerRaum.hostSitzung }), /Kein Host-Zugang/);
+  const raumMeldungen: string[] = [];
+  const merken = (z: { code: string }) => raumMeldungen.push(z.code);
+  wechsler.on("zustand", merken);
+  await eigenerHost.frag("host:einstellungen", { zielKarten: 20 });
+  await host.frag("host:einstellungen", { zielKarten: 15 });
+  await bis(() => wechsler.letzter?.code === code && wechsler.letzter.einstellungen.zielKarten === 15);
+  assert.ok(raumMeldungen.every((c) => c === code), "keine Nachrichten aus dem verlassenen Raum");
+  wechsler.off("zustand", merken);
+  await host.frag("host:einstellungen", { zielKarten: 10 });
+
+  // Der Gastgeber darf auf derselben Verbindung mitspielen; beim Wechsel verschwinden alte Spieler-IDs.
+  await wechsler.frag("host:verbinden", eigenerRaum);
+  const hostSicht = await bis(() => wechsler.letzter?.code === eigenerRaum.code && wechsler.letzter);
+  assert.equal(hostSicht.ich, null, "Spieler-ID gehört nur zum bisherigen Raum");
+  await bis(() => host.letzter?.spieler.find((p: { id: string; verbunden: boolean }) => p.id === fremderSpieler.spielerId)?.verbunden === false);
+  const eigenerSpieler = await wechsler.frag("spieler:beitreten", { code: eigenerRaum.code, name: "Gastgeber" });
+  await wechsler.frag("host:verbinden", eigenerRaum);
+  await wechsler.frag("host:einstellungen", { zielKarten: 15 });
+  await bis(() => wechsler.letzter?.einstellungen.zielKarten === 15);
+  assert.equal(wechsler.letzter.host, true);
+  assert.equal(wechsler.letzter.ich, eigenerSpieler.spielerId);
+  await wechsler.frag("spieler:beitreten", { code, sitzung: fremderSpieler.sitzung });
+  await assert.rejects(wechsler.frag("host:einstellungen", { zielKarten: 20 }), /Nur der Host/);
+  await wechsler.frag("spieler:verlassen");
+  await eigenerHost.frag("host:beenden");
+  wechsler.close();
+  eigenerHost.close();
+  console.log("  Raumwechsel: Rechte, Einladungen, Spieler-IDs und Nachrichten getrennt; Gastgeber darf mitspielen");
+
   const a = await anna.frag("spieler:beitreten", { code, name: "Anna" });
   await ben.frag("spieler:beitreten", { code, name: "Ben" });
   await assert.rejects(ben.frag("spieler:beitreten", { code, name: "anna" }), /gibt es schon/);
@@ -139,6 +188,14 @@ try {
   assert.equal(teil.status, 206);
   assert.equal((await teil.arrayBuffer()).byteLength, 100);
   assert.equal((await fetch(`${BASIS}${z1.ausschnitt}`)).status, 401);
+
+  // Defekte Hörprobe: nur der Host darf den aktuellen Song ohne Wertung austauschen.
+  await assert.rejects(anna.frag("host:tauschen", { ausschnitt: z1.ausschnitt }), /Nur der Host/);
+  await host.frag("host:tauschen", { ausschnitt: z1.ausschnitt });
+  const ersatz = await bis(() => host.letzter?.ausschnitt && host.letzter.ausschnitt !== z1.ausschnitt && host.letzter);
+  assert.ok(ersatz.spieler.every((p: { zeitstrahl: unknown[]; punkte: number }) => p.zeitstrahl.length === 1 && p.punkte === 0));
+  await assert.rejects(host.frag("host:tauschen", { ausschnitt: z1.ausschnitt }), /Runde ist schon vorbei/);
+  console.log("  Audiofehler: Songwechsel ohne Wertung, nur vom Host und nur für den aktuellen Ausschnitt");
 
   // Spiel durchspielen (Modus „alle“): beide legen jede Karte an Position 0; falsche Karten gehen weg, also endet es spätestens mit leerem Stapel
   let runden = 0;
@@ -249,6 +306,18 @@ try {
   for (let i = 0; i < 35 && status !== 429; i++) status = (await fetch(`${BASIS}/api/raum?code=ZZZZ`, { headers: { Cookie: cookie } })).status;
   assert.equal(status, 429, "Code-Prüfung über HTTP gebremst");
   console.log("  Grenzen: falsche Codes und /api/raum gebremst");
+
+  // Auch nach ausgeschöpftem Code-Limit bleiben genau die übrigen Raumerstellungen dieser IP möglich.
+  const grenzenHost = client(cookie);
+  await bis(() => grenzenHost.connected);
+  assert.ok(raumErstellungen < 10);
+  while (raumErstellungen < 10) {
+    await grenzenHost.frag("host:erstellen");
+    await grenzenHost.frag("host:beenden");
+  }
+  await assert.rejects(grenzenHost.frag("host:erstellen"), /Zu viele neue Spiele/);
+  grenzenHost.close();
+  console.log("  Grenzen: Codeprüfungen und Raumerstellungen haben getrennte Zähler");
 
   await host.frag("host:beenden");
   for (const s of [host, anna, ben, anna2, host2, rater, host3, cleo]) s.close();

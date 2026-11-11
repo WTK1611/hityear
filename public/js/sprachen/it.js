@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Posizione non valida.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Troppe poche canzoni per questa selezione ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Il codice usa solo lettere latine (A–Z) e cifre – cambia tastiera 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Impossibile caricare l’anteprima.",
+  "Erneut versuchen": "Riprova",
+  "Song wechseln": "Cambia brano",
+  "Im Querformat fortfahren": "Continua in orizzontale",
 });

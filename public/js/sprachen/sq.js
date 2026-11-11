@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Pozicion i pavlefshëm.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Shumë pak këngë për këtë zgjedhje ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Kodi ka vetëm shkronja latine (A–Z) dhe shifra – ndrysho tastierën 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Fragmenti nuk mund të ngarkohej.",
+  "Erneut versuchen": "Provo përsëri",
+  "Song wechseln": "Ndrysho këngën",
+  "Im Querformat fortfahren": "Vazhdo horizontalisht",
 });

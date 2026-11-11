@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "無効な位置です。",
   "Zu wenige Songs für diese Auswahl ({0}).": "この条件では曲が足りません（{0}曲）。",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "コードはローマ字（A–Z）と数字だけ。キーボードを切り替えてね 🌐",
+  "Hörprobe konnte nicht geladen werden.": "試聴音源を読み込めませんでした。",
+  "Erneut versuchen": "再試行",
+  "Song wechseln": "曲を変更",
+  "Im Querformat fortfahren": "横向きで続ける",
 });

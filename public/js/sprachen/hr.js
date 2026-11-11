@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Neispravna pozicija.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Premalo pjesama za ovaj odabir ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Kod ima samo latinična slova (A–Z) i brojke – promijeni tipkovnicu 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Isječak nije moguće učitati.",
+  "Erneut versuchen": "Pokušaj ponovno",
+  "Song wechseln": "Promijeni pjesmu",
+  "Im Querformat fortfahren": "Nastavi vodoravno",
 });

@@ -511,4 +511,8 @@ uebersetzungLaden({
   "Ungültige Position.": "Neplatná pozice.",
   "Zu wenige Songs für diese Auswahl ({0}).": "Příliš málo písní pro tento výběr ({0}).",
   "Der Code hat nur lateinische Buchstaben (A–Z) und Ziffern – bitte die Tastatur umschalten 🌐": "Kód má jen latinková písmena (A–Z) a číslice – přepni klávesnici 🌐",
+  "Hörprobe konnte nicht geladen werden.": "Ukázku se nepodařilo načíst.",
+  "Erneut versuchen": "Zkusit znovu",
+  "Song wechseln": "Změnit skladbu",
+  "Im Querformat fortfahren": "Pokračovat na šířku",
 });
