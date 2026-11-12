@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "ניסיון נוסף",
   "Song wechseln": "החלפת שיר",
   "Im Querformat fortfahren": "המשך במצב אופקי",
+  "Hörproben geprüft: {0} von {1}.": "קטעים שנבדקו: {0} מתוך {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "נגישים: {0}. לא זמינים: {1}. לא ודאיים: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "הקישורים נבדקים ברקע ומתחדשים לפי הצורך.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "הבדיקה הושלמה. הקישורים ימשיכו להתחדש בזמן הניגון.",
 });

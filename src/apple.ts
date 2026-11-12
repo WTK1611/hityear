@@ -88,8 +88,8 @@ async function itunes(pfad: string, params: Record<string, string>, eilig = fals
 }
 
 /** Ein Song per ID, ohne Wartezeit (beim Spielen; einzelne Abrufe liegen weit unter Apples Grenze). */
-export async function appleNachId(trackId: number): Promise<AppleTreffer | null> {
-  return (await itunes("lookup", { id: String(trackId), entity: "song" }, true))[0] ?? null;
+export async function appleNachId(trackId: number, eilig = true): Promise<AppleTreffer | null> {
+  return (await itunes("lookup", { id: String(trackId), entity: "song" }, eilig))[0] ?? null;
 }
 
 export function appleSuchen(begriff: string): Promise<AppleTreffer[]> {

@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Opnieuw proberen",
   "Song wechseln": "Ander nummer",
   "Im Querformat fortfahren": "Doorgaan in liggende stand",
+  "Hörproben geprüft: {0} von {1}.": "Fragmenten gecontroleerd: {0} van {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Bereikbaar: {0}. Niet beschikbaar: {1}. Onzeker: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Links worden op de achtergrond gecontroleerd en zo nodig vernieuwd.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Controle voltooid. Links worden bij het afspelen nog steeds vernieuwd.",
 });

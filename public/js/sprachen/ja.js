@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "再試行",
   "Song wechseln": "曲を変更",
   "Im Querformat fortfahren": "横向きで続ける",
+  "Hörproben geprüft: {0} von {1}.": "確認済みの試聴：{0}/{1}。",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "アクセス可能：{0}。利用不可：{1}。未確認：{2}。",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "リンクをバックグラウンドで確認し、必要に応じて更新しています。",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "確認が完了しました。再生時にもリンクは引き続き更新されます。",
 });

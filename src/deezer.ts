@@ -54,11 +54,13 @@ function treffer(t: DeezerTrack): AppleTreffer | null {
   };
 }
 
-async function abfragen(pfad: string): Promise<unknown> {
+async function abfragen(pfad: string, fehltErlaubt = false): Promise<unknown> {
   await drosseln();
   const res = await fetch(`https://api.deezer.com/${pfad}`, { signal: AbortSignal.timeout(15_000) });
+  if (fehltErlaubt && res.status === 404) return null;
   if (!res.ok) throw new Error(`Deezer HTTP ${res.status}`);
   const daten = (await res.json()) as { error?: { message?: string; code?: number } };
+  if (fehltErlaubt && daten.error?.code === 800) return null;
   if (daten.error) throw new Error(daten.error.code === 4 ? "Deezer drosselt gerade – bitte kurz warten" : `Deezer: ${daten.error.message ?? "Fehler"}`);
   return daten;
 }
@@ -70,5 +72,6 @@ export async function deezerSuchen(begriff: string): Promise<AppleTreffer[]> {
 }
 
 export async function deezerTrack(id: number): Promise<AppleTreffer | null> {
-  return treffer((await abfragen(`track/${id}`)) as DeezerTrack);
+  const daten = await abfragen(`track/${id}`, true);
+  return daten ? treffer(daten as DeezerTrack) : null;
 }

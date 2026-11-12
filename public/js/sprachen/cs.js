@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Zkusit znovu",
   "Song wechseln": "Změnit skladbu",
   "Im Querformat fortfahren": "Pokračovat na šířku",
+  "Hörproben geprüft: {0} von {1}.": "Zkontrolované ukázky: {0} z {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Dostupné: {0}. Nedostupné: {1}. Nejisté: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Odkazy se kontrolují na pozadí a podle potřeby obnovují.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Kontrola dokončena. Odkazy se budou nadále obnovovat při přehrávání.",
 });

@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Tekrar dene",
   "Song wechseln": "Şarkıyı değiştir",
   "Im Querformat fortfahren": "Yatay modda devam et",
+  "Hörproben geprüft: {0} von {1}.": "Kontrol edilen önizlemeler: {0}/{1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Erişilebilir: {0}. Kullanılamayan: {1}. Belirsiz: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Bağlantılar arka planda kontrol edilir ve gerektiğinde yenilenir.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Kontrol tamamlandı. Bağlantılar oynatma sırasında da yenilenmeye devam eder.",
 });

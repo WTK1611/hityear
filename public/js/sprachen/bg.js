@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Опитай отново",
   "Song wechseln": "Смени песента",
   "Im Querformat fortfahren": "Продължи в хоризонтален режим",
+  "Hörproben geprüft: {0} von {1}.": "Проверени откъси: {0} от {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Достъпни: {0}. Недостъпни: {1}. Неуточнени: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Връзките се проверяват във фонов режим и се обновяват при нужда.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Проверката приключи. Връзките ще продължат да се обновяват при възпроизвеждане.",
 });

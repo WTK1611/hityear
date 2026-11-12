@@ -126,7 +126,7 @@ try {
   assert.ok(audio.quelle.startsWith(basis + '/api/audio/abcdefghijklmno?appFreigabe='));
   let medienVersuche = 0;
   await seite.route(`${basis}/api/app/medien`, async (route) => {
-    if (route.request().postDataJSON().pfad === '/api/audio/funkloch12345' && ++medienVersuche === 1) {
+    if (route.request().postDataJSON().pfad.startsWith('/api/audio/funkloch12345') && ++medienVersuche === 1) {
       return route.fulfill({ status: 503, contentType: 'application/json', body: '{}' });
     }
     await route.continue();
@@ -141,9 +141,17 @@ try {
     const zweiter = await spieler.abspielen(0, true);
     const dritter = await spieler.abspielen();
     spieler.stop(0);
-    return { erster, fehler, zweiter, dritter };
+    return { erster, fehler, zweiter, dritter, quelle: spieler.element.src, kanonisch: spieler.url };
   });
-  assert.deepEqual(wiederholen, { erster: false, fehler: 'quelle', zweiter: true, dritter: true });
+  const { quelle, kanonisch, ...ergebnis } = wiederholen;
+  assert.deepEqual(ergebnis, { erster: false, fehler: 'quelle', zweiter: true, dritter: true });
+  assert.equal(kanonisch, '/api/audio/funkloch12345');
+  const erneuert = new URL(quelle);
+  assert.equal(erneuert.searchParams.get('neu'), '1', 'Wiederholen erneuert auch den Link beim Musikdienst');
+  assert.ok(erneuert.searchParams.get('appFreigabe'), 'Erneuerungsparameter wird vor dem Signieren ergänzt');
+  assert.equal((await fetch(erneuert)).status, 404, 'Signierte Wiederholung passiert die Anmeldung (unbekannter Ausschnitt)');
+  erneuert.searchParams.delete('neu');
+  assert.equal((await fetch(erneuert)).status, 401, 'Erneuerungsparameter bleibt durch die Signatur geschützt');
   assert.equal(medienVersuche, 2, 'Wiederholen erneuert auch eine fehlgeschlagene Medienfreigabe');
   await seite.unroute(`${basis}/api/app/medien`);
   const links = await seite.evaluate((basis) => [

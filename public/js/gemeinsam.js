@@ -553,13 +553,16 @@ function audioSpieler() {
       let frist;
       try {
         const starten = async () => {
-          if (appServer && neuLaden && aktuell.startsWith("/api/")) {
-            // Nach Funkloch oder längerer Pause kann die Freigabe abgelaufen sein.
-            ladenBereit = medienAdresse(aktuell, true).then((adresse) => {
+          if (neuLaden && aktuell.startsWith("/api/audio/")) {
+            // Auch der Server muss die Hörprobe neu beim Dienst auflösen.
+            // Die kanonische URL für Spielaktionen bleibt dabei unverändert.
+            const quelle = new URL(aktuell, location.origin);
+            quelle.searchParams.set("neu", "1");
+            ladenBereit = medienAdresse(quelle.pathname + quelle.search, true).then((adresse) => {
               if (nummer === versuch) a.src = adresse;
             });
           }
-          if (appServer) await ladenBereit;
+          if (appServer || neuLaden) await ladenBereit;
           if (nummer !== versuch) return;
           if (neuLaden) a.load();
           a.currentTime = Math.max(0, ab);

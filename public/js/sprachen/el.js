@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Δοκιμάστε ξανά",
   "Song wechseln": "Αλλαγή τραγουδιού",
   "Im Querformat fortfahren": "Συνέχεια σε οριζόντια προβολή",
+  "Hörproben geprüft: {0} von {1}.": "Ελεγμένα αποσπάσματα: {0} από {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Προσβάσιμα: {0}. Μη διαθέσιμα: {1}. Αβέβαια: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Οι σύνδεσμοι ελέγχονται στο παρασκήνιο και ανανεώνονται όταν χρειάζεται.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Ο έλεγχος ολοκληρώθηκε. Οι σύνδεσμοι θα συνεχίσουν να ανανεώνονται κατά την αναπαραγωγή.",
 });

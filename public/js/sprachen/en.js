@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Try again",
   "Song wechseln": "Change song",
   "Im Querformat fortfahren": "Continue in landscape",
+  "Hörproben geprüft: {0} von {1}.": "Previews checked: {0} of {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Reachable: {0}. Unavailable: {1}. Uncertain: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Links are checked in the background and renewed when needed.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Check complete. Links will still be renewed during playback.",
 });

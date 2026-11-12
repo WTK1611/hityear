@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Prøv igjen",
   "Song wechseln": "Bytt sang",
   "Im Querformat fortfahren": "Fortsett i liggende modus",
+  "Hörproben geprüft: {0} von {1}.": "Lydklipp kontrollert: {0} av {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Tilgjengelige: {0}. Utilgjengelige: {1}. Uavklarte: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Lenker kontrolleres i bakgrunnen og fornyes ved behov.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Kontrollen er fullført. Lenker fornyes fortsatt ved avspilling.",
 });

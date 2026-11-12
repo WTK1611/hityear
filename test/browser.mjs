@@ -7,11 +7,12 @@ import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { chromium } from "playwright";
+import { io } from "socket.io-client";
 
 const wurzel = path.resolve(import.meta.dirname, "..");
 const daten = mkdtempSync(path.join(os.tmpdir(), "hityear-browser-"));
 const basis = "http://127.0.0.1:3793";
-const server = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "src/server.ts"], {
+const server = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "test/deck-server.ts"], {
   cwd: wurzel,
   env: { ...process.env, PORT: "3793", HOST: "127.0.0.1", NODE_ENV: "test", ZEITSTRAHL_ZUGANG: "offen",
     ZEITSTRAHL_DATEN: daten, ZEITSTRAHL_MUSIK: path.join(daten, "musik") },
@@ -69,6 +70,38 @@ try {
   await seite.locator("#lobby").waitFor({ state: "visible" });
   const browserFehler = [];
   seite.on("pageerror", (err) => browserFehler.push(err.message));
+  const decks = await (await fetch(`${basis}/api/bibliothek`)).json();
+  const pruefdeck = decks.listen.find(deck => deck.name === "Prüfdeck");
+  assert.ok(pruefdeck);
+  await seite.evaluate((deck) => {
+    const feld = document.querySelector("#liste");
+    feld.value = deck;
+    feld.dispatchEvent(new Event("change", { bubbles: true }));
+  }, pruefdeck.id);
+  await seite.locator("#deck-pruefung").getByText("Links werden im Hintergrund geprüft und bei Bedarf erneuert.", { exact: false }).waitFor();
+  await seite.waitForFunction(() => document.querySelector("#deck-pruefung").textContent.includes("Prüfung abgeschlossen."), null, { timeout: 30_000 });
+  assert.match(await seite.locator("#deck-pruefung").textContent(), /Hörproben geprüft: 12 von 12\./);
+  assert.match(await seite.locator("#deck-pruefung").textContent(), /Erreichbar: 10\. Nicht verfügbar: 1\. Unklar: 1\./);
+  assert.match(log, /frischer Link geprüft/, "defekter Link wurde schon bei der Deck-Auswahl erneuert");
+  assert.equal(await seite.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
+  await seite.locator("#deck-pruefung").scrollIntoViewIfNeeded();
+  await seite.screenshot({ path: path.join(os.tmpdir(), "hityear-deckpruefung.png") });
+  const raum = await seite.evaluate(() => JSON.parse(speicher("zs_host")).code);
+  const gast = io(basis, { transports: ["websocket"] });
+  try {
+    const zustand = new Promise(resolve => gast.on("zustand", z => { if (z.ich) resolve(z); }));
+    await new Promise((resolve, reject) => gast.timeout(5000).emit("spieler:beitreten", { code: raum, name: "Prüfgast" }, (err, a) => err ? reject(err) : a.ok ? resolve(a) : reject(new Error(a.fehler))));
+    const sicht = await zustand;
+    assert.equal(sicht.deckPruefung, null, "Prüfdetails bleiben beim Host");
+    assert.equal(sicht.verfuegbar, 11, "bestätigter Ausfall wird ausgeschlossen, Drosselung nicht");
+  } finally { gast.disconnect(); }
+  await seite.evaluate(() => {
+    const feld = document.querySelector("#liste");
+    feld.value = "";
+    feld.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  await seite.locator("#deck-pruefung").waitFor({ state: "hidden" });
+  console.log("  Deckprüfung: automatische Auswahlprüfung, Link-Erneuerung, Fortschritt, Ausfallschutz und Deckwechsel");
   await seite.evaluate(async () => {
     window.tonTest = { audio: audioSpieler(), host: true, aktiv: true, wechsel: 0, geladen: 0 };
     const t = window.tonTest;
@@ -87,6 +120,7 @@ try {
     kopf.setUint16(32, 2, true);
     kopf.setUint16(34, 16, true);
     kopf.setUint32(40, wav.length - 44, true);
+    t.wav = wav;
     t.url = URL.createObjectURL(new Blob([wav], { type: "audio/wav" }));
     audioFehlerBinden(t.audio, {
       aktiv: () => t.aktiv,
@@ -152,6 +186,29 @@ try {
   await seite.getByText("Hörprobe konnte nicht geladen werden.").waitFor();
   assert.equal(await seite.evaluate(() => window.tonTest.audio.fehler), "quelle", "Zeitüberschreitung wird als Ladefehler angezeigt");
   await seite.screenshot({ path: path.join(os.tmpdir(), "hityear-audiofehler.png") });
+
+  // Wirkliche Medienanfrage: erster Abruf scheitert, Wiederholen fordert einen neuen Link an.
+  const wav = Buffer.from(await seite.evaluate(() => Array.from(window.tonTest.wav)));
+  const abrufe = [];
+  await seite.route("**/api/audio/wiederholung123*", async (route) => {
+    abrufe.push(new URL(route.request().url()));
+    if (abrufe.length === 1) return route.fulfill({ status: 503, contentType: "application/json", body: "{}" });
+    return route.fulfill({ status: 200, contentType: "audio/wav", body: wav });
+  });
+  await seite.evaluate(() => {
+    window.tonTest.audio.laden(null);
+    const audio = window.echtesAudio = audioSpieler();
+    audioFehlerBinden(audio, { aktiv: () => true, position: () => 0, darfWechseln: () => true, wechseln: async () => { throw new Error("Songwechsel nicht nötig"); } });
+    audio.laden("/api/audio/wiederholung123");
+    void audio.abspielen();
+  });
+  await seite.getByText("Hörprobe konnte nicht geladen werden.").waitFor();
+  await seite.getByRole("button", { name: "Erneut versuchen" }).click();
+  await seite.waitForFunction(() => !window.echtesAudio.element.paused && window.echtesAudio.element.currentTime > 0);
+  await seite.locator(".audio-hilfe").waitFor({ state: "detached" });
+  assert.ok(abrufe.some(url => url.searchParams.get("neu") === "1"), "Browser fordert beim Wiederholen eine frische Vorschau an");
+  assert.equal(await seite.evaluate(() => window.echtesAudio.url), "/api/audio/wiederholung123", "Spielaktionen behalten die ursprüngliche Ausschnitt-Adresse");
+  await seite.evaluate(() => window.echtesAudio.laden(null));
   assert.deepEqual(browserFehler, [], "keine unbehandelten Browserfehler");
   console.log("  Audio: Autoplay, Laden, Wiederholen, Host-Songwechsel, Rundenwechsel und Zeitüberschreitung geprüft");
   console.log("Browser: alles grün");

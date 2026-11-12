@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Riprova",
   "Song wechseln": "Cambia brano",
   "Im Querformat fortfahren": "Continua in orizzontale",
+  "Hörproben geprüft: {0} von {1}.": "Anteprime controllate: {0} di {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Raggiungibili: {0}. Non disponibili: {1}. Incerti: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "I link vengono controllati in background e aggiornati quando necessario.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Controllo completato. I link continueranno a essere aggiornati durante la riproduzione.",
 });
