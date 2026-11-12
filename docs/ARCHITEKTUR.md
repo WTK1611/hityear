@@ -56,10 +56,26 @@ Stand: 31.10.2026 · gilt für den MVP in diesem Repo
 | `bibliothek.ts` | Ordner-Scan (inkrementell), Jahresregeln, Chart-Abgleich, Stapel ziehen (wenig Wiederholung) |
 | `musicbrainz.ts` | Abgleich im Hintergrund, frühestes passendes `first-release-date` |
 | `audio.ts` | Startpunkt wählen, ffmpeg-Ausschnitt, opake Einmal-Token, Cache-Begrenzung |
+| `vorschau.ts` | Aktuelle Vorschau-Links, Ersatzsuche und HEAD-Prüfung ohne Mediendownload |
+| `deckpruefung.ts` | Gemeinsame Vorabprüfung ausgewählter Decks, höchstens zwei Songs gleichzeitig |
 | `auth.ts` | Passwort-Login, HMAC-Cookie, Login-Rate-Limit, Client-IP hinter Proxy |
 | `db.ts` / `config.ts` / `normalisieren.ts` | Schema, Umgebungsvariablen, Text-Normalisierung |
 
 ## 4. Datenmodell (SQLite)
+
+Bei der Deck-Auswahl startet im Hintergrund eine Prüfung der bereits zugeordneten Streaming-Songs.
+Die Lobby zeigt ausschließlich Fortschritt und Summen, keine verdeckten Songdaten. Neue Treffer aus
+dem bestehenden Nachladen fehlender Deck-Einträge werden ebenfalls geprüft. Ein Deckwechsel verwirft
+noch nicht begonnene Arbeit, soweit kein anderer Raum das Deck nutzt. Der Spielstart wartet nicht
+auf das gesamte Deck; bei großen Listen kann die Prüfung während des Spiels weiterlaufen.
+
+Die Prüfung verwendet HEAD-Anfragen mit Zeitlimit und prüft jedes Weiterleitungsziel gegen die
+Musikdienst-Domains. Defekte Links werden neu aufgelöst; ersatzweise wird nach Interpret und Titel
+gesucht. Es werden keine Hörproben heruntergeladen oder gespeichert. Bestätigt fehlende Vorschauen
+werden für fünf Minuten nicht neu in den Stapel aufgenommen und aus noch ungespielten Karten entfernt.
+Timeouts, Drosselung und nicht unterstützte HEAD-Anfragen gelten als unklar und sperren keine Songs.
+Prüfergebnisse werden nur kurz im Speicher wiederverwendet; die Link-Erneuerung beim Abspielen bleibt
+maßgeblich, da eine Vorabprüfung weder spätere Ausfälle noch die Verbindung des Endgeräts garantieren kann.
 
 - `songs`: Pfad, Tags, Dauer, `tag_jahr`, `mb_jahr`, `chart_jahr`/`chart_platz`, `manuell_jahr`, daraus `jahr` + `jahr_quelle`, Prüfflag mit Grund, ausgeschlossen
 - `gespielt`: Song-ID + Zeitpunkt (gegen Wiederholungen über mehrere Spiele)

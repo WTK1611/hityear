@@ -19,7 +19,7 @@ fs.mkdirSync(cacheOrdner, { recursive: true });
 export type Ausschnitt = { datei: string } | { url: string };
 
 interface Freigabe {
-  ziel: Promise<Ausschnitt>;
+  holen: (erneuern: boolean) => Promise<Ausschnitt>;
   ablauf: number;
 }
 
@@ -79,24 +79,29 @@ export function startpunkt(dauerMs: number, sek: number): number {
 export function ausschnittFreigeben(songId: string, sek: number): string {
   const z = songHolen(songId);
   if (!z) throw new Error("Song nicht gefunden");
-  let ziel: Promise<Ausschnitt>;
+  let holen: Freigabe["holen"];
   if (istApple(z)) {
-    ziel = liveTreffer(z).then((t) => ({ url: t.vorschau }));
+    // Keine Promise für die ganze Runde festhalten: Fehler müssen erneut versucht
+    // und ablaufende Links beim nächsten Abruf durch den Vorschau-Cache ersetzt werden.
+    holen = (erneuern) => liveTreffer(z, erneuern).then((t) => ({ url: t.vorschau }));
   } else {
     const start = startpunkt(z.dauer_ms, sek);
     const schluessel = crypto.createHash("sha256").update(`${z.id}|${z.mtime}|${start}|${sek}|${config.lautheitAngleichen}`).digest("hex").slice(0, 32);
     const datei = path.join(cacheOrdner, `${schluessel}.mp3`);
-    // gleicher Ausschnitt in zwei Räumen gleichzeitig → nur einmal schneiden
-    let fertig = fs.existsSync(datei) ? Promise.resolve(datei) : inArbeit.get(datei);
-    if (!fertig) {
-      fertig = ausschnittErzeugen(vollerPfad(z), start, sek, datei).finally(() => inArbeit.delete(datei));
-      inArbeit.set(datei, fertig);
-    }
-    ziel = fertig.then((d) => ({ datei: d }));
+    holen = () => {
+      // Gleicher Ausschnitt in zwei Räumen gleichzeitig → nur einmal schneiden.
+      // Nach einem ffmpeg-Fehler darf derselbe Ausschnitt neu vorbereitet werden.
+      let fertig = fs.existsSync(datei) ? Promise.resolve(datei) : inArbeit.get(datei);
+      if (!fertig) {
+        fertig = ausschnittErzeugen(vollerPfad(z), start, sek, datei).finally(() => inArbeit.delete(datei));
+        inArbeit.set(datei, fertig);
+      }
+      return fertig.then((d) => ({ datei: d }));
+    };
   }
-  ziel.catch((err) => console.warn(`[audio] ${z.pfad}: ${err.message}`));
+  void holen(false).catch((err) => console.warn(`[audio] ${z.pfad}: ${err.message}`));
   const token = crypto.randomBytes(18).toString("base64url");
-  freigaben.set(token, { ziel, ablauf: Date.now() + 30 * 60_000 });
+  freigaben.set(token, { holen, ablauf: Date.now() + 30 * 60_000 });
   return token;
 }
 
@@ -104,14 +109,12 @@ export function freigabeEntziehen(token: string | undefined): void {
   if (token) freigaben.delete(token);
 }
 
-export async function ausschnittHolen(token: string): Promise<Ausschnitt | null> {
+export async function ausschnittHolen(token: string, erneuern = false): Promise<Ausschnitt | null> {
   const f = freigaben.get(token);
-  if (!f || f.ablauf < Date.now()) return null;
-  try {
-    return await f.ziel;
-  } catch {
-    return null;
-  }
+  if (!f || f.ablauf <= Date.now()) return null;
+  const ziel = await f.holen(erneuern);
+  // Während einer langsamen Dienstabfrage kann die Runde bereits beendet worden sein.
+  return freigaben.get(token) === f && f.ablauf > Date.now() ? ziel : null;
 }
 
 // Aufräumen: abgelaufene Token, Cache auf ~2 GB begrenzen

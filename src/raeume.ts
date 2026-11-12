@@ -8,18 +8,37 @@ import {
   aktiverSpieler, alleGleichzeitig, auswerten, bereit, botHinzufuegen, botsDazu, type BotStufe, botZug, eingeben, ratenAbgeben, grenzen, naechsterZug, revanche, sicht, songTauschen, spielEntschieden, spielerEntfernen, zeitAbgelaufen,
   spielerHinzufuegen, starten, SpielFehler, STANDARD_EINSTELLUNGEN, type Einstellungen, type Karte, type Spiel,
 } from "./game.ts";
-import { alsGespieltMarkieren, anzahlVerfuegbar, songHolen, stapelZiehen } from "./bibliothek.ts";
+import { alsGespieltMarkieren, anzahlVerfuegbar, istApple, songHolen, stapelZiehen } from "./bibliothek.ts";
 import { ausschnittFreigeben, freigabeEntziehen } from "./audio.ts";
 import { clientIp } from "./auth.ts";
 import { rolleAusAnfrage, rolleAusAppSitzung } from "./app.ts";
-import { dienstName } from "./vorschau.ts";
+import { dienstName, vorschauPruefen } from "./vorschau.ts";
+import { DeckPruefung } from "./deckpruefung.ts";
 import { beiNeuenSongs, fehlendeNachladen } from "./apple.ts";
 import { listenSongIds, listenUebersicht } from "./listen.ts";
 import { bestenliste, spielEintragen } from "./bestenliste.ts";
 import { diagnose } from "./log.ts";
 
 // nur Admin-Räume dürfen eigene Dateien (Musikordner, Uploads) spielen; alle anderen nur Apple/Deezer zum Streamen
-const auswahl = (s: Spiel) => ({ ...s.einstellungen, songIds: s.einstellungen.liste ? listenSongIds(s.einstellungen.liste) : null, nurStreaming: !s.privat });
+const auswahl = (s: Spiel) => ({ ...s.einstellungen, songIds: s.einstellungen.liste ? listenSongIds(s.einstellungen.liste).filter(id => !deckPruefung.fehlt(id)) : null, nurStreaming: !s.privat });
+
+const deckPruefung = new DeckPruefung(
+  deck => listenSongIds(deck).filter(id => { const z = songHolen(id); return z && istApple(z); }),
+  async id => { const z = songHolen(id); return z ? vorschauPruefen(z) : { art: "fehlt", bis: Date.now() + 60_000 }; },
+  deck => {
+    if (!io) return;
+    for (const s of raeume.values()) if (s.einstellungen.liste === deck) {
+      // Schon sicher fehlende Hörproben nicht erst in einer späteren Runde ziehen.
+      s.stapel = s.stapel.filter(k => !deckPruefung.fehlt(k.songId));
+      if (s.phase === "lobby") senden(s);
+    }
+  },
+);
+
+/** Auswahl und Warteschlange bleiben auch bei Wiederbeitritt und nachgeladenen Songs aktuell. */
+function deckVorbereiten(s: Spiel): void {
+  deckPruefung.waehlen(s.code, s.einstellungen.liste);
+}
 
 // ohne Verwechsler: kein O/0, I/1, S/5, Z/2, B/8
 const CODE_ZEICHEN = "ACDEFGHJKLMNPQRTUVWXY2345679";
@@ -74,6 +93,7 @@ export function raeumeLaden(): void {
     if (!s.einladung) s.einladung = einladungToken();
     s.einstellungen = grenzen({ ...STANDARD_EINSTELLUNGEN, ...s.einstellungen }); // neue Optionen nachrüsten
     raeume.set(s.code, s);
+    deckVorbereiten(s);
     zugVorbereiten(s); // Ausschnitt-Token sind nach Neustart weg → neu freigeben
     autoWeiter(s);
   }
@@ -81,6 +101,7 @@ export function raeumeLaden(): void {
 
 /** Raum samt Timern, Freigaben und Snapshot entfernen. */
 function raumWeg(s: Spiel): void {
+  deckPruefung.waehlen(s.code, null);
   fristStoppen(s);
   const lauf = weiterTimer.get(s.code);
   if (lauf) clearTimeout(lauf.t);
@@ -256,6 +277,7 @@ async function alleBereit(s: Spiel, aktuell: () => boolean): Promise<void> {
 
 /** Spiel starten; freie Plätze übernehmen Bots (Option „auffüllen“) – genau die, die die Lobby angekündigt hat */
 function mitBotsStarten(s: Spiel): void {
+  deckVorbereiten(s);
   const stapel = stapelZiehen(auswahl(s));
   const neueBots: string[] = [];
   for (const b of botsDazu(s)) neueBots.push(botHinzufuegen(s, b.stufe, crypto.randomBytes(6).toString("base64url"), freieFarbe(s), Math.random, b).id);
@@ -329,11 +351,13 @@ function zustandFuer(s: Spiel, d: SocketDaten, basis = { ...sicht(s), bestenlist
     meinTipp: s.phase === "hoeren" && d.spielerId ? s.zug?.gelegt?.[d.spielerId] ?? null : null,
     einladung: istHost(s, d) ? s.einladung : null,
     verfuegbar,
+    deckPruefung: s.phase === "lobby" && istHost(s, d) && s.einstellungen.liste ? deckPruefung.stand(s.einstellungen.liste) : null,
   };
 }
 
 // neue Songs (Streaming-Nachladen) → Lobbys zeigen die neue Songzahl
 beiNeuenSongs.add(() => {
+  deckPruefung.aktualisieren();
   for (const s of raeume.values()) if (s.phase === "lobby") senden(s);
 });
 
@@ -698,6 +722,7 @@ export function socketsEinrichten(server: Server): void {
         raeume.set(code, s);
         raumVerbinden(s);
         d.hostSitzung = s.hostSitzung;
+        deckVorbereiten(s);
         senden(s);
         return { code, hostSitzung: s.hostSitzung };
       }),
@@ -710,6 +735,7 @@ export function socketsEinrichten(server: Server): void {
         if (typeof x.hostSitzung !== "string" || x.hostSitzung !== s.hostSitzung) throw new SpielFehler("Kein Host-Zugang für diesen Raum.");
         raumVerbinden(s);
         d.hostSitzung = s.hostSitzung;
+        deckVorbereiten(s);
         senden(s);
         return { code: s.code };
       }),
@@ -725,6 +751,7 @@ export function socketsEinrichten(server: Server): void {
         s.geaendert = Date.now();
         // gewähltes Deck zuerst vervollständigen
         if (s.einstellungen.liste && s.einstellungen.liste !== vorher) fehlendeNachladen([s.einstellungen.liste], true);
+        deckVorbereiten(s);
         senden(s);
       }),
     );
@@ -816,6 +843,7 @@ export function socketsEinrichten(server: Server): void {
         const s = hostRaum();
         if (s.phase !== "ende") throw new SpielFehler("Das Spiel läuft noch.");
         revanche(s);
+        deckVorbereiten(s);
         senden(s);
       }),
     );

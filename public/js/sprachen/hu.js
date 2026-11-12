@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Újrapróbálkozás",
   "Song wechseln": "Dal cseréje",
   "Im Querformat fortfahren": "Folytatás fekvő módban",
+  "Hörproben geprüft: {0} von {1}.": "Ellenőrzött részletek: {0}/{1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Elérhető: {0}. Nem elérhető: {1}. Bizonytalan: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "A hivatkozások ellenőrzése a háttérben zajlik, és szükség esetén frissülnek.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Az ellenőrzés kész. A hivatkozások lejátszáskor továbbra is frissülnek.",
 });

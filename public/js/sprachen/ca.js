@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Torna-ho a provar",
   "Song wechseln": "Canvia la cançó",
   "Im Querformat fortfahren": "Continua en horitzontal",
+  "Hörproben geprüft: {0} von {1}.": "Fragments comprovats: {0} de {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Accessibles: {0}. No disponibles: {1}. Sense confirmar: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Els enllaços es comproven en segon pla i es renoven quan cal.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Comprovació completada. Els enllaços es continuaran renovant durant la reproducció.",
 });

@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Réessayer",
   "Song wechseln": "Changer de chanson",
   "Im Querformat fortfahren": "Continuer en mode paysage",
+  "Hörproben geprüft: {0} von {1}.": "Extraits vérifiés : {0} sur {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Accessibles : {0}. Indisponibles : {1}. Incertains : {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Les liens sont vérifiés en arrière-plan et renouvelés si nécessaire.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Vérification terminée. Les liens seront toujours renouvelés lors de la lecture.",
 });

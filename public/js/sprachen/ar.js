@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "حاول مجددًا",
   "Song wechseln": "تغيير الأغنية",
   "Im Querformat fortfahren": "المتابعة بالوضع الأفقي",
+  "Hörproben geprüft: {0} von {1}.": "المقاطع التي تم فحصها: {0} من {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "متاحة: {0}. غير متاحة: {1}. غير مؤكدة: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "تُفحص الروابط في الخلفية وتُحدَّث عند الحاجة.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "اكتمل الفحص. سيستمر تحديث الروابط عند التشغيل.",
 });

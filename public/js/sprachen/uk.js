@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Спробувати ще раз",
   "Song wechseln": "Змінити пісню",
   "Im Querformat fortfahren": "Продовжити в альбомній орієнтації",
+  "Hörproben geprüft: {0} von {1}.": "Перевірено уривків: {0} із {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Доступні: {0}. Недоступні: {1}. Не підтверджені: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Посилання перевіряються у фоні й за потреби оновлюються.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Перевірку завершено. Посилання й надалі оновлюватимуться під час відтворення.",
 });

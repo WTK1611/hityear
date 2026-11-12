@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Încearcă din nou",
   "Song wechseln": "Schimbă melodia",
   "Im Querformat fortfahren": "Continuă în modul peisaj",
+  "Hörproben geprüft: {0} von {1}.": "Fragmente verificate: {0} din {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Accesibile: {0}. Indisponibile: {1}. Neconfirmate: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Linkurile sunt verificate în fundal și reînnoite la nevoie.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Verificare încheiată. Linkurile vor fi reînnoite în continuare la redare.",
 });

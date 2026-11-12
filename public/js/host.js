@@ -952,6 +952,14 @@
       : v < noetig ? `Für ${z.spieler.length} Mitspieler braucht es mindestens ${noetig} Songs – wähle ein größeres Deck oder mehr Jahrzehnte/Genres.`
       : "";
     verfuegbarText.textContent = `${v} Songs passen zur Auswahl.${fehlt ? " " + fehlt : ""}`;
+    const pruefung = z.deckPruefung;
+    const pruefText = $("#deck-pruefung");
+    pruefText.classList.toggle("versteckt", !pruefung);
+    pruefText.textContent = pruefung
+      ? [t(`Hörproben geprüft: ${pruefung.geprueft} von ${pruefung.gesamt}.`),
+        t(`Erreichbar: ${pruefung.bereit}. Nicht verfügbar: ${pruefung.fehlt}. Unklar: ${pruefung.unklar}.`),
+        t(pruefung.laeuft ? "Links werden im Hintergrund geprüft und bei Bedarf erneuert." : "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.")].join(" ")
+      : "";
     startKnopf.disabled = Boolean(fehlt);
     startKnopf.title = fehlt;
     if (!wechsel) schrittZeigen(); // nicht mitten in die Wechsel-Animation hinein neu aufbauen

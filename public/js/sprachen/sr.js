@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Покушај поново",
   "Song wechseln": "Промени песму",
   "Im Querformat fortfahren": "Настави водоравно",
+  "Hörproben geprüft: {0} von {1}.": "Проверени исечци: {0} од {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Доступни: {0}. Недоступни: {1}. Непотврђени: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Линкови се проверавају у позадини и обнављају по потреби.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Провера је завршена. Линкови ће се и даље обнављати при репродукцији.",
 });

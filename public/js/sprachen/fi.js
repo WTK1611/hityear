@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Yritä uudelleen",
   "Song wechseln": "Vaihda kappale",
   "Im Querformat fortfahren": "Jatka vaaka-asennossa",
+  "Hörproben geprüft: {0} von {1}.": "Tarkistetut näytteet: {0}/{1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Saatavilla: {0}. Ei saatavilla: {1}. Epäselvät: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Linkit tarkistetaan taustalla ja uusitaan tarvittaessa.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Tarkistus valmis. Linkit uusitaan edelleen toiston yhteydessä.",
 });

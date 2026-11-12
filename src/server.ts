@@ -319,7 +319,14 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
 
   const audio = /^\/api\/audio\/([A-Za-z0-9_-]{10,64})$/.exec(p);
   if (audio) {
-    const a = await ausschnittHolen(audio[1]);
+    let a;
+    try {
+      a = await ausschnittHolen(audio[1], url.searchParams.get("neu") === "1");
+    } catch {
+      // Ein Dienst-/Dateifehler ist keine abgelaufene Raumfreigabe.
+      res.setHeader("Retry-After", "1");
+      return json(res, 503, { fehler: "Hörprobe konnte nicht geladen werden." });
+    }
     if (!a) return json(res, 404, { fehler: "Ausschnitt abgelaufen." });
     // Streaming: der Browser holt die Hörprobe direkt bei Apple/Deezer
     if ("url" in a) return weiterleiten(res, a.url);

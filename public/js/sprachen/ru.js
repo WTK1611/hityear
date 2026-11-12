@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Попробовать снова",
   "Song wechseln": "Сменить песню",
   "Im Querformat fortfahren": "Продолжить в альбомной ориентации",
+  "Hörproben geprüft: {0} von {1}.": "Проверено фрагментов: {0} из {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Доступны: {0}. Недоступны: {1}. Не подтверждены: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Ссылки проверяются в фоне и при необходимости обновляются.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Проверка завершена. Ссылки продолжат обновляться при воспроизведении.",
 });

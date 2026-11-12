@@ -517,4 +517,8 @@ uebersetzungLaden({
   "Erneut versuchen": "Provo përsëri",
   "Song wechseln": "Ndrysho këngën",
   "Im Querformat fortfahren": "Vazhdo horizontalisht",
+  "Hörproben geprüft: {0} von {1}.": "Fragmente të kontrolluara: {0} nga {1}.",
+  "Erreichbar: {0}. Nicht verfügbar: {1}. Unklar: {2}.": "Të arritshme: {0}. Të padisponueshme: {1}. Të pasigurta: {2}.",
+  "Links werden im Hintergrund geprüft und bei Bedarf erneuert.": "Lidhjet kontrollohen në sfond dhe rinovohen sipas nevojës.",
+  "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.": "Kontrolli përfundoi. Lidhjet do të vazhdojnë të rinovohen gjatë luajtjes.",
 });
