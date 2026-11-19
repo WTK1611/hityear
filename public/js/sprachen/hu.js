@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} kártya · {1} % találat · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kártya · {1} % találat · ⭐ {2} pont · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Döntetlen – a gyorsabb válaszok döntöttek.",
+  "Britische Hits": "Brit slágerek",
+  "Latino Hits": "Latin slágerek",
 });

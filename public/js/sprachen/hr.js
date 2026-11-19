@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} karata · {1} % pogodaka · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} karata · {1} % pogodaka · ⭐ {2} bodova · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Neriješeno – odlučili su brži odgovori.",
+  "Britische Hits": "Britanski hitovi",
+  "Latino Hits": "Latino hitovi",
 });

@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "Karty: {0} · zásahy: {1} % · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "Karty: {0} · zásahy: {1} % · ⭐ body: {2} · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Remíza – rozhodli rýchlejšie odpovede.",
+  "Britische Hits": "Britské hity",
+  "Latino Hits": "Latino hity",
 });

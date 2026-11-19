@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} kart · %{1} isabet · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kart · %{1} isabet · ⭐ {2} puan · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Beraberlik – daha hızlı cevaplar belirledi.",
+  "Britische Hits": "İngiliz Hitleri",
+  "Latino Hits": "Latin Hitleri",
 });

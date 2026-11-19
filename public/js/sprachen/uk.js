@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "Карток: {0} · влучань: {1} % · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "Карток: {0} · влучань: {1} % · ⭐ балів: {2} · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Нічия – вирішили швидші відповіді.",
+  "Britische Hits": "Британські хіти",
+  "Latino Hits": "Латиноамериканські хіти",
 });

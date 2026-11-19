@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} carte · {1} % di centri · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} carte · {1} % di centri · ⭐ {2} punti · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Parità – hanno deciso le risposte più veloci.",
+  "Britische Hits": "Hit britanniche",
+  "Latino Hits": "Hit latine",
 });

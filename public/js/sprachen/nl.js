@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} kaarten · {1} % raak · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kaarten · {1} % raak · ⭐ {2} punten · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Gelijkspel – de snellere antwoorden gaven de doorslag.",
+  "Britische Hits": "Britse hits",
+  "Latino Hits": "Latin hits",
 });

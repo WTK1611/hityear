@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} karta · {1} % goditje · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} karta · {1} % goditje · ⭐ {2} pikë · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Barazim – vendosën përgjigjet më të shpejta.",
+  "Britische Hits": "Hite britanike",
+  "Latino Hits": "Hite latine",
 });

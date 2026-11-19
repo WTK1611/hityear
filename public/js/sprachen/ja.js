@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0}枚 · 的中率{1}% · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0}枚 · 的中率{1}% · ⭐ {2}点 · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "同点 – 回答の速さで決着しました。",
+  "Britische Hits": "UKヒット",
+  "Latino Hits": "ラテン・ヒット",
 });

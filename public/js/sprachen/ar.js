@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "البطاقات: {0} · الإصابات: {1} % · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "البطاقات: {0} · الإصابات: {1} % · ⭐ النقاط: {2} · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "تعادل – الإجابات الأسرع حسمت النتيجة.",
+  "Britische Hits": "أغاني بريطانية ناجحة",
+  "Latino Hits": "أغاني لاتينية ناجحة",
 });

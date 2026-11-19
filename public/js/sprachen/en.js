@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} cards · {1} % hits · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cards · {1} % hits · ⭐ {2} points · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Tie – the faster answers decided it.",
+  "Britische Hits": "British Hits",
+  "Latino Hits": "Latino Hits",
 });

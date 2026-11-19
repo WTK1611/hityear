@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} cartas · {1} % de acertos · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cartas · {1} % de acertos · ⭐ {2} pontos · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Empate – as respostas mais rápidas decidiram.",
+  "Britische Hits": "Êxitos britânicos",
+  "Latino Hits": "Êxitos latinos",
 });

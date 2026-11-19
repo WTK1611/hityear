@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} cărți · {1} % reușite · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cărți · {1} % reușite · ⭐ {2} puncte · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Egalitate – au decis răspunsurile mai rapide.",
+  "Britische Hits": "Hituri britanice",
+  "Latino Hits": "Hituri latino",
 });

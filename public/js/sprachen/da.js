@@ -517,4 +517,6 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} kort · {1} % rigtige · ⏱ Ø {2} s",
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kort · {1} % rigtige · ⭐ {2} point · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Uafgjort – de hurtigste svar afgjorde det.",
+  "Britische Hits": "Britiske hits",
+  "Latino Hits": "Latino-hits",
 });
