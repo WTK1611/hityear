@@ -252,14 +252,15 @@ let arbeitet = false;
 
 /**
  * Decks (ohne Angabe: alle mit Quelle Apple/Deezer und fehlenden Songs) in die Warteschlange; vorne = als Nächstes.
- * Ohne Angabe zuerst die Decks, die im Spiel zur Auswahl stehen (die mit den wenigsten Lücken vorneweg), ausgeblendete
- * Hitster-Decks zuletzt – sonst warten neue Decks nach dem Ausrollen hinter allen anderen (alphabetisch).
+ * Ohne Angabe zuerst die Decks, die im Spiel zur Auswahl stehen – die am wenigsten vollständigen vorneweg (ein neues
+ * Deck wartet sonst hinter großen Decks wie den Jahrescharts, deren Rest bei keinem Dienst zu finden ist und jedes Mal
+ * die gedrosselte Apple-Suche durchläuft) –, ausgeblendete Hitster-Decks zuletzt.
  */
 export function fehlendeNachladen(deckIds?: string[], vorne = false): void {
   const sichtbar = new Set(spielDecks().map((l) => l.id));
   const ids = deckIds ?? listenUebersicht()
     .filter((l) => l.audio === "apple" && l.treffer < l.gesamt)
-    .sort((a, b) => Number(sichtbar.has(b.id)) - Number(sichtbar.has(a.id)) || (a.gesamt - a.treffer) - (b.gesamt - b.treffer))
+    .sort((a, b) => Number(sichtbar.has(b.id)) - Number(sichtbar.has(a.id)) || a.treffer / a.gesamt - b.treffer / b.gesamt)
     .map((l) => l.id);
   for (const id of ids) {
     if (!listeHolen(id) || listenUebersicht().find((l) => l.id === id)?.audio !== "apple") continue;
