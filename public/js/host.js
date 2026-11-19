@@ -452,19 +452,24 @@
   }
   // Galerie: eine Reihe großer Cover, wischen per Touch oder blättern mit den Pfeilen; merkt sich je Schritt die Position
   const galerieStand = {};
+  const galeriePfeile = {}; // je Galerie: welche Pfeile zuletzt ausgeblendet waren (gegen Flackern beim Neuaufbau)
   function galerie(schluessel, messen, karten) {
     const reihe = el("div", { class: "deck-raster", "data-anzahl": String(Math.min(karten.length, 6)) }, karten);
     const blaettern = (richtung) => reihe.scrollBy({ left: richtung * reihe.clientWidth * 0.8, behavior: "smooth" });
-    const links = el("button", { type: "button", class: "galerie-pfeil links", "aria-label": "Zurück blättern", text: "‹", onclick: () => blaettern(-1) });
-    const rechts = el("button", { type: "button", class: "galerie-pfeil rechts", "aria-label": "Weiter blättern", text: "›", onclick: () => blaettern(1) });
+    // Pfeile und Hinweis übernehmen den zuletzt gemessenen Zustand dieser Galerie (beim ersten Mal unsichtbar) –
+    // die Lobby baut den Schritt bei jeder Änderung neu auf (z. B. Fortschritt der Hörproben-Prüfung), sonst flackern sie
+    const vorher = galeriePfeile[schluessel] ?? { links: true, rechts: true };
+    const links = el("button", { type: "button", class: "galerie-pfeil links", "aria-label": "Zurück blättern", text: "‹", disabled: vorher.links, onclick: () => blaettern(-1) });
+    const rechts = el("button", { type: "button", class: "galerie-pfeil rechts", "aria-label": "Weiter blättern", text: "›", disabled: vorher.rechts, onclick: () => blaettern(1) });
     // Hinweis, solange es mehr zu sehen gibt – auf breiten Bildschirmen in der Zeile mit Zurück/Weiter (kein eigener Platz)
     const touch = matchMedia("(pointer: coarse)").matches;
-    const hinweis = el("p", { class: "galerie-hinweis", "aria-hidden": "true" },
+    const hinweis = el("p", { class: `galerie-hinweis ${vorher.links && vorher.rechts ? "aus" : ""}`, "aria-hidden": "true" },
       el("span", { class: "galerie-hand", text: touch ? "👆" : "↔" }), touch ? "Wischen für mehr" : "Scrollen oder Pfeile für mehr");
     const pfeile = () => {
       links.disabled = reihe.scrollLeft < 4;
       rechts.disabled = reihe.scrollLeft + reihe.clientWidth > reihe.scrollWidth - 4;
       hinweis.classList.toggle("aus", links.disabled && rechts.disabled);
+      if (!messen) galeriePfeile[schluessel] = { links: links.disabled, rechts: rechts.disabled };
     };
     const groesseSetzen = () => {
       if (matchMedia("(max-width: 700px)").matches) { reihe.classList.remove("vermessen"); return; }
