@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Impressum",
   "Ganze Bibliothek": "Hele biblioteket",
   "Spiel starten ✨": "Start spillet ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Spill på denne enheten",
   "Neues Spiel erstellen": "Opprett nytt spill",
   "📺 Zum Spielfeld": "📺 Til spillbrettet",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Venter på spillere – minst 1 må skanne QR-koden.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Uavgjort – de raskeste svarene avgjorde.",
   "Britische Hits": "Britiske hits",
   "Latino Hits": "Latino-hits",
+  "Wie nutzt du dieses Gerät?": "Hvordan bruker du denne enheten?",
+  "Nur Musik und Spieler zeigen": "Bare musikk og spillere",
+  "TV, Bildschirm im Auto": "TV, skjerm i bilen",
+  "Tablet, Smartphone": "Nettbrett, smarttelefon",
+  "Alle sechs Plätze sind belegt.": "Alle seks plassene er opptatt.",
+  "Auf diesem Gerät mitspielen": "Spill på denne enheten",
 });

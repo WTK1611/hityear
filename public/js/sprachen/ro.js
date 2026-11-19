@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Impressum",
   "Ganze Bibliothek": "Toată biblioteca",
   "Spiel starten ✨": "Pornește jocul ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Joacă pe acest dispozitiv",
   "Neues Spiel erstellen": "Creează un joc nou",
   "📺 Zum Spielfeld": "📺 La tabla de joc",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Aștept jucători – cel puțin 1 trebuie să scaneze codul QR.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Egalitate – au decis răspunsurile mai rapide.",
   "Britische Hits": "Hituri britanice",
   "Latino Hits": "Hituri latino",
+  "Wie nutzt du dieses Gerät?": "Cum folosești acest dispozitiv?",
+  "Nur Musik und Spieler zeigen": "Doar muzică și jucători",
+  "TV, Bildschirm im Auto": "TV, ecranul din mașină",
+  "Tablet, Smartphone": "Tabletă, smartphone",
+  "Alle sechs Plätze sind belegt.": "Toate cele șase locuri sunt ocupate.",
+  "Auf diesem Gerät mitspielen": "Joacă pe acest dispozitiv",
 });

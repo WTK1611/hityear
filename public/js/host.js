@@ -781,14 +781,36 @@
             el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: zurueck ? "Bot dazu" : "frei" })),
             zurueck ? () => botsAendern(weg.slice(0, -1)) : null);
         })),
-        // „Zusammen spielen“ ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit
-        messen || spieler.length >= 6 || $("#wiedergabe").value !== "alle" ? null
-          : el("button", { type: "button", class: "zweit hier-mitspielen", text: "🎮 Auf diesem Gerät mitspielen", onclick: mitspielen }),
+        // unten: wofür ist dieses Gerät da? Nur Bühne (Musik und Spieler, z. B. TV oder Bildschirm im Auto) oder
+        // selbst mitspielen (Tablet, Smartphone) – „Spiel starten“ wechselt dann zur Spielerseite (Name, Avatar)
+        $("#wiedergabe").value !== "alle" ? null : el("div", { class: "geraet-wahl-reihe", role: "group", "aria-label": "Wie nutzt du dieses Gerät?" },
+          geraetWahl(false, "Nur Musik und Spieler zeigen", "TV, Bildschirm im Auto", BILD_BUEHNE, messen),
+          geraetWahl(true, "Auf diesem Gerät mitspielen", "Tablet, Smartphone", BILD_MITSPIELEN, messen, spieler.length >= 6 && !bots)),
       );
     }
     return inhalt;
   }
   let bereitVorher = new Set(); // wer beim letzten Aufbau schon „fertig“ war (nur Neue wackeln)
+  // Letzte Seite: spielt der Gastgeber auf diesem Gerät mit? Standard: nein – das Gerät zeigt nur Musik und Spieler.
+  let hierMitspielen = false;
+  const BILD_BUEHNE = tv(10, 14, 0.82) + bogen(110, 26, 0.75) + handy(140, 46, 0.7) + handy(170, 58, 0.55);
+  const BILD_MITSPIELEN = handy(62, 4, 1.55, true) + bogen(124, 26, 0.75) + person(10, 58, 0.95);
+  function geraetWahl(wert, titel, unter, bild, messen, gesperrt = false) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 200 134");
+    svg.setAttribute("class", "geraet-bild");
+    svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML = bild;
+    return el("button", {
+      type: "button", class: "geraet-wahl", "aria-pressed": String(hierMitspielen === wert), disabled: gesperrt,
+      title: gesperrt ? "Alle sechs Plätze sind belegt." : "",
+      onclick: messen ? null : (ev) => {
+        hierMitspielen = wert;
+        for (const b of ev.currentTarget.parentElement.children) b.setAttribute("aria-pressed", String(b === ev.currentTarget));
+        if (zustand) startPruefen(zustand);
+      },
+    }, svg, el("span", { class: "geraet-text" }, el("strong", { text: titel }), el("small", { text: unter })));
+  }
   function schrittZeigen() {
     const liste = sichtbareSchritte();
     schritt = Math.min(schritt, liste.length - 1);
@@ -983,6 +1005,21 @@
     tun("host:einstellungen", { ...einstellungenLesen(), ohneBots });
   }
   // ---------- Lobby ----------
+  // Darf das Spiel starten? Setzt Start-Knopf und Songzahl-Hinweis; wer auf diesem Gerät mitspielt, zählt als Mitspieler.
+  function startPruefen(z) {
+    const e = z.einstellungen;
+    const v = z.verfuegbar ?? 0;
+    const hier = e.wiedergabe === "solo" || (e.wiedergabe === "alle" && hierMitspielen);
+    const menschen = z.spieler.length + (hier && !z.spieler.length ? 1 : 0);
+    const noetig = Math.max(e.auffuellen ? 6 : menschen, 1) + 5;
+    const fehlt = !menschen && !e.auffuellen ? "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen."
+      : v < noetig ? `Für ${z.spieler.length} Mitspieler braucht es mindestens ${noetig} Songs – wähle ein größeres Deck oder mehr Jahrzehnte/Genres.`
+      : "";
+    verfuegbarText.textContent = `${v} Songs passen zur Auswahl.${fehlt ? " " + fehlt : ""}`;
+    startKnopf.disabled = Boolean(fehlt);
+    startKnopf.title = fehlt;
+    return fehlt;
+  }
   let qrFuer = null;
   function lobby(z) {
     audio.laden(null);
@@ -999,12 +1036,7 @@
     for (const i of jzBox.querySelectorAll("input")) i.checked = (e.jahrzehnte ?? []).includes(Number(i.value));
     for (const i of genreBox.querySelectorAll("input")) i.checked = (e.genres ?? []).includes(i.value);
 
-    const v = z.verfuegbar ?? 0;
-    const noetig = Math.max(e.auffuellen ? 6 : z.spieler.length, 1) + 5;
-    const fehlt = !z.spieler.length && !e.auffuellen && e.wiedergabe !== "solo" ? "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen."
-      : v < noetig ? `Für ${z.spieler.length} Mitspieler braucht es mindestens ${noetig} Songs – wähle ein größeres Deck oder mehr Jahrzehnte/Genres.`
-      : "";
-    verfuegbarText.textContent = `${v} Songs passen zur Auswahl.${fehlt ? " " + fehlt : ""}`;
+    const fehlt = startPruefen(z);
     const pruefung = z.deckPruefung;
     const pruefText = $("#deck-pruefung");
     pruefText.classList.toggle("versteckt", !pruefung);
@@ -1013,8 +1045,6 @@
         t(`Erreichbar: ${pruefung.bereit}. Nicht verfügbar: ${pruefung.fehlt}. Unklar: ${pruefung.unklar}.`),
         t(pruefung.laeuft ? "Links werden im Hintergrund geprüft und bei Bedarf erneuert." : "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.")].join(" ")
       : "";
-    startKnopf.disabled = Boolean(fehlt);
-    startKnopf.title = fehlt;
     if (!wechsel) schrittZeigen(); // nicht mitten in die Wechsel-Animation hinein neu aufbauen
     if (!gemessen) gemessen = hoeheMessen();
   }
@@ -1351,7 +1381,8 @@
   // ---------- Knöpfe ----------
   // „Allein üben“: erst auf der Spieler-Seite Name und Avatar wählen, dort startet das Spiel dann von selbst
   startKnopf.addEventListener("click", () => {
-    if (zustand?.einstellungen.wiedergabe !== "solo") return void tun("host:starten");
+    const hier = zustand?.einstellungen.wiedergabe === "solo" || (hierMitspielen && zustand?.einstellungen.wiedergabe === "alle");
+    if (!hier) return void tun("host:starten");
     speicher(`zs_solo_start_${zustand.code}`, "1");
     mitspielen();
   });

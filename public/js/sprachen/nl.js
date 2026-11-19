@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Colofon",
   "Ganze Bibliothek": "Hele bibliotheek",
   "Spiel starten ✨": "Spel starten ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Op dit apparaat meespelen",
   "Neues Spiel erstellen": "Nieuw spel maken",
   "📺 Zum Spielfeld": "📺 Naar het speelveld",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Wachten op spelers – minstens 1 moet de QR-code scannen.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Gelijkspel – de snellere antwoorden gaven de doorslag.",
   "Britische Hits": "Britse hits",
   "Latino Hits": "Latin hits",
+  "Wie nutzt du dieses Gerät?": "Hoe gebruik je dit apparaat?",
+  "Nur Musik und Spieler zeigen": "Alleen muziek en spelers",
+  "TV, Bildschirm im Auto": "Tv, scherm in de auto",
+  "Tablet, Smartphone": "Tablet, smartphone",
+  "Alle sechs Plätze sind belegt.": "Alle zes plekken zijn bezet.",
+  "Auf diesem Gerät mitspielen": "Op dit apparaat meespelen",
 });

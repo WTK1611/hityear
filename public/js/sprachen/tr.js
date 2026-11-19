@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Yasal bilgiler",
   "Ganze Bibliothek": "Tüm kütüphane",
   "Spiel starten ✨": "Oyunu başlat ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Bu cihazda oyna",
   "Neues Spiel erstellen": "Yeni oyun kur",
   "📺 Zum Spielfeld": "📺 Oyun alanına",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Oyuncular bekleniyor – en az 1 kişi QR kodu taramalı.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Beraberlik – daha hızlı cevaplar belirledi.",
   "Britische Hits": "İngiliz Hitleri",
   "Latino Hits": "Latin Hitleri",
+  "Wie nutzt du dieses Gerät?": "Bu cihazı nasıl kullanıyorsun?",
+  "Nur Musik und Spieler zeigen": "Sadece müzik ve oyuncular",
+  "TV, Bildschirm im Auto": "TV, araç ekranı",
+  "Tablet, Smartphone": "Tablet, akıllı telefon",
+  "Alle sechs Plätze sind belegt.": "Altı yerin hepsi dolu.",
+  "Auf diesem Gerät mitspielen": "Bu cihazda oyna",
 });

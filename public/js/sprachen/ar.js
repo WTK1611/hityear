@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "بيانات الناشر",
   "Ganze Bibliothek": "المكتبة كاملة",
   "Spiel starten ✨": "ابدأ اللعبة ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 العب على هذا الجهاز",
   "Neues Spiel erstellen": "أنشئ لعبة جديدة",
   "📺 Zum Spielfeld": "📺 إلى ساحة اللعب",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "بانتظار اللاعبين – لازم واحد على الأقل يمسح رمز QR.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "تعادل – الإجابات الأسرع حسمت النتيجة.",
   "Britische Hits": "أغاني بريطانية ناجحة",
   "Latino Hits": "أغاني لاتينية ناجحة",
+  "Wie nutzt du dieses Gerät?": "كيف تستخدم هذا الجهاز؟",
+  "Nur Musik und Spieler zeigen": "عرض الموسيقى واللاعبين فقط",
+  "TV, Bildschirm im Auto": "تلفاز، شاشة السيارة",
+  "Tablet, Smartphone": "جهاز لوحي، هاتف ذكي",
+  "Alle sechs Plätze sind belegt.": "كل المقاعد الستة مشغولة.",
+  "Auf diesem Gerät mitspielen": "العب على هذا الجهاز",
 });

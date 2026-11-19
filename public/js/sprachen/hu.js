@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Impresszum",
   "Ganze Bibliothek": "Teljes könyvtár",
   "Spiel starten ✨": "Játék indítása ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Játék ezen az eszközön",
   "Neues Spiel erstellen": "Új játék létrehozása",
   "📺 Zum Spielfeld": "📺 A játéktérre",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Várunk a játékosokra – legalább 1-nek be kell olvasnia a QR-kódot.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Döntetlen – a gyorsabb válaszok döntöttek.",
   "Britische Hits": "Brit slágerek",
   "Latino Hits": "Latin slágerek",
+  "Wie nutzt du dieses Gerät?": "Hogyan használod ezt az eszközt?",
+  "Nur Musik und Spieler zeigen": "Csak zene és játékosok",
+  "TV, Bildschirm im Auto": "TV, autós kijelző",
+  "Tablet, Smartphone": "Tablet, okostelefon",
+  "Alle sechs Plätze sind belegt.": "Mind a hat hely foglalt.",
+  "Auf diesem Gerät mitspielen": "Játék ezen az eszközön",
 });
