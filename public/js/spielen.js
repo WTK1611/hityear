@@ -136,7 +136,7 @@
     const sitzung = speicher(SITZUNG);
     if (!sitzung) return zeigen("#beitreten");
     try {
-      await socket.anfrage("spieler:beitreten", { code, sitzung });
+      await socket.anfrage("spieler:beitreten", { code, sitzung, neu: istNeuling() });
       await alsHostVerbinden();
     } catch (err) {
       // Raum gibt es nicht mehr (geschlossen, während das Handy weg war, oder Server neu gestartet)
@@ -224,7 +224,7 @@
     fehler("");
     const name = $("#name").value.trim();
     try {
-      const r = await socket.anfrage("spieler:beitreten", { code, name, avatar });
+      const r = await socket.anfrage("spieler:beitreten", { code, name, avatar, neu: istNeuling() });
       speicher(SITZUNG, r.sitzung);
       speicher("zs_name", name);
       speicher("zs_avatar", avatar);
@@ -466,6 +466,38 @@
       }
     }
     $("#bestaetigen").disabled = gewaehlt === null;
+    hilfeZeigen(z, ich, darfLegen || vorschau);
+  }
+
+  /**
+   * Neulinge (erste Spiele auf diesem Gerät), erste Runde: zwei Schritte als Hinweisblase über dem Zeitstrahl –
+   * ① oben „vor …“ oder unten „nach …“ antippen, ② mit dem Knopf bestätigen (der aktuelle Schritt ist hervorgehoben,
+   * erledigte bekommen ✓). Nach dem Antippen zeigt zusätzlich eine Blase direkt über dem Knopf nach unten.
+   * Beides verschwindet, sobald eingeordnet ist.
+   */
+  function hilfeZeigen(z, ich, offen) {
+    const zeigen = offen && istNeuling() && z.runde === 1 && !z.stechen && ich.zeitstrahl.length === 1;
+    if (!zeigen) {
+      $("#zeitstrahl-hilfe")?.remove();
+      $("#bestaetigen-hilfe")?.remove();
+      return;
+    }
+    const jahr = ich.zeitstrahl[0].jahr;
+    const gewaehltSchon = gewaehlt !== null;
+    const stand = `${jahr}|${gewaehltSchon}|${$("#bestaetigen").textContent}`;
+    if ($("#zeitstrahl-hilfe")?.dataset.stand === stand) return; // unverändert: nicht neu aufbauen (kein Flackern)
+    const schritt = (nr, aktiv, erledigt, text) => el("li", { class: `${aktiv ? "aktiv" : ""} ${erledigt ? "erledigt" : ""}` },
+      el("b", { class: "blase-nr", "aria-hidden": "true", text: erledigt ? "✓" : String(nr) }), el("span", { text }));
+    const blase = el("ol", { id: "zeitstrahl-hilfe", class: "hilfe-blase", role: "note", "data-stand": stand },
+      schritt(1, !gewaehltSchon, gewaehltSchon, `Älter oder neuer als ${jahr}? Tippe oben auf „vor ${jahr}“ oder unten auf „nach ${jahr}“.`),
+      schritt(2, gewaehltSchon, false, `Dann unten mit „${$("#bestaetigen").textContent}“ bestätigen.`));
+    const alt = $("#zeitstrahl-hilfe");
+    if (alt) alt.replaceWith(blase);
+    else $("#zeitstrahl").before(blase);
+    // Schritt 2: Blase direkt über dem Knopf
+    const knopfBlase = $("#bestaetigen-hilfe");
+    if (!gewaehltSchon) return void knopfBlase?.remove();
+    if (!knopfBlase) $("#bestaetigen").before(el("p", { id: "bestaetigen-hilfe", class: "hilfe-blase knopf-hilfe", role: "note", text: "👇 Jetzt bestätigen – erst dann zählt dein Tipp!" }));
   }
 
   /** Knopf der geführten Eingabe: leer = überspringen, sonst bestätigen */
