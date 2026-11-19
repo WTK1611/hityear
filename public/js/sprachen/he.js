@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "להיטים בריטיים",
   "Französische Hits": "להיטים צרפתיים",
   "US-Hits": "להיטים אמריקאיים",
+  "Filmmusik": "מוזיקת סרטים",
   "Latino Hits": "להיטים לטיניים",
   "Deutsche Jahrescharts 70er bis heute": "מצעדים שנתיים גרמניים משנות ה-70 ועד היום",
   "HitYear - Schlager 50er bis heute": "HitYear - שלאגר משנות ה-50 ועד היום",

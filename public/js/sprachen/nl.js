@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "Britse hits",
   "Französische Hits": "Franse hits",
   "US-Hits": "Amerikaanse hits",
+  "Filmmusik": "Filmmuziek",
   "Latino Hits": "Latin hits",
   "Deutsche Jahrescharts 70er bis heute": "Duitse jaarlijsten jaren 70 tot nu",
   "HitYear - Schlager 50er bis heute": "HitYear - Schlager jaren 50 tot nu",

@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "Hituri britanice",
   "Französische Hits": "Hituri franțuzești",
   "US-Hits": "Hituri americane",
+  "Filmmusik": "Muzică de film",
   "Latino Hits": "Hituri latino",
   "Deutsche Jahrescharts 70er bis heute": "Topuri anuale germane din anii '70 până azi",
   "HitYear - Schlager 50er bis heute": "HitYear - Schlager din anii '50 până azi",

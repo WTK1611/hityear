@@ -449,7 +449,8 @@ function tonweg(element) {
 // (vierter, hoher Ton zum Songstart), party = Siegerehrung mit Bestenliste. Wert = Lautstärke (die Töne sind
 // auf -1 dB Spitze normalisiert). Über den gemeinsamen Web-Audio-Kontext, sobald er läuft (iOS spielt dann auch
 // ohne neuen Tipp), sonst über ein eigenes Audio-Element.
-const UI_TOENE = { klick: 0.45, richtig: 0.55, falsch: 0.5, countdown: 0.35, party: 0.55 };
+// Lautstärke je Ton (0–1); der Countdown ist als Datei deutlich lauter abgemischt und läuft deshalb leise
+const UI_TOENE = { klick: 0.45, richtig: 0.55, falsch: 0.5, countdown: 0.12, party: 0.55 };
 const uiPuffer = new Map();
 function uiTonPuffer(name) {
   if (!tonKontext) return Promise.resolve(null);

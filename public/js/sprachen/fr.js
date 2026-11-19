@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "Tubes britanniques",
   "Französische Hits": "Tubes français",
   "US-Hits": "Tubes américains",
+  "Filmmusik": "Musiques de films",
   "Latino Hits": "Tubes latinos",
   "Deutsche Jahrescharts 70er bis heute": "Tops annuels allemands des années 70 à nos jours",
   "HitYear - Schlager 50er bis heute": "HitYear - Schlager des années 50 à aujourd'hui",

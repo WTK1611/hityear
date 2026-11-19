@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "UKヒット",
   "Französische Hits": "フレンチ・ヒット",
   "US-Hits": "USヒット",
+  "Filmmusik": "映画音楽",
   "Latino Hits": "ラテン・ヒット",
   "Deutsche Jahrescharts 70er bis heute": "ドイツ年間チャート 70年代から現在まで",
   "HitYear - Schlager 50er bis heute": "HitYear - シュラーガー 50年代から現在まで",

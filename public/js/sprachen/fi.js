@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "Brittihitit",
   "Französische Hits": "Ranskalaiset hitit",
   "US-Hits": "Amerikkalaiset hitit",
+  "Filmmusik": "Elokuvamusiikki",
   "Latino Hits": "Latinohitit",
   "Deutsche Jahrescharts 70er bis heute": "Saksan vuoden listat 70-luvulta tähän päivään",
   "HitYear - Schlager 50er bis heute": "HitYear - Schlager 50-luvulta tähän päivään",

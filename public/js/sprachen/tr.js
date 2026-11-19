@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "İngiliz Hitleri",
   "Französische Hits": "Fransız Hitleri",
   "US-Hits": "ABD Hitleri",
+  "Filmmusik": "Film Müzikleri",
   "Latino Hits": "Latin Hitleri",
   "Deutsche Jahrescharts 70er bis heute": "70'lerden Bugüne Alman Yıl Sonu Listeleri",
   "HitYear - Schlager 50er bis heute": "HitYear - 50'lerden Bugüne Schlager",
