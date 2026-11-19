@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  auswerten, bereit, eingeben, grenzen, karteLegen, naechsterZug, pruefePosition, ratenAbgeben, sicht, spielerEntfernen, spielerHinzufuegen, spielEntschieden, starten,
+  auswerten, bereit, eingeben, gesammelt, grenzen, karteLegen, naechsterZug, pruefePosition, ratenAbgeben, sicht, spielerEntfernen, spielerHinzufuegen, spielEntschieden, starten,
   STANDARD_EINSTELLUNGEN, type Karte, type Spiel,
 } from "../src/game.ts";
 import { jahrBestimmen } from "../src/bibliothek.ts";
@@ -31,7 +31,7 @@ test("Position prüfen inkl. gleichem Jahr und Toleranz", () => {
 });
 
 test("kompletter Ablauf mit Sieg am Rundenende", () => {
-  const s = neuesSpiel(2);
+  const s = neuesSpiel(1);
   spielerHinzufuegen(s, { id: "a", name: "Anna", farbe: "#f00", sitzung: "x" });
   spielerHinzufuegen(s, { id: "b", name: "Ben", farbe: "#0f0", sitzung: "y" });
   // Stapel wird von hinten gezogen: gemeinsame Startkarte 2000, dann Züge
@@ -39,6 +39,8 @@ test("kompletter Ablauf mit Sieg am Rundenende", () => {
   assert.equal(s.phase, "hoeren");
   assert.deepEqual(s.spieler.map((p) => p.zeitstrahl[0].jahr), [2000, 2000]);
   assert.notEqual(s.spieler[0].zeitstrahl, s.spieler[1].zeitstrahl); // eigene Zeitstrahlen
+  // die Startkarte ist geschenkt: alle starten mit 0 Punkten
+  assert.deepEqual(s.spieler.map(gesammelt), [0, 0]);
   // Verdeckte Karte darf nicht in der Sicht stehen
   assert.ok(!JSON.stringify(sicht(s)).includes("1950"));
   assert.ok(!JSON.stringify(sicht(s)).includes('"sitzung"'));
@@ -51,13 +53,13 @@ test("kompletter Ablauf mit Sieg am Rundenende", () => {
   const e2 = karteLegen(s, "b", 1); // 1960 nach 2000 → falsch
   assert.equal(e2.richtig, false);
   assert.equal(e2.abstand, 40);
-  naechsterZug(s); // Runde vorbei: Anna hat 2 = Ziel → Sieg
+  naechsterZug(s); // Runde vorbei: Anna hat 1 gesammelte Karte = Ziel → Sieg
   assert.equal(s.phase, "ende");
   assert.deepEqual(s.gewinner, ["a"]);
 });
 
 test("Gleichstand am Ziel: gemeinsamer Sieg, ⭐ entscheiden", () => {
-  const s = neuesSpiel(2);
+  const s = neuesSpiel(1);
   spielerHinzufuegen(s, { id: "a", name: "A", farbe: "", sitzung: "1" });
   spielerHinzufuegen(s, { id: "b", name: "B", farbe: "", sitzung: "2" });
   spielerHinzufuegen(s, { id: "c", name: "C", farbe: "", sitzung: "3" });
@@ -68,6 +70,24 @@ test("Gleichstand am Ziel: gemeinsamer Sieg, ⭐ entscheiden", () => {
   assert.equal(s.phase, "ende");
   assert.equal(s.stechen, null);
   assert.deepEqual(s.gewinner, ["a", "b"]);
+});
+
+test("Gleichstand bei Karten und ⭐: die schnelleren Antworten gewinnen", () => {
+  const s = neuesSpiel(1);
+  spielerHinzufuegen(s, { id: "a", name: "A", farbe: "", sitzung: "1" });
+  spielerHinzufuegen(s, { id: "b", name: "B", farbe: "", sitzung: "2" });
+  starten(s, [k(1900), k(1901), k(1960), k(1950), k(2000)]);
+  s.zug!.startUm = 1_000;
+  eingeben(s, "a", 0, undefined, false, 9_000); // 8 s nach Songstart
+  auswerten(s);
+  naechsterZug(s);
+  s.zug!.startUm = 20_000;
+  eingeben(s, "b", 0, undefined, false, 23_000); // 3 s nach Songstart
+  auswerten(s);
+  naechsterZug(s);
+  assert.equal(s.phase, "ende");
+  assert.deepEqual(s.spieler.map((p) => p.zeitMs), [8_000, 3_000]);
+  assert.deepEqual(s.gewinner, ["b"]);
 });
 
 test("aktiven Spieler entfernen setzt beim Nächsten fort", () => {
@@ -350,11 +370,11 @@ test("Bots: lustiger Name, Roboter-Avatar, Profi trifft mit hohem Zufall die ric
 });
 
 test("Ziel erreicht: Spiel ist schon bei der Auflösung entschieden (kein weiterer Song)", () => {
-  const s = neuesSpiel(2);
+  const s = neuesSpiel(1);
   spielerHinzufuegen(s, { id: "a", name: "Anna", farbe: "#f00", sitzung: "x" });
   spielerHinzufuegen(s, { id: "b", name: "Ben", farbe: "#0f0", sitzung: "y" });
   starten(s, [k(1940), k(1941), k(1970), k(1960), k(1950), k(2000)]);
-  karteLegen(s, "a", 0); // Anna hat 2 = Ziel, aber Ben ist in dieser Runde noch dran
+  karteLegen(s, "a", 0); // Anna hat 1 gesammelte Karte = Ziel, aber Ben ist in dieser Runde noch dran
   assert.equal(spielEntschieden(s), false);
   naechsterZug(s);
   karteLegen(s, "b", 1);

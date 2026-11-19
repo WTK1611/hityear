@@ -15,12 +15,13 @@ import { rolleAusAnfrage, rolleAusAppSitzung } from "./app.ts";
 import { dienstName, vorschauPruefen } from "./vorschau.ts";
 import { DeckPruefung } from "./deckpruefung.ts";
 import { beiNeuenSongs, fehlendeNachladen } from "./apple.ts";
-import { listenSongIds, listenUebersicht } from "./listen.ts";
+import { deckImSpiel, listenSongIds, spielDecks } from "./listen.ts";
 import { bestenliste, spielEintragen } from "./bestenliste.ts";
 import { diagnose } from "./log.ts";
 
 // nur Admin-Räume dürfen eigene Dateien (Musikordner, Uploads) spielen; alle anderen nur Apple/Deezer zum Streamen
-const auswahl = (s: Spiel) => ({ ...s.einstellungen, songIds: s.einstellungen.liste ? listenSongIds(s.einstellungen.liste).filter(id => !deckPruefung.fehlt(id)) : null, nurStreaming: !s.privat });
+// ein inzwischen ausgeblendetes Hitster-Deck (oder gelöschtes) zählt wie „ganze Bibliothek“
+const auswahl = (s: Spiel) => ({ ...s.einstellungen, songIds: s.einstellungen.liste && deckImSpiel(s.einstellungen.liste) ? listenSongIds(s.einstellungen.liste).filter(id => !deckPruefung.fehlt(id)) : null, nurStreaming: !s.privat });
 
 const deckPruefung = new DeckPruefung(
   deck => listenSongIds(deck).filter(id => { const z = songHolen(id); return z && istApple(z); }),
@@ -155,6 +156,11 @@ interface SocketDaten {
   hostSitzung?: string;
 }
 
+/** Spielt dieses Gerät die Musik? Jedes Handy immer, der Hauptbildschirm beim „Zusammen spielen“ auch. */
+function musikHier(s: Spiel, d: SocketDaten): boolean {
+  return Boolean(d.spielerId) || (s.einstellungen.wiedergabe === "alle" && istHost(s, d));
+}
+
 /** Host-Rechte gelten nur mit der bestätigten Sitzung des aktuellen Raums. */
 function istHost(s: Spiel, d: SocketDaten): boolean {
   return d.code === s.code && d.hostSitzung === s.hostSitzung;
@@ -164,12 +170,7 @@ function ausschnittUrlFuer(s: Spiel, d: SocketDaten): string | null {
   if (s.phase !== "hoeren") return null;
   const t = ausschnitte.get(s.code);
   if (!t) return null;
-  const w = s.einstellungen.wiedergabe;
-  if (w === "host" && istHost(s, d)) return `/api/audio/${t}`;
-  if ((w === "alle" || w === "solo") && d.spielerId) return `/api/audio/${t}`;
-  // Modus „alle“: „Handy, wer dran ist“ heißt jedes Handy
-  if (w === "spieler" && d.spielerId && (alleGleichzeitig(s) || d.spielerId === aktiverSpieler(s)?.id)) return `/api/audio/${t}`;
-  return null;
+  return musikHier(s, d) ? `/api/audio/${t}` : null;
 }
 
 /** Nach der Auflösung geht es nach 10 s von selbst weiter (kein Überspringen – alle sehen die Auflösung gleich lang). */
@@ -298,12 +299,12 @@ const DEMO_NEUSTART_MS = 25_000;
 const demoTimer = new Map<string, ReturnType<typeof setTimeout>>();
 
 function demoStarten(s: Spiel): void {
-  const decks = listenUebersicht().filter((l) => l.treffer >= 60);
+  const decks = spielDecks().filter((l) => l.treffer >= 60);
   const deck = Math.random() < 1 / (decks.length + 1) ? null : decks[Math.floor(Math.random() * decks.length)]?.id ?? null;
   for (const p of s.spieler.filter((q) => q.bot)) spielerEntfernen(s, p.id);
   s.einstellungen = grenzen({
     ...s.einstellungen, liste: deck, jahrzehnte: [], genres: [], nurChartHits: false, modus: "alle", warten: "alle",
-    zeitlimit: true, raten: false, auffuellen: true, ohneBots: [], wiedergabe: "host", zielKarten: 10,
+    zeitlimit: true, raten: false, auffuellen: true, ohneBots: [], wiedergabe: "alle", zielKarten: 10,
   });
   s.botPlan = undefined;
   s.geaendert = Date.now();
@@ -420,9 +421,7 @@ function vorspielPlanen(s: Spiel): void {
 function vorspielFuer(s: Spiel, d: SocketDaten) {
   const v = vorspiele.get(s.code);
   if (!v || s.phase !== "hoeren" || Date.now() > v.bis) return null;
-  const w = s.einstellungen.wiedergabe;
-  const hier = w === "host" ? istHost(s, d) : Boolean(d.spielerId);
-  return { karte: v.karte, ab: v.ab, bis: v.bis, url: hier ? `/api/audio/${v.token}` : null };
+  return { karte: v.karte, ab: v.ab, bis: v.bis, url: musikHier(s, d) ? `/api/audio/${v.token}` : null };
 }
 
 /** Wann der Ausschnitt endet (Apple-Vorschauen sind teils kürzer als die eingestellte Länge). */
@@ -705,7 +704,7 @@ export function socketsEinrichten(server: Server): void {
           hostSitzung: token(),
           privat: (rolleAusAppSitzung(socket.handshake.auth.sitzung) ?? rolleAusAnfrage(socket.request)) === "admin",
           einladung: einladungToken(),
-          einstellungen: grenzen({ ...STANDARD_EINSTELLUNGEN, ...(x.einstellungen ?? {}) }),
+          einstellungen: ((e) => (e.liste && !deckImSpiel(e.liste) ? { ...e, liste: null } : e))(grenzen({ ...STANDARD_EINSTELLUNGEN, ...(x.einstellungen ?? {}) })),
           spieler: [],
           stapel: [],
           ablage: [],
@@ -748,6 +747,8 @@ export function socketsEinrichten(server: Server): void {
         if (s.phase !== "lobby") throw new SpielFehler("Nur in der Lobby änderbar.");
         const vorher = s.einstellungen.liste;
         s.einstellungen = grenzen({ ...s.einstellungen, ...x });
+        // ausgeblendete Hitster-Decks (oder gelöschte) lassen sich nicht wählen → ganze Bibliothek
+        if (s.einstellungen.liste && !deckImSpiel(s.einstellungen.liste)) s.einstellungen.liste = null;
         s.geaendert = Date.now();
         // gewähltes Deck zuerst vervollständigen
         if (s.einstellungen.liste && s.einstellungen.liste !== vorher) fehlendeNachladen([s.einstellungen.liste], true);

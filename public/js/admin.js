@@ -158,6 +158,32 @@ bereichZeigen();
   let offenesDeck = null;
   let geladen = false;
 
+  // Hitster-Decks (Original-Editionen) im Spiel anzeigen – Standard: aus, dann nur die selbst erstellten Decks
+  api("/api/admin/hitster").then((r) => ($("#hitster-an").checked = Boolean(r.an))).catch(() => {});
+  $("#hitster-an").addEventListener("change", async (ev) => {
+    const an = ev.target.checked;
+    try {
+      ev.target.checked = (await api("/api/admin/hitster", { an })).an;
+    } catch (err) {
+      ev.target.checked = !an;
+      fehler(err.message);
+    }
+  });
+  // je Deck: gehört es zu den Hitster-Decks?
+  const hitsterWahl = (l) => el("label", { class: "hitster-wahl", title: "Songliste einer Original-Edition von Hitster" },
+    el("input", {
+      type: "checkbox", checked: l.hitster,
+      onchange: async (ev) => {
+        try {
+          await api(`/api/admin/listen/${l.id}/hitster`, { hitster: ev.target.checked });
+          l.hitster = ev.target.checked;
+        } catch (err) {
+          ev.target.checked = l.hitster;
+          fehler(err.message);
+        }
+      },
+    }), " Hitster");
+
   async function listen() {
     const vorher = decks.filter((d) => d.quelle === "eigen").map((d) => d.id).join();
     decks = await api("/api/admin/listen");
@@ -172,7 +198,7 @@ bereichZeigen();
             return el(
               "tr",
               {},
-              el("td", {}, el("strong", { text: l.name }), el("span", { class: "art-chip", text: ART[l.quelle] ?? l.quelle })),
+              el("td", {}, el("strong", { text: l.name }), el("span", { class: "art-chip", text: ART[l.quelle] ?? l.quelle }), hitsterWahl(l)),
               el("td", {}, audioWahl(l)),
               el("td", {}, `${l.treffer} / ${l.gesamt} (${quote} %)`, el("div", { class: "fortschritt" }, balken)),
               el(

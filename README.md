@@ -2,7 +2,7 @@
 
 **English** · [Deutsch](README.de.md)
 
-![HitYear home page: "When did the song come out?" with the tiles "Join with a code" and "Start a party"](docs/bilder/startseite.jpg)
+![HitYear home page: "When did the song come out?" with the tiles "Create a party" and "Join"](docs/bilder/startseite.jpg)
 
 **When did the song come out?** A clip plays, everyone listens, and each player places the song on their phone into their own timeline by release year. The first to get enough cards in the right spot wins.
 
@@ -17,9 +17,9 @@ Android and iOS apps are in development: [setup, builds and tests (German)](docs
 
 ## Screenshots
 
-| Setup: where does the music play? | Choosing a deck |
+| Setup: how do you want to play? | Choosing a deck |
 |---|---|
-| ![Setup step with the tiles Party in the room, Online and Solo](docs/bilder/host-modus.jpg) | ![Deck selection with record-sleeve covers](docs/bilder/host-decks.jpg) |
+| ![Setup step with the tiles Together and Solo](docs/bilder/host-modus.jpg) | ![Deck selection with record-sleeve covers](docs/bilder/host-decks.jpg) |
 | **Lobby: players and AI bots** | **Round on the main screen** |
 | ![Lobby with one phone player and five bots](docs/bilder/host-lobby.jpg) | ![Main screen during a round: record, equalizer, all timelines](docs/bilder/host-runde.jpg) |
 
@@ -31,12 +31,12 @@ Android and iOS apps are in development: [setup, builds and tests (German)](docs
 
 ## How to play
 
-1. **Start:** Every player gets one face-up starting card (a song with its year) on their timeline.
+1. **Start:** Every player gets one face-up starting card (a song with its year) on their timeline. It is a gift and does not count: everyone starts with 0 points.
 2. **Listen:** After a countdown (3 · 2 · 1) a clip plays on all devices at the same moment.
 3. **Place:** Tap the gap in your timeline where the song belongs and confirm. Same year as a neighbouring card counts as correct.
 4. **Reveal:** Title, artist, year and cover appear. Whoever was right adds the card to their timeline.
 5. **Bonus stars ⭐ (optional):** After the year, also guess the title and the artist. Each hit earns a star.
-6. **Winning:** The first player to reach the target (10, 15 or 20 cards) wins right away. On a tie the ⭐ decide; if those are equal too, the leaders win together.
+6. **Winning:** The first player to reach the target (10, 15 or 20 cards) wins right away. On a tie the ⭐ decide, then the faster answers (total answer time of all correctly placed cards); only if those are equal too do the leaders win together.
 7. After the reveal the game moves on automatically after 10 seconds. There is no skipping, so everyone sees the reveal equally long.
 
 ### Setup step by step
@@ -45,7 +45,7 @@ The main screen asks one question per step, the answers are big tiles (on phones
 
 | Step | Options |
 |---|---|
-| Where does the music play? | **Party in the room** (sound from the TV, phones only tap) · **Online** (every phone plays the music, also from different places; the host can play on the same device) · **Solo** (practise alone, with or without bots) |
+| How do you want to play? | **Together** (the main screen and every phone play the music, in the same room or from different places; the host can play on the same device) · **Solo** (practise alone, with or without bots) |
 | Whose turn? | everyone at once · one player at a time |
 | When does a round end? (everyone at once) | after the full preview (30 s) · 5 s after all answers · 5 s after the first answer |
 | What do you guess? | year only · year + title & artist (bonus stars) |
@@ -66,7 +66,7 @@ The main screen asks one question per step, the answers are big tiles (on phones
 | **Debugging** | Devices report page freezes, disconnects and missing replies to the server log (`[diagnose]`, `[verbindung]`, `[bereit]`); the footer shows live games, app version (1.<number of commits>) and the detected device (tv/tb/sp/pc) |
 | **Legal** | Legal notice, privacy policy, terms of use, footer links; anonymous statistics (self-hosted Matomo) only with consent, revocable on the cookie page |
 | **Search engines** | Home page and “How to play” are indexable (`robots.txt`, `sitemap.xml`, `llms.txt`); API, rooms, main screen, phone and library send `noindex` |
-| **Home page** | Two square tiles: *Join with a code* (code field right on the tile, own error message) and *Start a party*; on phones side by side |
+| **Home page** | Two square tiles: *Create a party* on the left, *Join* on the right (code field right on the tile, own error message); on phones side by side |
 | **Setup** | Guided setup with tiles (gradient, sticker image, shadow), a particle burst on every tap, decks as record sleeves designed from their name (flag, symbol), starting card revealed before the first song |
 | **Main screen** | QR code, spinning record that shakes to the bass, equalizer in 20 styles (click or ←/→ switches), progress bar, player grid with live status (thinking, placed, guessing), reveal with genre tag and source link, result banners with stars, “+1” animations, confetti, leaderboard |
 | **Phone** | Tappable personal timeline, score in the header, who has already tapped, countdown, guided guessing (year → artist → title), vibration, screen stays awake (Wake Lock); the host turns the phone sideways to get the main-screen view |

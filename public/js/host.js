@@ -173,10 +173,8 @@
     `<rect width="116" height="74" rx="10" fill="${W}"/><rect x="6" y="6" width="104" height="62" rx="6" fill="${D}"/>` +
     `<rect x="48" y="76" width="20" height="9" fill="${W}"/><rect x="33" y="85" width="50" height="7" rx="3.5" fill="${W}"/>` + note(44, 14, 0.75));
   const BILDER_WIEDERGABE = {
-    host: tv(32, 2, 0.95) + bogen(146, 20, 0.9) + g(28, 20, 0.9, `<path d="M9 6q-8 12 0 24M0 0q-14 18 0 36" fill="none" stroke="${W}" stroke-width="4" stroke-linecap="round"/>`) +
-      handy(52, 100, 0.5) + handy(90, 100, 0.5) + handy(128, 100, 0.5),
-    // jedes Handy spielt die Musik selbst: Schallwellen an allen drei
-    alle: handy(16, 44, 1.1, true) + bogen(62, 46, 0.55) + handy(78, 20, 1.3, true) + bogen(130, 22, 0.6) + handy(142, 44, 1.1, true) + bogen(188, 46, 0.55),
+    // zusammen: Fernseher und jedes Handy spielen die Musik – Schallwellen überall
+    alle: tv(6, 4, 0.82) + bogen(104, 18, 0.7) + handy(122, 46, 0.95, true) + bogen(161, 50, 0.5) + handy(170, 70, 0.7, true),
     // allein üben: ein Mensch mit seinem Handy, daneben (wer mag) ein Bot
     solo: person(22, 40, 1.3) + handy(88, 24, 1.3, true) + bogen(140, 26, 0.6) + roboter(150, 70, 0.75),
   };
@@ -229,7 +227,11 @@
     [/holland|niederland|netherlands/i, "q", ["#ae1c28", "#fff", "#21468b"]], [/ungarn|hungar/i, "q", ["#ce2939", "#fff", "#477050"]],
     [/kanada|canada/i, "l", ["#d52b1e", "#fff", "#fff", "#d52b1e"]], [/nordeuropa|northern europe|nordic/i, "nord", ["#006aa7", "#fecc00"]], [/mitteleuropa|central europe/i, "eu", ["#003399", "#ffcc00"]],
     [/brasil|brazil|mpb/i, "br", ["#009c3b", "#ffdf00", "#002776"]],
+    [/brit|großbritannien|united kingdom|\buk\b/i, "uk", ["#012169", "#fff", "#c8102e"]],
   ];
+  // Latino ohne Land: schräge Streifen in Pink, Orange, Gelb und Türkis wie ein Sommerplakat
+  const latino = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
+    ["#ff8a3d", "#ffd93d", "#2ec4b6", "#ff3d9a", "#ff8a3d"].map((c, i) => `<path d="M${i * 16 - 24} 40L${i * 16 - 4} 0h8L${i * 16 - 16} 40z" fill="${c}"/>`).join("");
   // Schlager ohne Land: Strahlenkranz in Pink und Gold wie in den Hitparaden der 70er
   const strahlenkranz = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
     Array.from({ length: 12 }, (_, i) => {
@@ -241,8 +243,11 @@
     [19, 14.5, 10].map((r, i) => `<circle cx="20" cy="20" r="${r}" fill="none" stroke="${i % 2 ? "#ff3d9a" : "#b04bd6"}" stroke-width="2.2"/>`).join("");
   function flagge(name) {
     const f = FLAGGEN.find(([muster]) => muster.test(name));
-    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : "";
+    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : /latin/i.test(name) ? latino() : "";
     const [, art, farben] = f;
+    if (art === "uk") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M0 0L40 40M40 0L0 40" stroke="${farben[1]}" stroke-width="8"/>` +
+      `<path d="M0 0L40 40M40 0L0 40" stroke="${farben[2]}" stroke-width="2.6"/><path d="M20 0V40M0 20H40" stroke="${farben[1]}" stroke-width="12"/>` +
+      `<path d="M20 0V40M0 20H40" stroke="${farben[2]}" stroke-width="7"/>`;
     if (art === "br") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M20 4L37 20L20 36L3 20z" fill="${farben[1]}"/>` +
       `<circle cx="20" cy="20" r="9.5" fill="${farben[2]}"/><path d="M10.8 18.2q9-3 18.6 2.4" fill="none" stroke="#fff" stroke-width="1.6"/>`;
     if (art === "nord") return `<rect width="40" height="40" fill="${farben[0]}"/><rect x="11" width="7" height="40" fill="${farben[1]}"/><rect y="16.5" width="40" height="7" fill="${farben[1]}"/>`;
@@ -269,6 +274,13 @@
     [/mpb|bossa|brasil|brazil/i, ((teile) => `<g transform="rotate(38 12 12)"><g stroke-width="2.6" fill="#160c26">${teile}</g><g stroke="none">${teile}</g>` +
       `<g fill="#160c26" stroke="none"><circle cx="12" cy="13.4" r="1.9"/><rect x="10" y="18.4" width="4" height="1.3" rx=".5"/></g></g>`)(
       `<circle cx="12" cy="17.4" r="6"/><circle cx="12" cy="10.8" r="4.4"/><rect x="10.9" y="-0.5" width="2.2" height="10" rx=".8"/><rect x="10" y="-2" width="4" height="3.4" rx="1"/>`)],
+    // Latino: zwei Rasseln (Maracas) über Kreuz
+    [/latin/i, `<g transform="rotate(-28 12 12)"><ellipse cx="8" cy="7" rx="4.6" ry="5.6"/><rect x="7" y="12" width="2" height="10" rx="1"/></g>` +
+      `<g transform="rotate(28 12 12)"><ellipse cx="16" cy="7" rx="4.6" ry="5.6"/><rect x="15" y="12" width="2" height="10" rx="1"/></g>` +
+      `<g fill="#ff3d9a" stroke="none"><circle cx="5.4" cy="8.8" r="1.1"/><circle cx="18.6" cy="8.8" r="1.1"/></g>`],
+    // Weihnachten: Tannenbaum mit gelbem Stern
+    [/weihnacht|christmas|xmas/i, `<path d="M12 3.5l5.5 6.5h-3l5 6h-3.5l4 5.5H4l4-5.5H4.5l5-6h-3z"/><rect x="10.4" y="21.5" width="3.2" height="2.5"/>` +
+      `<path d="M12 .2l1 2.1 2.3.3-1.7 1.6.4 2.3L12 5.4l-2 1.1.4-2.3-1.7-1.6 2.3-.3z" fill="#ffd93d"/>`],
     [/hits/i, `<path d="M12 1l3.4 7 7.6 1-5.5 5.3 1.4 7.6L12 18.3l-6.9 3.6 1.4-7.6L1 9l7.6-1z"/>`],
   ];
   function symbol(name) {
@@ -292,7 +304,7 @@
   // Länderkennzeichen je Deck (Schlager und Jahrescharts sind deutsch); Mittel-/Nordeuropa ohne
   const KENNZEICHEN = [
     [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france/i, "F"], [/holland|niederland|netherlands/i, "NL"],
-    [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"],
+    [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"], [/brit|großbritannien|united kingdom|\buk\b/i, "GB"],
   ];
   // klein in der Ecke, damit es auch neben langen Titelzeilen („Deutschlands“) frei steht; längere Kennzeichen
   // werden nach links breiter, der rechte Rand bleibt
@@ -377,6 +389,29 @@
     return titel;
   }
   // Deck-Cover: Verlauf in der Farbe des Decks, Plattenhülle mit Schallplatte und der Paketname (ohne Marke davor)
+  // Weihnachts-Decks: eigenes Cover – Schallplatte als Christbaumkugel an rotem Band, Stechpalme, Stern und Schnee
+  // auf rot-grünem Verlauf (statt Plattenhülle mit Symbol)
+  const WEIHNACHTEN = /weihnacht|christmas|xmas/i;
+  function weihnachtsCover(id) {
+    const schnee = [[46, 30, 1.6], [90, 14, 1.2], [58, 12, 1], [96, 46, 1.4], [42, 54, 1.1], [52, 88, 1.3], [94, 84, 1], [36, 94, 1.2], [80, 22, 0.9]]
+      .map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity=".85"/>`).join("");
+    const rillen = [17, 14, 11].map((r) => `<circle cx="71" cy="70" r="${r}" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width=".8"/>`).join("");
+    const blatt = (x, y, dreh) => `<path transform="translate(${x} ${y}) rotate(${dreh})" d="M0 0c3-2 5-1 7-4 1 3 3 3 5 2-1 3 0 5 2 6-3 1-4 3-4 5-2-2-4-2-6 0 0-3-1-5-4-5 2-1 1-3 0-4z" fill="#1f9d55" stroke="#0b4d2c" stroke-width=".7"/>`;
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ef3b4f"/><stop offset=".55" stop-color="#a3123a"/><stop offset="1" stop-color="#0d6a43"/></linearGradient>` +
+      `<radialGradient id="${id}-glanz" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#3a2a55"/><stop offset="1" stop-color="#160c26"/></radialGradient></defs>` +
+      `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` + schnee +
+      // Band von oben, Kappe, Kugel = Schallplatte mit Rillen, rotem Etikett und goldenem Loch
+      `<path d="M71 36V47" stroke="#ffd93d" stroke-width="1.4"/><path d="M71 37c-4-5-8-1-5 1.5 1.5 1.2 3.5.2 5-1.5 1.5 1.7 3.5 2.7 5 1.5 3-2.5-1-6.5-5-1.5z" fill="none" stroke="#ffd93d" stroke-width="1.3" stroke-linejoin="round"/>` +
+      `<rect x="66.5" y="46.5" width="9" height="5" rx="1.2" fill="#ffd93d" stroke="#160c26" stroke-width=".8"/>` +
+      `<circle cx="71" cy="70" r="20" fill="url(#${id}-glanz)" stroke="#fff" stroke-width="1.4"/>` + rillen +
+      `<circle cx="71" cy="70" r="7" fill="#ef3b4f" stroke="#fff" stroke-width=".8"/><circle cx="71" cy="70" r="1.6" fill="#ffd93d"/>` +
+      `<path d="M58 60a15 15 0 0 1 8-6" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>` +
+      // Stechpalme an der Kappe
+      blatt(60, 46, -20) + blatt(80, 44, 30) +
+      `<circle cx="69" cy="45" r="1.9" fill="#ef3b4f" stroke="#160c26" stroke-width=".6"/><circle cx="73" cy="44" r="1.9" fill="#ef3b4f" stroke="#160c26" stroke-width=".6"/>` +
+      // Stern oben rechts
+      `<path transform="translate(88 30) scale(.55)" d="M0-12l3.2 8.8 8.8 3.2-8.8 3.2L0 12l-3.2-8.8L-12 0l8.8-3.2z" fill="#ffd93d"/>`;
+  }
   function deckCover(wert, name, nr) {
     const h = farbe(nr);
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -387,10 +422,12 @@
     const farben = wert
       ? `<stop offset="0" stop-color="hsl(${h} 85% 60%)"/><stop offset="1" stop-color="hsl(${(h + 50) % 360} 80% 38%)"/>`
       : `<stop offset="0" stop-color="#ff3d9a"/><stop offset=".35" stop-color="#ffd93d"/><stop offset=".7" stop-color="#3dd8ff"/><stop offset="1" stop-color="#9b5cff"/>`;
-    svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${farben}</linearGradient></defs>` +
-      `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
-      // Motiv aus dem Originalnamen (die Anzeige ist schon übersetzt)
-      (wert ? schallplatte(h, (bibliothek.listen ?? []).find((l) => l.id === wert)?.name ?? name, nr) : plattenStapel());
+    // Motiv aus dem Originalnamen (die Anzeige ist schon übersetzt)
+    const original = (bibliothek.listen ?? []).find((l) => l.id === wert)?.name ?? name;
+    svg.innerHTML = wert && WEIHNACHTEN.test(original) ? weihnachtsCover(id)
+      : `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${farben}</linearGradient></defs>` +
+        `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
+        (wert ? schallplatte(h, original, nr) : plattenStapel());
     if (wert) svg.append(titelZeilen(t(name).replace(/^(HitYear|Party-Hits)\s*[-–:]?\s+/i, "")));
     else {
       const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -492,14 +529,13 @@
   }
   const SCHRITTE = [
     {
-      frage: "Wo läuft die Musik?", feld: "#wiedergabe", symbole: { host: "📺", alle: "📱", solo: "🎧" }, bilder: BILDER_WIEDERGABE,
+      frage: "Wie wollt ihr spielen?", feld: "#wiedergabe", symbole: { alle: "🎉", solo: "🎧" }, bilder: BILDER_WIEDERGABE,
       koepfe: {
-        host: ["Party", "vor Ort", "Ton vom TV", "Nur Hauptscreen spielt Musik"], alle: ["Online", "spielen", "Ton am Handy", "Alle Geräte spielen Musik"],
+        alle: ["Zusammen", "spielen", "Vor Ort & online", "Alle Geräte spielen Musik"],
         solo: ["Allein", "spielen", "Zum Üben", "Mit oder ohne Bots"],
       },
       texte: {
-        host: "Ein Fernseher oder Monitor ist der Hauptbildschirm, der Ton kommt aus seinen Lautsprechern. Die Handys dienen nur zum Tippen.",
-        alle: "Ein Gerät richtet das Spiel ein, jedes Handy spielt die Musik selbst ab – auch wenn ihr nicht im selben Raum seid.",
+        alle: "Der Hauptbildschirm und jedes Handy spielen die Musik – egal, ob ihr im selben Raum seid oder an verschiedenen Orten.",
         solo: "Du spielst allein auf diesem Gerät – zum Üben, gegen Bots oder ganz für dich.",
       },
     },
@@ -728,7 +764,7 @@
             el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: zurueck ? "Bot dazu" : "frei" })),
             zurueck ? () => botsAendern(weg.slice(0, -1)) : null);
         })),
-        // „Online spielen“ ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit (bei „Party vor Ort“ ist es der Hauptscreen)
+        // „Zusammen spielen“ ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit
         messen || spieler.length >= 6 || $("#wiedergabe").value !== "alle" ? null
           : el("button", { type: "button", class: "zweit hier-mitspielen", text: "🎮 Auf diesem Gerät mitspielen", onclick: mitspielen }),
       );
@@ -997,23 +1033,22 @@
     if (hoeren) {
       aufgedeckt = null;
       startsongZeigen(z.vorspiel, startsongAudio);
-      const hierAudio = z.einstellungen.wiedergabe === "host";
+      // „Zusammen spielen“: auch der Hauptbildschirm spielt die Musik (zeitgleich mit den Handys)
+      const hierAudio = z.einstellungen.wiedergabe === "alle";
       audio.laden(hierAudio ? z.ausschnitt : null);
       // neuer Ausschnitt → Countdown 3 · 2 · 1, dann spielt er von selbst
       if (hierAudio && audio.url && autoGestartet !== audio.url) {
         const url = (autoGestartet = audio.url);
         countdownAbspielen(audio, () => zustand?.phase === "hoeren" && audio.url === url, z.startUm);
       }
-      // Musik läuft auf den Handys → trotzdem 3 · 2 · 1 am Hauptbildschirm
+      // Musik läuft nur auf dem Handy („Allein“, quer gedreht) → trotzdem 3 · 2 · 1 am Spielfeld
       if (!hierAudio && z.startUm && countdownFuer !== z.startUm) {
         const startUm = (countdownFuer = z.startUm);
         countdownZeigen(startUm, () => zustand?.phase === "hoeren" && zustand.startUm === startUm);
       }
       $("#kicker").textContent = z.einstellungen.modus === "alle" ? `${runde} · alle sind dran` : `${runde} · ${aktiv?.name ?? "?"} ist dran`;
       $("#titel-gross").textContent = "Welches Jahr?";
-      $("#interpret-gross").textContent = hierAudio ? "Hör genau hin …"
-        : z.einstellungen.wiedergabe === "alle" ? "Die Musik läuft auf euren Handys."
-        : `Die Musik läuft auf dem Handy von ${aktiv?.name ?? "?"}.`;
+      $("#interpret-gross").textContent = hierAudio ? "Hör genau hin …" : "Die Musik läuft auf euren Handys.";
       $("#urteil").textContent = "";
       // wer schon getippt hat, steht unten in den Spielerkarten (zeitstrahleZeichnen)
       $("#eingaben").replaceChildren();
@@ -1057,6 +1092,8 @@
       ? (treffer ? "Karte geht in den Zeitstrahl, wer richtig lag" : wohinFalsch(z))
       : e.richtig ? "Karte geht in den Zeitstrahl" : wohinFalsch(z);
     if (e.richtig) konfetti();
+    // Modus „alle“: richtig, sobald mindestens einer richtig lag (die Handys spielen jeweils ihr eigenes Ergebnis)
+    uiTon((e.spielerId ? e.richtig : treffer > 0) ? "richtig" : "falsch");
 
     // Cover unverändert vom Dienst; der Hintergrund ist ein eigener Verlauf in der Farbe des Jahrzehnts (keine Bearbeitung des Covers)
     const amb = $("#ambient");
@@ -1154,7 +1191,7 @@
   // Stand je Spieler vom letzten Zeichnen – wächst Karten- oder ⭐-Zahl, hüpft sie mit „+1“
   const standVorher = new Map();
   function zahlEl(p, z) {
-    const karten = p.zeitstrahl.length;
+    const karten = gesammelt(p);
     const sterne = p.punkte ?? 0;
     const vorher = standVorher.get(p.id);
     standVorher.set(p.id, { karten, sterne });
@@ -1256,7 +1293,7 @@
           banner(p),
           (() => {
             const balken = el("i");
-            balken.style.width = `${Math.min(100, (100 * p.zeitstrahl.length) / z.einstellungen.zielKarten)}%`;
+            balken.style.width = `${Math.min(100, (100 * gesammelt(p)) / z.einstellungen.zielKarten)}%`;
             return el("div", { class: "fortschritt" }, balken);
           })(),
           strahlOl(p),
@@ -1283,6 +1320,7 @@
       aufgedeckt = "ende";
       konfetti(260);
       setTimeout(() => konfetti(200), 900);
+      uiTon("party");
     }
   }
 

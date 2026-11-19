@@ -85,7 +85,7 @@
   const standZeigen = (z, ich) => {
     stand.classList.toggle("versteckt", !ich);
     if (!ich) return;
-    stand.querySelector(".stand-karten").textContent = `${ich.zeitstrahl.length}/${z.einstellungen.zielKarten}`;
+    stand.querySelector(".stand-karten").textContent = `${gesammelt(ich)}/${z.einstellungen.zielKarten}`;
     const sterne = ich.punkte ?? 0;
     const mitSternen = Boolean(z.einstellungen.raten) || sterne > 0;
     stand.querySelector(".stand-sterne").textContent = mitSternen ? `⭐ ${sterne}` : "";
@@ -283,7 +283,7 @@
       zeigen("#ende");
       const gewonnen = z.gewinner.includes(ich.id);
       $("#ende-titel").textContent = gewonnen ? "🏆 Du hast gewonnen!" : z.gewinner.length === 2 ? `${t(z.spieler.find((p) => p.id === z.gewinner[0])?.name)} & ${t(z.spieler.find((p) => p.id === z.gewinner[1])?.name)} gewinnen.` : `${z.gewinner.map((id) => z.spieler.find((p) => p.id === id)?.name).join(" & ")} gewinnt.`;
-      $("#ende-text").textContent = `Du hast ${ich.zeitstrahl.length} Karten gesammelt (${ich.richtig} richtig, ${ich.falsch} daneben).`;
+      $("#ende-text").textContent = `Du hast ${gesammelt(ich)} Karten gesammelt (${ich.richtig} richtig, ${ich.falsch} daneben).`;
       $("#sieger-avatare").replaceChildren(...z.gewinner.map((id) => avatarEl(z.spieler.find((p) => p.id === id), true)));
       ranglisteZeichnen($("#rangliste"), z, ich.id);
       // nach dem Spiel: statt „Zurück“ die beiden Möglichkeiten
@@ -300,6 +300,7 @@
         letzteAufloesung = "ende";
         vibrieren(gewonnen ? [80, 60, 80, 60, 200] : 60);
         if (gewonnen) konfetti(220);
+        uiTon("party");
       }
       return;
     }
@@ -330,7 +331,8 @@
     hintergrundStimmung(z);
     if (hoeren) startsongZeigen(z.vorspiel, startsongAudio);
     const w = z.einstellungen.wiedergabe;
-    const hierAudio = hoeren && Boolean(z.ausschnitt) && (w === "alle" || w === "solo" || (w === "spieler" && (alle || binDran)));
+    // jedes Handy spielt die Musik („Zusammen“ und „Allein“)
+    const hierAudio = hoeren && Boolean(z.ausschnitt) && (w === "alle" || w === "solo");
     audio.laden(hierAudio ? z.ausschnitt : null);
     $("#audio-box").classList.toggle("versteckt", !hierAudio);
     // Quellenhinweis schon während der Hörprobe (ohne Link – der würde den Titel verraten)
@@ -397,6 +399,7 @@
       const schluessel = `${z.runde}-${e.karte.songId}`;
       if (letzteAufloesung !== schluessel) {
         if (binDran) vibrieren(e.richtig ? [40, 40, 40] : 250);
+        if (binDran) uiTon(e.richtig ? "richtig" : "falsch");
         if (binDran && e.richtig) konfetti(90);
       }
       letzteAufloesung = schluessel;
