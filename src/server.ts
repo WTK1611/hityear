@@ -17,7 +17,7 @@ import {
 } from "./bibliothek.ts";
 import {
   abgleichen, abgleichVeraltet, alleAbgleichen, AUDIO, deckAnlegen, deckUebersicht, deckAudioSetzen, deckLoeschen, deckSongs, deckUmbenennen, fehlendeSongs, listeHolen,
-  listenFuerSong, listenLaden, listenUebersicht, type Audio,
+  hitsterDecksAn, hitsterDecksSetzen, hitsterSetzen, listenFuerSong, listenLaden, listenUebersicht, spielDecks, type Audio,
 } from "./listen.ts";
 import { appleErgaenzen, appleStatus, appleUebernehmenNachId, deezerAbgleichen, deezerAbgleichStatus, fehlendeNachladen, vorschauSuchen } from "./apple.ts";
 import { playlistImportieren } from "./playlist.ts";
@@ -302,7 +302,8 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
     return st ? json(res, 200, st) : json(res, 404, { fehler: "Raum nicht gefunden." });
   }
 
-  if (p === "/api/bibliothek") return json(res, 200, { ...statistik(), listen: listenUebersicht() });
+  // Spieler und Host sehen nur die Decks, die im Spiel zur Auswahl stehen (Hitster-Decks nur, wenn eingeschaltet)
+  if (p === "/api/bibliothek") return json(res, 200, { ...statistik(), listen: spielDecks() });
   if (p === "/api/schaufenster") return json(res, 200, schaufenster());
 
   if (p === "/api/qr") {
@@ -415,9 +416,18 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
         return json(res, status, { fehler: status === 502 ? `Übernehmen fehlgeschlagen (${(err as Error).message}).` : (err as Error).message });
       }
     }
-    const listeRoute = /^\/api\/admin\/listen\/([a-z0-9-]{1,60})\/(audio|apple-ergaenzen)$/.exec(p);
+    // Hitster-Decks (Original-Editionen) im Spiel anzeigen: Schalter für alle Decks
+    if (p === "/api/admin/hitster") {
+      if (req.method === "POST") hitsterDecksSetzen((await body(req)).an === true);
+      return json(res, 200, { an: hitsterDecksAn() });
+    }
+    const listeRoute = /^\/api\/admin\/listen\/([a-z0-9-]{1,60})\/(audio|apple-ergaenzen|hitster)$/.exec(p);
     if (listeRoute && req.method === "POST") {
       if (!listeHolen(listeRoute[1])) return json(res, 404, { fehler: "Deck nicht gefunden." });
+      if (listeRoute[2] === "hitster") {
+        hitsterSetzen(listeRoute[1], (await body(req)).hitster === true);
+        return json(res, 200, { ok: true });
+      }
       if (listeRoute[2] === "audio") {
         const audio = String((await body(req)).audio) as Audio;
         if (!AUDIO.includes(audio)) return json(res, 400, { fehler: "Quelle ungültig." });

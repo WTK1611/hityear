@@ -37,6 +37,43 @@ export function deckAudioSetzen(id: string, audio: Audio): boolean {
   return true;
 }
 
+// ---------- Hitster-Decks ----------
+// Decks mit den Songs der Original-Editionen von „Hitster“ (importierte Songlisten). Im Admin-Setup lassen sie sich
+// für das Spiel ein- oder ausblenden; ausgeblendet (Standard) bietet die Deck-Auswahl nur die selbst erstellten Decks.
+// Welche Decks dazugehören, ist je Deck einstellbar; ohne Eintrag gilt: importierte Songliste, deren Name nicht mit
+// „HitYear“ beginnt (die selbst kuratierten Listen heißen „HitYear – …“).
+db.exec("CREATE TABLE IF NOT EXISTS deck_hitster (id TEXT PRIMARY KEY, hitster INTEGER NOT NULL)");
+const HITSTER_SCHALTER = "hitster_decks";
+
+/** Sollen Hitster-Decks im Spiel zur Auswahl stehen? (Standard: nein) */
+export function hitsterDecksAn(): boolean {
+  const r = db.prepare("SELECT wert FROM einstellungen WHERE schluessel = ?").get(HITSTER_SCHALTER) as { wert: string } | undefined;
+  return r?.wert === "an";
+}
+
+export function hitsterDecksSetzen(an: boolean): void {
+  db.prepare("INSERT INTO einstellungen (schluessel, wert) VALUES (?, ?) ON CONFLICT(schluessel) DO UPDATE SET wert = excluded.wert")
+    .run(HITSTER_SCHALTER, an ? "an" : "aus");
+}
+
+function istHitster(l: Pick<Liste, "id" | "name" | "quelle">): boolean {
+  const r = db.prepare("SELECT hitster FROM deck_hitster WHERE id = ?").get(l.id) as { hitster: number } | undefined;
+  return r ? r.hitster === 1 : l.quelle === "katalog" && !/^hityear\b/i.test(l.name.trim());
+}
+
+/** Ein Deck als Hitster-Deck markieren (oder die Markierung aufheben). */
+export function hitsterSetzen(id: string, hitster: boolean): boolean {
+  if (!listen.has(id)) return false;
+  db.prepare("INSERT INTO deck_hitster (id, hitster) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET hitster = excluded.hitster").run(id, hitster ? 1 : 0);
+  return true;
+}
+
+/** Darf dieses Deck im Spiel gewählt werden? (Hitster-Decks nur, wenn sie eingeschaltet sind) */
+export function deckImSpiel(id: string): boolean {
+  const l = listen.get(id);
+  return Boolean(l) && (hitsterDecksAn() || !istHitster(l!));
+}
+
 export interface Liste {
   id: string;
   name: string;
@@ -139,6 +176,7 @@ export function deckLoeschen(id: string): boolean {
   const r = db.prepare("DELETE FROM decks WHERE id = ?").run(id);
   db.prepare("DELETE FROM deck_eintraege WHERE deck_id = ?").run(id);
   db.prepare("DELETE FROM deck_audio WHERE id = ?").run(id);
+  db.prepare("DELETE FROM deck_hitster WHERE id = ?").run(id);
   listenLaden();
   return r.changes > 0;
 }
@@ -344,13 +382,19 @@ export function deckAnzeigeName(name: string): string {
   return name.replace(/\s{2,}/g, " ").trim().slice(0, 80);
 }
 
-export function listenUebersicht(): Array<{ id: string; name: string; quelle: Quelle; audio: Audio; gesamt: number; treffer: number }> {
+export function listenUebersicht(): Array<{ id: string; name: string; quelle: Quelle; audio: Audio; gesamt: number; treffer: number; hitster: boolean }> {
   return [...listen.values()]
     .map((l) => {
       const a = abgleichen(l.id)!;
-      return { id: l.id, name: deckAnzeigeName(l.name), quelle: l.quelle, audio: deckAudio(l.id), gesamt: l.eintraege.length, treffer: a.ids.length };
+      return { id: l.id, name: deckAnzeigeName(l.name), quelle: l.quelle, audio: deckAudio(l.id), gesamt: l.eintraege.length, treffer: a.ids.length, hitster: istHitster(l) };
     })
     .sort((a, b) => a.name.localeCompare(b.name, "de"));
+}
+
+/** Die Decks, die im Spiel zur Auswahl stehen (Hitster-Decks nur, wenn eingeschaltet). */
+export function spielDecks(): ReturnType<typeof listenUebersicht> {
+  const mitHitster = hitsterDecksAn();
+  return listenUebersicht().filter((l) => mitHitster || !l.hitster);
 }
 
 /** Alle Einträge eines Decks mit Treffer in der Bibliothek (vorhanden) oder ohne (fehlt). */
