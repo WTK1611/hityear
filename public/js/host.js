@@ -602,6 +602,7 @@
   const allein = () => $("#wiedergabe").value === "solo" && !$("#auffuellen").checked;
   let schritt = 0;
   let gezeigt = null;
+  let letzterAbdruck = ""; // Inhalt des zuletzt aufgebauten Schritts (siehe schrittZeigen)
   let weiterTimer = 0;
   // „Allein üben“: die Bot-Frage kommt gleich nach „Wo läuft die Musik?“ – davon hängt ab, ob „Wer ist dran?“ Sinn ergibt
   const sichtbareSchritte = () => {
@@ -818,9 +819,17 @@
     schritt = Math.min(schritt, liste.length - 1);
     const s = liste[schritt];
     const nr = SCHRITTE.indexOf(s);
-    const box = el("div", { class: gezeigt === nr ? "schritt" : `schritt rein ${richtung}` }, schrittInhalt(s, liste));
-    gezeigt = nr;
-    $("#schritt-inhalt").replaceChildren(box);
+    // Die Lobby meldet sich oft (z. B. jede Sekunde der Fortschritt der Hörproben-Prüfung). Hat sich am Schritt nichts
+    // geändert, bleibt er stehen – ein Neuaufbau setzt Hover-Zustände zurück, Pfeile und ✕-Knöpfe würden flackern.
+    // Verglichen wird ein Mess-Aufbau (Kopien, ohne Klick-Handler), damit einmalige Elemente an ihrem Platz bleiben.
+    const abdruck = `${nr}|${liste.length}|${el("div", {}, schrittInhalt(s, liste, true)).innerHTML}`;
+    const stehtSchon = gezeigt === nr && abdruck === letzterAbdruck && $("#schritt-inhalt .schritt:not(.raus)");
+    letzterAbdruck = abdruck;
+    if (!stehtSchon) {
+      const box = el("div", { class: gezeigt === nr ? "schritt" : `schritt rein ${richtung}` }, schrittInhalt(s, liste));
+      gezeigt = nr;
+      $("#schritt-inhalt").replaceChildren(box);
+    }
     const letzter = schritt === liste.length - 1;
     // „Weiter“ nur, wo man mehreres wählen kann (Jahrzehnte/Genres) – sonst geht es mit dem Tipp auf die Antwort weiter
     $("#schritt-weiter").classList.toggle("unsichtbar", letzter || !s.mehrfach);
