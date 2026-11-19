@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "Βρετανικές επιτυχίες",
   "Französische Hits": "Γαλλικές επιτυχίες",
   "US-Hits": "Αμερικανικές επιτυχίες",
+  "Filmmusik": "Μουσική ταινιών",
   "Latino Hits": "Λάτιν επιτυχίες",
   "Deutsche Jahrescharts 70er bis heute": "Γερμανικά ετήσια charts από τα 70s ως σήμερα",
   "HitYear - Schlager 50er bis heute": "HitYear - Schlager από τα 50s ως σήμερα",

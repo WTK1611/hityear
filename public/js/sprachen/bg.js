@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "Британски хитове",
   "Französische Hits": "Френски хитове",
   "US-Hits": "Американски хитове",
+  "Filmmusik": "Филмова музика",
   "Latino Hits": "Латино хитове",
   "Deutsche Jahrescharts 70er bis heute": "Германски годишни класации от 70-те до днес",
   "HitYear - Schlager 50er bis heute": "HitYear - Шлагер от 50-те до днес",

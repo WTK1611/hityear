@@ -243,6 +243,10 @@
   const sommer = () => `<rect width="40" height="40" fill="#ff8a3d"/><rect width="40" height="14" fill="#ff3d9a"/><rect y="14" width="40" height="8" fill="#ff6a5c"/>` +
     `<circle cx="20" cy="27" r="9" fill="#ffd93d"/><rect y="27" width="40" height="13" fill="#2ec4b6"/>` +
     `<path d="M0 31q5-2.5 10 0t10 0 10 0 10 0M0 36q5-2.5 10 0t10 0 10 0 10 0" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.4"/>`;
+  // Filmmusik: roter Kinovorhang mit goldenem Saum
+  const kino = () => `<rect width="40" height="40" fill="#8c1230"/>` +
+    [0, 8, 16, 24, 32].map((x) => `<path d="M${x} 0h8v40h-8z" fill="#b5173d"/><path d="M${x + 6} 0v40" stroke="#5e0b20" stroke-width="2"/>`).join("") +
+    `<path d="M0 0h40v6q-10 5-20 0t-20 0z" fill="#ffd93d"/>`;
   // Schlager ohne Land: Strahlenkranz in Pink und Gold wie in den Hitparaden der 70er
   const strahlenkranz = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
     Array.from({ length: 12 }, (_, i) => {
@@ -254,7 +258,7 @@
     [19, 14.5, 10].map((r, i) => `<circle cx="20" cy="20" r="${r}" fill="none" stroke="${i % 2 ? "#ff3d9a" : "#b04bd6"}" stroke-width="2.2"/>`).join("");
   function flagge(name) {
     const f = FLAGGEN.find(([muster]) => muster.test(name));
-    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : /latin/i.test(name) ? latino() : /sommer|summer/i.test(name) ? sommer() : "";
+    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : /latin/i.test(name) ? latino() : /sommer|summer/i.test(name) ? sommer() : /film|soundtrack|movie|kino/i.test(name) ? kino() : "";
     const [, art, farben] = f;
     if (art === "uk") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M0 0L40 40M40 0L0 40" stroke="${farben[1]}" stroke-width="8"/>` +
       `<path d="M0 0L40 40M40 0L0 40" stroke="${farben[2]}" stroke-width="2.6"/><path d="M20 0V40M0 20H40" stroke="${farben[1]}" stroke-width="12"/>` +
@@ -296,6 +300,10 @@
     // Weihnachten: Tannenbaum mit gelbem Stern
     [/weihnacht|christmas|xmas/i, `<path d="M12 3.5l5.5 6.5h-3l5 6h-3.5l4 5.5H4l4-5.5H4.5l5-6h-3z"/><rect x="10.4" y="21.5" width="3.2" height="2.5"/>` +
       `<path d="M12 .2l1 2.1 2.3.3-1.7 1.6.4 2.3L12 5.4l-2 1.1.4-2.3-1.7-1.6 2.3-.3z" fill="#ffd93d"/>`],
+    // Filmmusik: Filmklappe
+    [/film|soundtrack|movie|kino/i, `<rect x="2" y="10" width="20" height="13" rx="2"/>` +
+      `<g transform="rotate(-14 2 9)"><rect x="2" y="4" width="20" height="5" rx="1"/><g fill="#160c26" stroke="none"><path d="M5 4h3l-2 5H3z"/><path d="M11 4h3l-2 5H9z"/><path d="M17 4h3l-2 5h-3z"/></g></g>` +
+      `<path d="M6 15h12M6 19h8" stroke-width="1.6"/>`],
     [/hits/i, `<path d="M12 1l3.4 7 7.6 1-5.5 5.3 1.4 7.6L12 18.3l-6.9 3.6 1.4-7.6L1 9l7.6-1z"/>`],
   ];
   function symbol(name) {

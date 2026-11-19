@@ -518,6 +518,7 @@ uebersetzungLaden({
   "Britische Hits": "أغاني بريطانية ناجحة",
   "Französische Hits": "أغاني فرنسية ناجحة",
   "US-Hits": "أغاني أمريكية ناجحة",
+  "Filmmusik": "موسيقى الأفلام",
   "Latino Hits": "أغاني لاتينية ناجحة",
   "Deutsche Jahrescharts 70er bis heute": "القوائم السنوية الألمانية منذ السبعينيات",
   "HitYear - Schlager 50er bis heute": "HitYear - شلاجر من الخمسينيات حتى اليوم",
