@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Отвори hityear.app на телевизор или лаптоп и натисни „Създай игра“.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Всички сканират QR кода с телефона – без приложение и без акаунт.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Пуска се 30-секунден откъс. Всеки поставя песента преди, между или след своите карти.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Правилно поставена значи: картата остава при теб. Който пръв събере 10, 15 или 20 карти, печели. При равенство решават ⭐ за заглавие и изпълнител.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Правилно поставена значи: картата остава при теб. Който пръв събере 10, 15 или 20 карти, печели. При равенство решават ⭐ за заглавие и изпълнител. След това – по-бързите отговори.",
   "Häufige Fragen": "Често задавани въпроси",
   "Kostet HitYear etwas?": "Струва ли нещо HitYear?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Не. HitYear е безплатна, без реклами и без акаунт.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Влез ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Да. При „Играйте заедно“ всеки телефон пуска музиката сам – не е нужно да сте в една стая.",
   "Weihnachtslieder": "Коледни песни",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} карти · {1} % успех · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} карти · {1} % успех · ⭐ {2} точки · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Равенство – решиха по-бързите отговори.",
 });

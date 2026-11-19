@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Άνοιξε το hityear.app σε τηλεόραση ή λάπτοπ και πάτα «Δημιουργία παιχνιδιού».",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Όλοι σκανάρουν το QR με το κινητό – χωρίς εφαρμογή και χωρίς λογαριασμό.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Παίζει ένα απόσπασμα 30 δευτερολέπτων. Ο καθένας βάζει το τραγούδι πριν, ανάμεσα ή μετά από τις κάρτες του.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Σωστή τοποθέτηση σημαίνει ότι κρατάς την κάρτα. Όποιος πρώτος φτάσει 10, 15 ή 20 κάρτες, κερδίζει. Στην ισοπαλία αποφασίζουν τα ⭐ για τίτλο και καλλιτέχνη.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Σωστή τοποθέτηση σημαίνει ότι κρατάς την κάρτα. Όποιος πρώτος φτάσει 10, 15 ή 20 κάρτες, κερδίζει. Στην ισοπαλία αποφασίζουν τα ⭐ για τίτλο και καλλιτέχνη. Μετά οι πιο γρήγορες απαντήσεις.",
   "Häufige Fragen": "Συχνές ερωτήσεις",
   "Kostet HitYear etwas?": "Κοστίζει κάτι το HitYear;",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Όχι. Το HitYear είναι δωρεάν, χωρίς διαφημίσεις και χωρίς λογαριασμό.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Μπες ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Ναι. Με το «Παίξτε μαζί» κάθε κινητό παίζει μόνο του τη μουσική – δεν χρειάζεται να είστε στο ίδιο δωμάτιο.",
   "Weihnachtslieder": "Χριστουγεννιάτικα τραγούδια",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} κάρτες · {1} % επιτυχίες · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} κάρτες · {1} % επιτυχίες · ⭐ {2} πόντοι · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Ισοπαλία – αποφάσισαν οι πιο γρήγορες απαντήσεις.",
 });

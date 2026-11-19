@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Åbn hityear.app på tv eller laptop og tryk på “Opret spil”.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Alle scanner QR-koden med mobilen – uden app og uden konto.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Et 30-sekunders klip spiller. Alle lægger sangen før, mellem eller efter deres kort.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Rigtigt lagt betyder: Du beholder kortet. Den, der først har 10, 15 eller 20 kort, vinder. Ved uafgjort afgør ⭐ for titel og kunstner.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Rigtigt lagt betyder: Du beholder kortet. Den, der først har 10, 15 eller 20 kort, vinder. Ved uafgjort afgør ⭐ for titel og kunstner. Derefter de hurtigste svar.",
   "Häufige Fragen": "Ofte stillede spørgsmål",
   "Kostet HitYear etwas?": "Koster HitYear noget?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Nej. HitYear er gratis, uden reklamer og uden konto.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Spil med ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Ja. Med “Spil sammen” afspiller hver mobil selv musikken – I behøver ikke være i samme rum.",
   "Weihnachtslieder": "Julesange",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} kort · {1} % rigtige · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kort · {1} % rigtige · ⭐ {2} point · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Uafgjort – de hurtigste svar afgjorde det.",
 });

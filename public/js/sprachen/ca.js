@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Obre hityear.app a la tele o al portàtil i toca «Crea una partida».",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Tothom escaneja el codi QR amb el mòbil: sense app i sense compte.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Sona un fragment de 30 segons. Cadascú posa la cançó abans, entre o després de les seves cartes.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Ben col·locada vol dir quedar-te la carta. Qui primer arriba a 10, 15 o 20 cartes, guanya. En cas d'empat, decideixen els ⭐ de títol i artista.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Ben col·locada vol dir quedar-te la carta. Qui primer arriba a 10, 15 o 20 cartes, guanya. En cas d'empat, decideixen els ⭐ de títol i artista. Després, les respostes més ràpides.",
   "Häufige Fragen": "Preguntes freqüents",
   "Kostet HitYear etwas?": "HitYear costa alguna cosa?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "No. HitYear és gratuït, sense publicitat i sense compte.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Juga ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Sí. Amb «Jugar junts», cada mòbil reprodueix la música pel seu compte: no cal ser a la mateixa sala.",
   "Weihnachtslieder": "Cançons de Nadal",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} cartes · {1} % d'encerts · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cartes · {1} % d'encerts · ⭐ {2} punts · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Empat: han decidit les respostes més ràpides.",
 });

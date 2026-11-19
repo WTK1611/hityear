@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Avaa hityear.app telkkarissa tai kannettavassa ja napauta ”Luo peli”.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Kaikki skannaavat QR-koodin puhelimellaan – ei appia, ei tiliä.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "30 sekunnin pätkä soi. Jokainen sijoittaa biisin korttiensa eteen, väliin tai perään.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Oikein sijoitettu tarkoittaa: kortti jää sinulle. Ensimmäinen, jolla on 10, 15 tai 20 korttia, voittaa. Tasapelissä ratkaisevat biisin nimestä ja esittäjästä saadut ⭐.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Oikein sijoitettu tarkoittaa: kortti jää sinulle. Ensimmäinen, jolla on 10, 15 tai 20 korttia, voittaa. Tasapelissä ratkaisevat biisin nimestä ja esittäjästä saadut ⭐. Sen jälkeen nopeammat vastaukset.",
   "Häufige Fragen": "Usein kysyttyä",
   "Kostet HitYear etwas?": "Maksaako HitYear mitään?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Ei. HitYear on ilmainen, ilman mainoksia ja ilman tiliä.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Pelaa mukana ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Kyllä. Kun valitset ”Pelatkaa yhdessä”, jokainen puhelin soittaa musiikin itse – teidän ei tarvitse olla samassa huoneessa.",
   "Weihnachtslieder": "Joululaulut",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} korttia · {1} % osumia · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} korttia · {1} % osumia · ⭐ {2} pistettä · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Tasapeli – nopeammat vastaukset ratkaisivat.",
 });

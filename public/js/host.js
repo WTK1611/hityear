@@ -378,6 +378,29 @@
     return titel;
   }
   // Deck-Cover: Verlauf in der Farbe des Decks, Plattenhülle mit Schallplatte und der Paketname (ohne Marke davor)
+  // Weihnachts-Decks: eigenes Cover – Schallplatte als Christbaumkugel an rotem Band, Stechpalme, Stern und Schnee
+  // auf rot-grünem Verlauf (statt Plattenhülle mit Symbol)
+  const WEIHNACHTEN = /weihnacht|christmas|xmas/i;
+  function weihnachtsCover(id) {
+    const schnee = [[46, 30, 1.6], [90, 14, 1.2], [58, 12, 1], [96, 46, 1.4], [42, 54, 1.1], [52, 88, 1.3], [94, 84, 1], [36, 94, 1.2], [80, 22, 0.9]]
+      .map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity=".85"/>`).join("");
+    const rillen = [17, 14, 11].map((r) => `<circle cx="71" cy="70" r="${r}" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width=".8"/>`).join("");
+    const blatt = (x, y, dreh) => `<path transform="translate(${x} ${y}) rotate(${dreh})" d="M0 0c3-2 5-1 7-4 1 3 3 3 5 2-1 3 0 5 2 6-3 1-4 3-4 5-2-2-4-2-6 0 0-3-1-5-4-5 2-1 1-3 0-4z" fill="#1f9d55" stroke="#0b4d2c" stroke-width=".7"/>`;
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ef3b4f"/><stop offset=".55" stop-color="#a3123a"/><stop offset="1" stop-color="#0d6a43"/></linearGradient>` +
+      `<radialGradient id="${id}-glanz" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#3a2a55"/><stop offset="1" stop-color="#160c26"/></radialGradient></defs>` +
+      `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` + schnee +
+      // Band von oben, Kappe, Kugel = Schallplatte mit Rillen, rotem Etikett und goldenem Loch
+      `<path d="M71 36V47" stroke="#ffd93d" stroke-width="1.4"/><path d="M71 37c-4-5-8-1-5 1.5 1.5 1.2 3.5.2 5-1.5 1.5 1.7 3.5 2.7 5 1.5 3-2.5-1-6.5-5-1.5z" fill="none" stroke="#ffd93d" stroke-width="1.3" stroke-linejoin="round"/>` +
+      `<rect x="66.5" y="46.5" width="9" height="5" rx="1.2" fill="#ffd93d" stroke="#160c26" stroke-width=".8"/>` +
+      `<circle cx="71" cy="70" r="20" fill="url(#${id}-glanz)" stroke="#fff" stroke-width="1.4"/>` + rillen +
+      `<circle cx="71" cy="70" r="7" fill="#ef3b4f" stroke="#fff" stroke-width=".8"/><circle cx="71" cy="70" r="1.6" fill="#ffd93d"/>` +
+      `<path d="M58 60a15 15 0 0 1 8-6" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>` +
+      // Stechpalme an der Kappe
+      blatt(60, 46, -20) + blatt(80, 44, 30) +
+      `<circle cx="69" cy="45" r="1.9" fill="#ef3b4f" stroke="#160c26" stroke-width=".6"/><circle cx="73" cy="44" r="1.9" fill="#ef3b4f" stroke="#160c26" stroke-width=".6"/>` +
+      // Stern oben rechts
+      `<path transform="translate(88 30) scale(.55)" d="M0-12l3.2 8.8 8.8 3.2-8.8 3.2L0 12l-3.2-8.8L-12 0l8.8-3.2z" fill="#ffd93d"/>`;
+  }
   function deckCover(wert, name, nr) {
     const h = farbe(nr);
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -388,10 +411,12 @@
     const farben = wert
       ? `<stop offset="0" stop-color="hsl(${h} 85% 60%)"/><stop offset="1" stop-color="hsl(${(h + 50) % 360} 80% 38%)"/>`
       : `<stop offset="0" stop-color="#ff3d9a"/><stop offset=".35" stop-color="#ffd93d"/><stop offset=".7" stop-color="#3dd8ff"/><stop offset="1" stop-color="#9b5cff"/>`;
-    svg.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${farben}</linearGradient></defs>` +
-      `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
-      // Motiv aus dem Originalnamen (die Anzeige ist schon übersetzt)
-      (wert ? schallplatte(h, (bibliothek.listen ?? []).find((l) => l.id === wert)?.name ?? name, nr) : plattenStapel());
+    // Motiv aus dem Originalnamen (die Anzeige ist schon übersetzt)
+    const original = (bibliothek.listen ?? []).find((l) => l.id === wert)?.name ?? name;
+    svg.innerHTML = wert && WEIHNACHTEN.test(original) ? weihnachtsCover(id)
+      : `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${farben}</linearGradient></defs>` +
+        `<rect width="100" height="100" rx="10" fill="url(#${id})"/>` +
+        (wert ? schallplatte(h, original, nr) : plattenStapel());
     if (wert) svg.append(titelZeilen(t(name).replace(/^(HitYear|Party-Hits)\s*[-–:]?\s+/i, "")));
     else {
       const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -1056,6 +1081,8 @@
       ? (treffer ? "Karte geht in den Zeitstrahl, wer richtig lag" : wohinFalsch(z))
       : e.richtig ? "Karte geht in den Zeitstrahl" : wohinFalsch(z);
     if (e.richtig) konfetti();
+    // Modus „alle“: richtig, sobald mindestens einer richtig lag (die Handys spielen jeweils ihr eigenes Ergebnis)
+    uiTon((e.spielerId ? e.richtig : treffer > 0) ? "richtig" : "falsch");
 
     // Cover unverändert vom Dienst; der Hintergrund ist ein eigener Verlauf in der Farbe des Jahrzehnts (keine Bearbeitung des Covers)
     const amb = $("#ambient");
@@ -1282,6 +1309,7 @@
       aufgedeckt = "ende";
       konfetti(260);
       setTimeout(() => konfetti(200), 900);
+      uiTon("party");
     }
   }
 

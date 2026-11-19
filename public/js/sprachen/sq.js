@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Hap hityear.app në televizor ose laptop dhe trokit te „Krijo lojë“.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Të gjithë skanojnë kodin QR me telefon – pa aplikacion dhe pa llogari.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Luan një copëz 30-sekondëshe. Secili e vendos këngën para, mes ose pas kartave të veta.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Vendosje e saktë do të thotë: e mban kartën. Kush i pari arrin 10, 15 ose 20 karta, fiton. Në rast barazimi vendosin ⭐ për titullin dhe interpretin.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Vendosje e saktë do të thotë: e mban kartën. Kush i pari arrin 10, 15 ose 20 karta, fiton. Në rast barazimi vendosin ⭐ për titullin dhe interpretin. Pastaj përgjigjet më të shpejta.",
   "Häufige Fragen": "Pyetje të shpeshta",
   "Kostet HitYear etwas?": "A kushton HitYear?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Jo. HitYear është falas, pa reklama dhe pa llogari.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Hyr ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Po. Te „Luani së bashku“ çdo telefon e luan vetë muzikën – nuk keni pse të jeni në të njëjtën dhomë.",
   "Weihnachtslieder": "Këngë Krishtlindjesh",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} karta · {1} % goditje · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} karta · {1} % goditje · ⭐ {2} pikë · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Barazim – vendosën përgjigjet më të shpejta.",
 });

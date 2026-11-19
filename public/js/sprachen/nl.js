@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Open hityear.app op de tv of laptop en tik op „Spel maken”.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Iedereen scant de QR-code met de telefoon – zonder app en zonder account.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Een fragment van 30 seconden speelt. Iedereen legt de song vóór, tussen of achter zijn kaarten.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Goed gelegd betekent: kaart houden. Wie als eerste 10, 15 of 20 kaarten heeft, wint. Bij gelijkspel beslissen de ⭐ voor titel en artiest.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Goed gelegd betekent: kaart houden. Wie als eerste 10, 15 of 20 kaarten heeft, wint. Bij gelijkspel beslissen de ⭐ voor titel en artiest. Daarna de snellere antwoorden.",
   "Häufige Fragen": "Veelgestelde vragen",
   "Kostet HitYear etwas?": "Kost HitYear iets?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Nee. HitYear is gratis, zonder reclame en zonder account.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Meespelen ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Ja. Bij „Samen spelen” speelt elke telefoon de muziek zelf af – jullie hoeven niet in dezelfde ruimte te zijn.",
   "Weihnachtslieder": "Kerstliedjes",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} kaarten · {1} % raak · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kaarten · {1} % raak · ⭐ {2} punten · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Gelijkspel – de snellere antwoorden gaven de doorslag.",
 });

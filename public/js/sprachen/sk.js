@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Otvor hityear.app na TV alebo notebooku a ťukni na „Vytvoriť hru“.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Všetci naskenujú QR kód mobilom – bez appky a bez účtu.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Spustí sa 30-sekundová ukážka. Každý položí skladbu pred, medzi alebo za svoje karty.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Správne položená karta zostáva. Kto prvý má 10, 15 alebo 20 kariet, vyhráva. Pri remíze rozhodnú ⭐ za názov a interpreta.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Správne položená karta zostáva. Kto prvý má 10, 15 alebo 20 kariet, vyhráva. Pri remíze rozhodnú ⭐ za názov a interpreta. Potom rýchlejšie odpovede.",
   "Häufige Fragen": "Časté otázky",
   "Kostet HitYear etwas?": "Stojí HitYear niečo?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Nie. HitYear je zadarmo, bez reklám a bez účtu.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Hrať ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Áno. Pri možnosti „Hrať spolu“ hrá hudbu každý mobil sám – nemusíte byť v jednej miestnosti.",
   "Weihnachtslieder": "Vianočné piesne",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "Karty: {0} · zásahy: {1} % · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "Karty: {0} · zásahy: {1} % · ⭐ body: {2} · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Remíza – rozhodli rýchlejšie odpovede.",
 });

@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Otvori hityear.app na televizoru ili laptopu i dodirni „Napravi igru“.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Svi skeniraju QR kod mobitelom – bez aplikacije i bez računa.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Svira ulomak od 30 sekundi. Svatko stavlja pjesmu ispred, između ili iza svojih karata.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Točno složeno znači: karta ostaje tvoja. Tko prvi skupi 10, 15 ili 20 karata, pobjeđuje. Kod izjednačenja odlučuju ⭐ za naslov i izvođača.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Točno složeno znači: karta ostaje tvoja. Tko prvi skupi 10, 15 ili 20 karata, pobjeđuje. Kod izjednačenja odlučuju ⭐ za naslov i izvođača. Zatim brži odgovori.",
   "Häufige Fragen": "Česta pitanja",
   "Kostet HitYear etwas?": "Košta li HitYear nešto?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Ne. HitYear je besplatan, bez reklama i bez računa.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Pridruži se ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Da. Kod opcije „Igrajte zajedno“ svaki mobitel sam pušta glazbu – ne morate biti u istoj prostoriji.",
   "Weihnachtslieder": "Božićne pjesme",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} karata · {1} % pogodaka · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} karata · {1} % pogodaka · ⭐ {2} bodova · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Neriješeno – odlučili su brži odgovori.",
 });

@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Abre hityear.app en la tele o el portátil y pulsa «Crear partida».",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Todos escanean el código QR con el móvil, sin app y sin cuenta.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Suena un fragmento de 30 segundos. Cada uno coloca la canción antes, entre o después de sus cartas.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Si aciertas, te quedas la carta. Gana quien llegue primero a 10, 15 o 20 cartas. En caso de empate, deciden las ⭐ por título y artista.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Si aciertas, te quedas la carta. Gana quien llegue primero a 10, 15 o 20 cartas. En caso de empate, deciden las ⭐ por título y artista. Después, las respuestas más rápidas.",
   "Häufige Fragen": "Preguntas frecuentes",
   "Kostet HitYear etwas?": "¿HitYear cuesta algo?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "No. HitYear es gratis, sin anuncios y sin cuenta.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Jugar ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Sí. Con «Jugar juntos» cada móvil reproduce la música; no hace falta estar en la misma habitación.",
   "Weihnachtslieder": "Canciones de Navidad",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} cartas · {1} % de aciertos · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cartas · {1} % de aciertos · ⭐ {2} puntos · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Empate: han decidido las respuestas más rápidas.",
 });

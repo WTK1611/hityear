@@ -423,6 +423,7 @@ function tonwegeAnschliessen() {
   }
   tonKontext.resume().then(() => {
     if (tonKontext.state !== "running") return;
+    for (const name of Object.keys(UI_TOENE)) uiTonPuffer(name); // UI-Töne vorladen, damit der Countdown pünktlich ist
     for (const w of tonwegWartend.splice(0)) {
       try {
         const gain = tonKontext.createGain();
@@ -442,6 +443,60 @@ function tonweg(element) {
   }
   return tonwege.get(element);
 }
+
+// ---------- UI-Töne (mit ElevenLabs Sound Effects erzeugt, liegen in public/toene) ----------
+// klick = Bestätigung beim Tippen, richtig/falsch = eigene Auflösung, countdown = 3 · 2 · 1 vor dem Song
+// (vierter, hoher Ton zum Songstart), party = Siegerehrung mit Bestenliste. Wert = Lautstärke (die Töne sind
+// auf -1 dB Spitze normalisiert). Über den gemeinsamen Web-Audio-Kontext, sobald er läuft (iOS spielt dann auch
+// ohne neuen Tipp), sonst über ein eigenes Audio-Element.
+const UI_TOENE = { klick: 0.45, richtig: 0.55, falsch: 0.5, countdown: 0.35, party: 0.55 };
+const uiPuffer = new Map();
+function uiTonPuffer(name) {
+  if (!tonKontext) return Promise.resolve(null);
+  if (!uiPuffer.has(name)) {
+    uiPuffer.set(name, fetch(`/toene/${name}.mp3`)
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+      .then((b) => new Promise((ok, fehler) => tonKontext.decodeAudioData(b, ok, fehler)))
+      .catch(() => {
+        uiPuffer.delete(name);
+        return null;
+      }));
+  }
+  return uiPuffer.get(name);
+}
+/** UI-Ton abspielen; ab = Startposition in Sekunden (der Countdown setzt bei Verspätung mittendrin ein). */
+async function uiTon(name, ab = 0) {
+  const lautstaerke = UI_TOENE[name];
+  if (lautstaerke === undefined) return;
+  try {
+    if (tonKontext?.state === "running") {
+      const puffer = await uiTonPuffer(name);
+      if (puffer) {
+        if (ab >= puffer.duration) return;
+        const quelle = tonKontext.createBufferSource();
+        const gain = tonKontext.createGain();
+        quelle.buffer = puffer;
+        gain.gain.value = lautstaerke;
+        quelle.connect(gain).connect(tonKontext.destination);
+        quelle.start(0, Math.max(0, ab));
+        return;
+      }
+    }
+    // ohne Web Audio: eigenes Element (Browser spielen erst nach einer Geste auf der Seite)
+    if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+    const a = new Audio(`/toene/${name}.mp3`);
+    a.volume = lautstaerke;
+    if (ab > 0) a.currentTime = ab;
+    await a.play();
+  } catch {
+    /* Töne sind Beiwerk – Fehler (Autoplay, Netz) still übergehen */
+  }
+}
+// Bestätigungston bei jedem Tipp auf einen Knopf oder eine Kachel (auch Start-Kacheln und Decks)
+document.addEventListener("click", (ev) => {
+  const ziel = ev.target instanceof Element ? ev.target.closest("button, a.knopf, a.start-karte, [role=button]") : null;
+  if (ziel && !ziel.disabled && ziel.getAttribute("aria-disabled") !== "true") uiTon("klick");
+}, true);
 
 /** Audio-Spieler mit iOS-Freischaltung: der erste Tipp auf der Seite schaltet Autoplay für später frei. */
 function audioSpieler() {
@@ -709,6 +764,10 @@ async function countdownZeigen(startUm, nochAktuell) {
 async function countdownAbspielen(audio, nochAktuell, startUm) {
   const start = startUm ? lokal(startUm) : Date.now() + 3000;
   if (!(await nachStartsong(start, nochAktuell))) return;
+  // Countdown-Ton: drei Pieptöne zu 3 · 2 · 1, der vierte (hohe) zum Songstart; verspätet ab der passenden Stelle
+  const tonAb = start - 3000 - Date.now();
+  if (tonAb > 0) setTimeout(() => nochAktuell() && audio.element.paused && uiTon("countdown"), tonAb);
+  else if (start - Date.now() > 250) uiTon("countdown", -tonAb / 1000);
   const { ov, zeige } = countdownFlaeche();
   let weg = false;
   const entfernen = () => {
@@ -880,21 +939,33 @@ function hochzaehlen(element, ziel, dauer = 900) {
 const gesammelt = (p) => Math.max(0, (p.zeitstrahl?.length ?? 0) - 1);
 
 /** Bestenliste über alle Spiele (Top 5) in `box` zeichnen; `hervor` = Namen dieses Spiels. */
-/** Rangliste der gerade beendeten Runde: nach Karten, dann Treffern; `ich` wird hervorgehoben (Handy). */
+/** Mittlere Antwortzeit der richtig gelegten Karten in Sekunden (eine Nachkommastelle), sonst null. */
+const antwortSek = (p) => (p.richtig && p.zeitMs ? (p.zeitMs / p.richtig / 1000).toLocaleString(document.documentElement.lang || undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : null);
+
+/**
+ * Rangliste der gerade beendeten Runde – in derselben Reihenfolge wie die Siegregel (src/game.ts beenden):
+ * Karten, ⭐, schnellere Antworten (Summe der Antwortzeiten der richtigen Karten). `ich` wird hervorgehoben (Handy).
+ */
 function ranglisteZeichnen(box, z, ich = null) {
-  const sortiert = [...z.spieler].sort((a, b) => gesammelt(b) - gesammelt(a) || b.richtig - a.richtig);
+  const sortiert = [...z.spieler].sort((a, b) => z.gewinner.includes(b.id) - z.gewinner.includes(a.id) || gesammelt(b) - gesammelt(a)
+    || (b.punkte ?? 0) - (a.punkte ?? 0) || (a.zeitMs ?? 0) - (b.zeitMs ?? 0) || b.richtig - a.richtig);
+  // Gleichstand bei Karten und ⭐, den erst die Antwortzeit entschieden hat → kurz erklären
+  const sieger = z.spieler.find((p) => p.id === z.gewinner[0]);
+  const perZeit = z.gewinner.length === 1 && sieger && z.spieler.some((p) => p.id !== sieger.id && gesammelt(p) === gesammelt(sieger) && (p.punkte ?? 0) === (sieger.punkte ?? 0));
   box.replaceChildren(
     ...sortiert.map((p, i) => {
       const quote = p.richtig + p.falsch ? Math.round((100 * p.richtig) / (p.richtig + p.falsch)) : 0;
+      const sek = antwortSek(p);
       return el(
         "div",
         { class: `platz ${z.gewinner.includes(p.id) ? "sieg" : ""} ${p.id === ich ? "ich" : ""}` },
         el("strong", { text: `${i + 1}.` }),
         avatarEl(p),
         el("span", { text: p.name }),
-        el("span", { class: "leise klein", text: `${gesammelt(p)} Karten · ${quote} % Treffer${z.einstellungen.raten ? ` · ⭐ ${p.punkte ?? 0} Punkte` : ""}` }),
+        el("span", { class: "leise klein", text: `${gesammelt(p)} Karten · ${quote} % Treffer${z.einstellungen.raten ? ` · ⭐ ${p.punkte ?? 0} Punkte` : ""}${sek ? ` · ⏱ Ø ${sek} s` : ""}` }),
       );
     }),
+    ...(perZeit ? [el("p", { class: "leise klein gleichstand-hinweis", text: "Gleichstand – die schnelleren Antworten haben entschieden." })] : []),
   );
 }
 

@@ -36,7 +36,7 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 3. **Einordnen:** Im eigenen Zeitstrahl die Lücke antippen, in die der Song gehört, und bestätigen. Gleiches Jahr wie eine Nachbarkarte zählt als richtig.
 4. **Auflösung:** Titel, Interpret, Jahr und Cover erscheinen. Wer richtig lag, bekommt die Karte in den Zeitstrahl.
 5. **Zusatzpunkte ⭐ (optional):** Nach dem Jahr zusätzlich Titel und Interpret raten. Jeder Treffer gibt einen Stern.
-6. **Sieg:** Wer die Zielzahl an Karten (10, 15 oder 20) erreicht, gewinnt sofort. Bei Gleichstand entscheiden die ⭐; sind auch die gleich, gewinnen alle Führenden gemeinsam.
+6. **Sieg:** Wer die Zielzahl an Karten (10, 15 oder 20) erreicht, gewinnt sofort. Bei Gleichstand entscheiden die ⭐, danach die schnelleren Antworten (Summe der Antwortzeiten aller richtig gelegten Karten); erst wenn auch die gleich sind, gewinnen alle Führenden gemeinsam.
 7. Nach der Auflösung geht es nach 10 Sekunden automatisch weiter. Überspringen gibt es nicht, damit alle die Auflösung gleich lang sehen.
 
 ### Einrichtung Schritt für Schritt

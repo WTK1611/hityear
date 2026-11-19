@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Deschide hityear.app pe televizor sau laptop și apasă „Creează jocul“.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Toți scanează codul QR cu telefonul – fără aplicație și fără cont.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Rulează un fragment de 30 de secunde. Fiecare așază melodia înaintea, între sau după cărțile lui.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Așezată corect înseamnă că păstrezi cartea. Cine are primul 10, 15 sau 20 de cărți, câștigă. La egalitate decid ⭐ pentru titlu și artist.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Așezată corect înseamnă că păstrezi cartea. Cine are primul 10, 15 sau 20 de cărți, câștigă. La egalitate decid ⭐ pentru titlu și artist. Apoi, răspunsurile mai rapide.",
   "Häufige Fragen": "Întrebări frecvente",
   "Kostet HitYear etwas?": "Costă ceva HitYear?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Nu. HitYear e gratuit, fără reclame și fără cont.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Intră ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Da. La „Jucați împreună“ fiecare telefon redă muzica singur – nu trebuie să fiți în aceeași cameră.",
   "Weihnachtslieder": "Cântece de Crăciun",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} cărți · {1} % reușite · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cărți · {1} % reușite · ⭐ {2} puncte · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Egalitate – au decis răspunsurile mai rapide.",
 });

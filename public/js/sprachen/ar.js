@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "افتح hityear.app على التلفزيون أو اللابتوب واضغط على «أنشئ لعبة».",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "الكل يمسح رمز QR بجواله – بدون تطبيق وبدون حساب.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "يشتغل مقطع مدته 30 ثانية. كل واحد يضع الأغنية قبل بطاقاته أو بينها أو بعدها.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "الترتيب الصحيح يعني: تحتفظ بالبطاقة. أول من يجمع 10 أو 15 أو 20 بطاقة يفوز. عند التعادل تحسم ⭐ العنوان والفنان.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "الترتيب الصحيح يعني: تحتفظ بالبطاقة. أول من يجمع 10 أو 15 أو 20 بطاقة يفوز. عند التعادل تحسم ⭐ العنوان والفنان. ثم الإجابات الأسرع.",
   "Häufige Fragen": "الأسئلة الشائعة",
   "Kostet HitYear etwas?": "هل HitYear بفلوس؟",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "لا. HitYear مجاني، بدون إعلانات وبدون حساب.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "انضم ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "أكيد. مع «العبوا معًا» كل جوال يشغّل الموسيقى بنفسه – ما لازم تكونوا في نفس الغرفة.",
   "Weihnachtslieder": "أغاني الكريسماس",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "البطاقات: {0} · الإصابات: {1} % · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "البطاقات: {0} · الإصابات: {1} % · ⭐ النقاط: {2} · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "تعادل – الإجابات الأسرع حسمت النتيجة.",
 });

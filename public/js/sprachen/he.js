@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "פתחו את hityear.app בטלוויזיה או במחשב ולחצו על “יצירת משחק”.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "כולם סורקים את קוד ה-QR עם הטלפון – בלי אפליקציה ובלי חשבון.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "מתנגן קטע של 30 שניות. כל אחד שם את השיר לפני הקלפים שלו, בין הקלפים או אחריהם.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "סידור נכון = הקלף נשאר אצלכם. מי שמגיע ראשון ל-10, 15 או 20 קלפים – מנצח. בתיקו מכריעים ה-⭐ על שם השיר והמבצע/ת.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "סידור נכון = הקלף נשאר אצלכם. מי שמגיע ראשון ל-10, 15 או 20 קלפים – מנצח. בתיקו מכריעים ה-⭐ על שם השיר והמבצע/ת. אחר כך – התשובות המהירות יותר.",
   "Häufige Fragen": "שאלות נפוצות",
   "Kostet HitYear etwas?": "HitYear עולה כסף?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "לא. HitYear חינמי, בלי פרסומות ובלי חשבון.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "להצטרף למשחק ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "כן. ב“משחקים ביחד” כל טלפון מנגן את המוזיקה בעצמו – לא חייבים להיות באותו חדר.",
   "Weihnachtslieder": "שירי חג המולד",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} קלפים · {1} % פגיעות · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} קלפים · {1} % פגיעות · ⭐ {2} נקודות · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "תיקו – התשובות המהירות יותר הכריעו.",
 });

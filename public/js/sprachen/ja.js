@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "テレビかPCでhityear.appを開いて、「ゲームを作る」をタップ。",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "みんなスマホでQRコードを読み取るだけ。アプリもアカウントも不要！",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "30秒のクリップが流れます。曲を自分のカードの前、間、後ろのどこかに置こう。",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "正しく置けたらカードをゲット。先に10枚、15枚、または20枚そろえた人の勝ち。同点のときは、曲名とアーティストの⭐で決着！",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "正しく置けたらカードをゲット。先に10枚、15枚、または20枚そろえた人の勝ち。同点のときは、曲名とアーティストの⭐で決着！ その次は回答の速さで決まります。",
   "Häufige Fragen": "よくある質問",
   "Kostet HitYear etwas?": "HitYearは有料？",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "いいえ。無料で、広告もアカウントもありません。",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "参加する ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "はい。「みんなで遊ぶ」なら各スマホが自分で音楽を再生するので、同じ部屋にいなくても大丈夫。",
   "Weihnachtslieder": "クリスマスソング",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0}枚 · 的中率{1}% · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0}枚 · 的中率{1}% · ⭐ {2}点 · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "同点 – 回答の速さで決着しました。",
 });

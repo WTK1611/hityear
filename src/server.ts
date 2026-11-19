@@ -60,6 +60,7 @@ const MIME: Record<string, string> = {
   ".txt": "text/plain; charset=utf-8",
   ".xml": "application/xml; charset=utf-8",
   ".jpg": "image/jpeg",
+  ".mp3": "audio/mpeg", // UI-Töne (public/toene)
 };
 
 // Secure-Cookie nur bei HTTPS – im IP-Betrieb (http://<IP>:3700) würde der Browser

@@ -72,6 +72,24 @@ test("Gleichstand am Ziel: gemeinsamer Sieg, ⭐ entscheiden", () => {
   assert.deepEqual(s.gewinner, ["a", "b"]);
 });
 
+test("Gleichstand bei Karten und ⭐: die schnelleren Antworten gewinnen", () => {
+  const s = neuesSpiel(1);
+  spielerHinzufuegen(s, { id: "a", name: "A", farbe: "", sitzung: "1" });
+  spielerHinzufuegen(s, { id: "b", name: "B", farbe: "", sitzung: "2" });
+  starten(s, [k(1900), k(1901), k(1960), k(1950), k(2000)]);
+  s.zug!.startUm = 1_000;
+  eingeben(s, "a", 0, undefined, false, 9_000); // 8 s nach Songstart
+  auswerten(s);
+  naechsterZug(s);
+  s.zug!.startUm = 20_000;
+  eingeben(s, "b", 0, undefined, false, 23_000); // 3 s nach Songstart
+  auswerten(s);
+  naechsterZug(s);
+  assert.equal(s.phase, "ende");
+  assert.deepEqual(s.spieler.map((p) => p.zeitMs), [8_000, 3_000]);
+  assert.deepEqual(s.gewinner, ["b"]);
+});
+
 test("aktiven Spieler entfernen setzt beim Nächsten fort", () => {
   const s = neuesSpiel(5);
   spielerHinzufuegen(s, { id: "a", name: "A", farbe: "", sitzung: "1" });

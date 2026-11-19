@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Nyisd meg a hityear.app oldalt a tévén vagy a laptopon, és koppints a „Játék létrehozása” gombra.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Mindenki beolvassa a QR-kódot a telefonjával – app és fiók nélkül.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Szól egy 30 másodperces részlet. Mindenki a kártyái elé, közé vagy mögé teszi a dalt.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Jól tippelve megtartod a kártyát. Az nyer, akinek elsőként van 10, 15 vagy 20 kártyája. Döntetlennél a címért és az előadóért járó ⭐ dönt.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Jól tippelve megtartod a kártyát. Az nyer, akinek elsőként van 10, 15 vagy 20 kártyája. Döntetlennél a címért és az előadóért járó ⭐ dönt. Utána a gyorsabb válaszok.",
   "Häufige Fragen": "Gyakori kérdések",
   "Kostet HitYear etwas?": "Kerül valamibe a HitYear?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Nem. A HitYear ingyenes, reklám és fiók nélkül.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Csatlakozás ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Igen. A „Közös játék” módban minden telefon maga játssza le a zenét – nem kell egy szobában lennetek.",
   "Weihnachtslieder": "Karácsonyi dalok",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} kártya · {1} % találat · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kártya · {1} % találat · ⭐ {2} pont · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Döntetlen – a gyorsabb válaszok döntöttek.",
 });

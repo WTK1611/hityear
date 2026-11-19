@@ -36,7 +36,7 @@ Android and iOS apps are in development: [setup, builds and tests (German)](docs
 3. **Place:** Tap the gap in your timeline where the song belongs and confirm. Same year as a neighbouring card counts as correct.
 4. **Reveal:** Title, artist, year and cover appear. Whoever was right adds the card to their timeline.
 5. **Bonus stars ⭐ (optional):** After the year, also guess the title and the artist. Each hit earns a star.
-6. **Winning:** The first player to reach the target (10, 15 or 20 cards) wins right away. On a tie the ⭐ decide; if those are equal too, the leaders win together.
+6. **Winning:** The first player to reach the target (10, 15 or 20 cards) wins right away. On a tie the ⭐ decide, then the faster answers (total answer time of all correctly placed cards); only if those are equal too do the leaders win together.
 7. After the reveal the game moves on automatically after 10 seconds. There is no skipping, so everyone sees the reveal equally long.
 
 ### Setup step by step

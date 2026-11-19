@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Ouvre hityear.app sur une télé ou un ordinateur et touche « Créer une partie ».",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Tout le monde scanne le QR code avec son téléphone – sans appli ni compte.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Un extrait de 30 secondes passe. Chacun place le morceau avant, entre ou après ses cartes.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Bien placé, tu gardes la carte. Le premier à 10, 15 ou 20 cartes gagne. En cas d’égalité, les ⭐ pour le titre et l’artiste départagent.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Bien placé, tu gardes la carte. Le premier à 10, 15 ou 20 cartes gagne. En cas d’égalité, les ⭐ pour le titre et l’artiste départagent. Ensuite, les réponses les plus rapides.",
   "Häufige Fragen": "Questions fréquentes",
   "Kostet HitYear etwas?": "HitYear est-il payant ?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Non. HitYear est gratuit, sans publicité et sans compte.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Jouer ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Oui. Avec « Jouer ensemble », chaque téléphone joue la musique lui-même – pas besoin d'être dans la même pièce.",
   "Weihnachtslieder": "Chansons de Noël",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} cartes · {1} % de réussite · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cartes · {1} % de réussite · ⭐ {2} points · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Égalité – les réponses les plus rapides ont départagé.",
 });

@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "Apri hityear.app sulla TV o sul portatile e tocca “Crea partita”.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Tutti scansionano il codice QR con il telefono – senza app e senza account.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "Parte un estratto di 30 secondi. Ognuno mette la canzone prima, tra o dopo le sue carte.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Se è giusta, tieni la carta. Vince chi arriva per primo a 10, 15 o 20 carte. In caso di parità decidono le ⭐ per titolo e artista.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Se è giusta, tieni la carta. Vince chi arriva per primo a 10, 15 o 20 carte. In caso di parità decidono le ⭐ per titolo e artista. Poi le risposte più veloci.",
   "Häufige Fragen": "Domande frequenti",
   "Kostet HitYear etwas?": "HitYear costa qualcosa?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "No. HitYear è gratuito, senza pubblicità e senza account.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Gioca ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Sì. Con “Giocare insieme” ogni telefono riproduce la musica da sé – non serve stare nella stessa stanza.",
   "Weihnachtslieder": "Canzoni di Natale",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} carte · {1} % di centri · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} carte · {1} % di centri · ⭐ {2} punti · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Parità – hanno deciso le risposte più veloci.",
 });

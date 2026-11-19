@@ -300,6 +300,7 @@
         letzteAufloesung = "ende";
         vibrieren(gewonnen ? [80, 60, 80, 60, 200] : 60);
         if (gewonnen) konfetti(220);
+        uiTon("party");
       }
       return;
     }
@@ -398,6 +399,7 @@
       const schluessel = `${z.runde}-${e.karte.songId}`;
       if (letzteAufloesung !== schluessel) {
         if (binDran) vibrieren(e.richtig ? [40, 40, 40] : 250);
+        if (binDran) uiTon(e.richtig ? "richtig" : "falsch");
         if (binDran && e.richtig) konfetti(90);
       }
       letzteAufloesung = schluessel;

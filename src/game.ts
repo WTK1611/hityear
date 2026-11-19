@@ -5,7 +5,8 @@
 // Jeder Spieler baut seinen eigenen Zeitstrahl. Wer am Zug ist, ordnet den
 // gehörten Song nach Erscheinungsjahr ein. Liegt er richtig, bleibt die Karte.
 // Gewonnen hat, wer am Ende einer vollen Runde die Zielzahl erreicht; bei
-// Gleichstand entscheiden die ⭐-Punkte, sonst gewinnen alle Führenden gemeinsam.
+// Gleichstand entscheiden die ⭐-Punkte, danach die schnelleren Antworten (Summe der Antwortzeiten aller
+// richtig gelegten Karten); nur wenn auch das gleich ist, gewinnen die Führenden gemeinsam.
 // Die aufgedeckte Startkarte liegt im Zeitstrahl, zählt aber nicht: Alle starten mit 0 Punkten.
 import { geraten, interpretVarianten, titelVarianten } from "./normalisieren.ts";
 
@@ -112,6 +113,8 @@ export interface Spieler {
   falsch: number;
   /** Zusatzpunkte fürs Raten von Interpret und Titel (Option „raten“). */
   punkte?: number;
+  /** Summe der Antwortzeiten (ms ab Songstart) aller richtig gelegten Karten – entscheidet Gleichstände nach den ⭐. */
+  zeitMs?: number;
   /** KI-Mitspieler (vom Server gesteuert) mit Schwierigkeitsstufe */
   bot?: BotStufe;
   /** Lobby: „Ich bin fertig“ getippt (Hauptbildschirm zeigt grünen Rahmen) */
@@ -221,6 +224,8 @@ export interface Zug {
   aufloesungUm?: number;
   /** Wer wo gelegt hat (Spieler-ID → Position), Positionen erst bei der Auflösung sichtbar */
   gelegt?: Record<string, number>;
+  /** Antwortzeit je Spieler (ms ab Songstart), gemessen beim Eintreffen der Eingabe auf dem Server */
+  eingabeMs?: Record<string, number>;
   /** Modus „alle“: ein Ergebnis je Spieler */
   ergebnisse?: Ergebnis[];
   /** Niemand lag richtig: Karte ist zurück im Stapel und bleibt verdeckt (kommt später wieder). */
@@ -389,7 +394,7 @@ export function spielerHinzufuegen(s: Spiel, p: Omit<Spieler, "zeitstrahl" | "ri
     p = { ...p, farbe: bot.farbe };
   }
   const avatar = p.avatar && AVATARE.includes(p.avatar) ? p.avatar : AVATARE[s.spieler.length % AVATARE.length];
-  const neu: Spieler = { ...p, name, avatar, zeitstrahl: [], toleranz: 0, verbunden: true, richtig: 0, falsch: 0, punkte: 0 };
+  const neu: Spieler = { ...p, name, avatar, zeitstrahl: [], toleranz: 0, verbunden: true, richtig: 0, falsch: 0, punkte: 0, zeitMs: 0 };
   s.spieler.push(neu);
   if (spaeter) {
     // Startkarte wie alle anderen, dann hinten in die Reihenfolge der laufenden Runde
@@ -458,6 +463,7 @@ export function starten(s: Spiel, stapel: Karte[]): void {
     p.richtig = 0;
     p.falsch = 0;
     p.punkte = 0;
+    p.zeitMs = 0;
   }
   s.runde = 1;
   s.stechen = null;
@@ -488,7 +494,7 @@ const tippText = (x: unknown) => (typeof x === "string" ? x.trim().slice(0, 120)
  * Karte legen. Mit `weiterRaten` (Option „raten“) ist das nur der erste Schritt der geführten Eingabe:
  * die Position ist sicher gemerkt, fertig ist der Spieler aber erst nach ratenAbgeben(…, fertig = true).
  */
-export function eingeben(s: Spiel, spielerId: string, position: number, tipp?: { interpret?: unknown; titel?: unknown }, weiterRaten = false): boolean {
+export function eingeben(s: Spiel, spielerId: string, position: number, tipp?: { interpret?: unknown; titel?: unknown }, weiterRaten = false, jetzt = Date.now()): boolean {
   if (s.phase !== "hoeren" || !s.zug) throw new SpielFehler("Gerade kann keine Karte gelegt werden.");
   const gelegt = (s.zug.gelegt ??= {});
   if (alleGleichzeitig(s)) {
@@ -501,6 +507,8 @@ export function eingeben(s: Spiel, spielerId: string, position: number, tipp?: {
   if (!p) throw new SpielFehler("Nicht im Spiel.");
   if (!Number.isInteger(position) || position < 0 || position > p.zeitstrahl.length) throw new SpielFehler("Ungültige Position.");
   gelegt[spielerId] = position;
+  // Antwortzeit ab Songstart (vor dem Start oder ohne Startzeit: 0) – für Gleichstände am Spielende
+  (s.zug.eingabeMs ??= {})[spielerId] = Math.max(0, jetzt - (s.zug.startUm ?? jetzt));
   if (s.einstellungen.raten && tipp) {
     const e = s.einstellungen;
     const t = { interpret: fragtInterpret(e) ? tippText(tipp.interpret) : "", titel: fragtTitel(e) ? tippText(tipp.titel) : "" };
@@ -563,6 +571,7 @@ export function auswerten(s: Spiel): void {
     if (richtig) {
       einsortieren(p.zeitstrahl, karte);
       p.richtig++;
+      zeitMerken(s, p);
     } else {
       zurueckInStapel(s, karte);
       p.falsch++;
@@ -573,6 +582,11 @@ export function auswerten(s: Spiel): void {
   s.zug.ergebnis = ergebnis;
   s.phase = "aufloesung";
   s.geaendert = Date.now();
+}
+
+/** Antwortzeit einer richtig gelegten Karte aufsummieren (Gleichstand: schneller gewinnt). */
+function zeitMerken(s: Spiel, p: Spieler): void {
+  p.zeitMs = (p.zeitMs ?? 0) + (s.zug?.eingabeMs?.[p.id] ?? 0);
 }
 
 /** Option „raten“: Interpret und/oder Titel prüfen (je nach „ratenWas“), je richtig +1 Punkt (unabhängig davon, ob das Jahr stimmt). */
@@ -619,6 +633,7 @@ function auswertenAlle(s: Spiel): void {
     if (richtig) {
       einsortieren(p.zeitstrahl, { ...karte });
       p.richtig++;
+      zeitMerken(s, p);
     } else p.falsch++;
     const e: Ergebnis = { spielerId: id, position, richtig, karte, abstand, zeitraum };
     bonusWerten(s, p, e);
@@ -677,13 +692,15 @@ export function naechsterZug(s: Spiel): void {
   zugBeginnen(s);
 }
 
-/** Spiel beenden: meiste Karten gewinnt, bei Gleichstand mehr ⭐, sonst gemeinsamer Sieg. */
+/** Spiel beenden: meiste Karten gewinnt, bei Gleichstand mehr ⭐, dann die schnelleren Antworten, sonst gemeinsamer Sieg. */
 function beenden(s: Spiel): void {
   const kandidaten = s.spieler.filter((p) => !s.stechen || s.stechen.includes(p.id));
   const max = Math.max(0, ...kandidaten.map(gesammelt));
   const fuehrende = kandidaten.filter((p) => gesammelt(p) === max);
   const sterne = Math.max(0, ...fuehrende.map((p) => p.punkte ?? 0));
-  s.gewinner = fuehrende.filter((p) => (p.punkte ?? 0) === sterne).map((p) => p.id);
+  const meisteSterne = fuehrende.filter((p) => (p.punkte ?? 0) === sterne);
+  const schnellste = Math.min(...meisteSterne.map((p) => p.zeitMs ?? 0));
+  s.gewinner = meisteSterne.filter((p) => (p.zeitMs ?? 0) === schnellste).map((p) => p.id);
   s.stechen = null;
   s.phase = "ende";
   s.zug = null;
@@ -706,6 +723,7 @@ export function revanche(s: Spiel): void {
     p.richtig = 0;
     p.falsch = 0;
     p.punkte = 0;
+    p.zeitMs = 0;
     p.bereit = false;
   }
   s.geaendert = Date.now();

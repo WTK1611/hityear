@@ -206,7 +206,7 @@ uebersetzungLaden({
   "Öffne hityear.app am Fernseher oder Laptop und tippe auf „Spiel erstellen“.": "hityear.app'i TV'de veya laptopta aç ve “Oyun kur”a dokun.",
   "Alle scannen den QR-Code mit dem Handy – ohne App und ohne Konto.": "Herkes telefonuyla QR kodu tarar – uygulama yok, hesap yok.",
   "Ein 30-Sekunden-Ausschnitt läuft. Jeder legt den Song vor, zwischen oder hinter seine Karten.": "30 saniyelik bir klip çalar. Herkes şarkıyı kartlarının önüne, arasına ya da sonuna yerleştirir.",
-  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret.": "Doğru yerleştirdiysen kartı tutarsın. 10, 15 ya da 20 karta ilk ulaşan kazanır. Eşitlikte şarkı adı ve sanatçı için ⭐ belirler.",
+  "Richtig gelegt heißt: Karte behalten. Wer zuerst 10, 15 oder 20 Karten hat, gewinnt. Bei Gleichstand entscheiden die ⭐ für Titel und Interpret, danach die schnelleren Antworten.": "Doğru yerleştirdiysen kartı tutarsın. 10, 15 ya da 20 karta ilk ulaşan kazanır. Eşitlikte şarkı adı ve sanatçı için ⭐ belirler. Sonra daha hızlı cevaplar.",
   "Häufige Fragen": "Sık sorulan sorular",
   "Kostet HitYear etwas?": "HitYear ücretli mi?",
   "Nein. HitYear ist kostenlos, ohne Werbung und ohne Konto.": "Hayır. HitYear ücretsiz, reklamsız ve hesapsız.",
@@ -514,4 +514,7 @@ uebersetzungLaden({
   "Mitspielen ·": "Katıl ·",
   "Ja. Bei „Zusammen spielen“ spielt jedes Handy die Musik selbst ab – ihr müsst nicht im selben Raum sein.": "Evet. “Birlikte oyna” seçeneğinde her telefon müziği kendi çalar – aynı odada olmanız gerekmez.",
   "Weihnachtslieder": "Noel Şarkıları",
+  "{0} Karten · {1} % Treffer · ⏱ Ø {2} s": "{0} kart · %{1} isabet · ⏱ Ø {2} s",
+  "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kart · %{1} isabet · ⭐ {2} puan · ⏱ Ø {3} s",
+  "Gleichstand – die schnelleren Antworten haben entschieden.": "Beraberlik – daha hızlı cevaplar belirledi.",
 });
