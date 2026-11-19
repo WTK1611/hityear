@@ -24,12 +24,16 @@ test("Hitster-Decks: standardmäßig nur die selbst erstellten Decks im Spiel", 
   const eigeneListe = deckAnlegen("HitYear - Schlager 50er bis heute", "katalog", eintrag);
   const eigen = deckAnlegen("Party 80er", "eigen", eintrag);
   const playlist = deckAnlegen("Meine Playlist", "playlist", eintrag);
+  // bekannte Edition, auch wenn sie als Playlist importiert wurde; „Hitster“ im Namen ebenso
+  const kanada = deckAnlegen("Kanadas Hits", "playlist", eintrag);
+  const weihnacht = deckAnlegen("Hitster Christmas", "eigen", eintrag);
   const imSpiel = () => spielDecks().map((l) => l.id);
 
   // Vorbelegung: importierte Songliste ohne „HitYear“ im Namen = Hitster-Deck
   const markiert = Object.fromEntries(listenUebersicht().map((l) => [l.id, l.hitster]));
   assert.deepEqual([markiert[hitster], markiert[eigeneListe], markiert[eigen], markiert[playlist]], [true, false, false, false]);
   assert.equal(markiert["weihnachtslieder"], false, "mitgelieferte Listen (data/listen) gelten als selbst erstellt");
+  assert.deepEqual([markiert[kanada], markiert[weihnacht]], [true, true]);
 
   // Standard: ausgeschaltet
   assert.equal(hitsterDecksAn(), false);

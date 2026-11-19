@@ -40,9 +40,32 @@ export function deckAudioSetzen(id: string, audio: Audio): boolean {
 // ---------- Hitster-Decks ----------
 // Decks mit den Songs der Original-Editionen von „Hitster“ (importierte Songlisten). Im Admin-Setup lassen sie sich
 // für das Spiel ein- oder ausblenden; ausgeblendet (Standard) bietet die Deck-Auswahl nur die selbst erstellten Decks.
-// Welche Decks dazugehören, ist je Deck einstellbar; ohne Eintrag gilt: importierte Songliste, deren Name nicht mit
-// „HitYear“ beginnt (die selbst kuratierten Listen heißen „HitYear – …“).
+// Welche Decks dazugehören, ist je Deck einstellbar. Ohne Eintrag gilt ein Deck als Hitster-Deck, wenn es eine der
+// bekannten Editionen ist (Liste unten), „Hitster“ im Namen trägt oder eine importierte Songliste ist, deren Name nicht
+// mit „HitYear“ beginnt (die selbst kuratierten Listen heißen „HitYear – …“).
 db.exec("CREATE TABLE IF NOT EXISTS deck_hitster (id TEXT PRIMARY KEY, hitster INTEGER NOT NULL)");
+/**
+ * Hitster-Editionen → Name des Decks in HitYear. Abgeglichen mit den Songlisten aus
+ * github.com/andygruber/songseeker-hitster-playlists (playlists.csv, Kartenzahl in Klammern).
+ */
+const HITSTER_EDITIONEN = new Set([
+  "Deutschlands Hits", // Hitster Deutschland (308)
+  "Deutschlands Schlager", // Deutschland Schlagerparty (308)
+  "Deutschlands Sommerhits", // Deutschland Summer Party (308)
+  "Deutschlands Heimliche Lieblingshits", // Deutschland Guilty Pleasures (309)
+  "Deutschlands Hit-Bingo", // Deutschland Bingo (226)
+  "Deutschlands Radio-Klassiker", // Deutschland Bayern 1 Expansion Pack (153)
+  "Deutschlands Rock-Hits", // Deutschland Rock (308)
+  "Deutschlands Partykracher", // Deutschland Celebration (309)
+  "Deutschlands Hits aller Jahrzehnte", // Deutschland Platinum Edition (500)
+  "Frankreichs Hits", // Hitster France (308)
+  "Frankreichs Sommerhits", // France Summer Party (308)
+  "Ungarns Hits", // Hitster magyar kiadás (308)
+  "Hollands Hits", // Hitster Netherlands (308)
+  "Nordeuropas Hits", // Hitster Nordics (300)
+  "Mitteleuropas Hits", // Hitster Central Europe (308)
+  "Kanadas Hits", // Hitster Canada (308)
+].map((n) => n.toLowerCase()));
 const HITSTER_SCHALTER = "hitster_decks";
 
 /** Sollen Hitster-Decks im Spiel zur Auswahl stehen? (Standard: nein) */
@@ -58,7 +81,9 @@ export function hitsterDecksSetzen(an: boolean): void {
 
 function istHitster(l: Pick<Liste, "id" | "name" | "quelle">): boolean {
   const r = db.prepare("SELECT hitster FROM deck_hitster WHERE id = ?").get(l.id) as { hitster: number } | undefined;
-  return r ? r.hitster === 1 : l.quelle === "katalog" && !/^hityear\b/i.test(l.name.trim());
+  if (r) return r.hitster === 1;
+  const name = deckAnzeigeName(l.name);
+  return HITSTER_EDITIONEN.has(name.toLowerCase()) || /hitster/i.test(name) || (l.quelle === "katalog" && !/^hityear\b/i.test(name));
 }
 
 /** Ein Deck als Hitster-Deck markieren (oder die Markierung aufheben). */
