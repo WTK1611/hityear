@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "تعادل – الإجابات الأسرع حسمت النتيجة.",
   "Britische Hits": "أغاني بريطانية ناجحة",
   "Französische Hits": "أغاني فرنسية ناجحة",
+  "US-Hits": "أغاني أمريكية ناجحة",
   "Latino Hits": "أغاني لاتينية ناجحة",
   "Wie nutzt du dieses Gerät?": "كيف تستخدم هذا الجهاز؟",
   "Nur Musik und Spieler zeigen": "عرض الموسيقى واللاعبين فقط",

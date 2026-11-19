@@ -234,6 +234,7 @@
     [/kanada|canada/i, "l", ["#d52b1e", "#fff", "#fff", "#d52b1e"]], [/nordeuropa|northern europe|nordic/i, "nord", ["#006aa7", "#fecc00"]], [/mitteleuropa|central europe/i, "eu", ["#003399", "#ffcc00"]],
     [/brasil|brazil|mpb/i, "br", ["#009c3b", "#ffdf00", "#002776"]],
     [/brit|großbritannien|united kingdom|\buk\b/i, "uk", ["#012169", "#fff", "#c8102e"]],
+    [/\bus\b|\busa\b|amerika|america|united states/i, "us", ["#b22234", "#fff", "#3c3b6e"]],
   ];
   // Latino ohne Land: schräge Streifen in Pink, Orange, Gelb und Türkis wie ein Sommerplakat
   const latino = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
@@ -256,6 +257,10 @@
       `<path d="M20 0V40M0 20H40" stroke="${farben[2]}" stroke-width="7"/>`;
     if (art === "br") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M20 4L37 20L20 36L3 20z" fill="${farben[1]}"/>` +
       `<circle cx="20" cy="20" r="9.5" fill="${farben[2]}"/><path d="M10.8 18.2q9-3 18.6 2.4" fill="none" stroke="#fff" stroke-width="1.6"/>`;
+    // USA: 13 Streifen, blaues Feld mit Sternenpunkten
+    if (art === "us") return Array.from({ length: 13 }, (_, i) => `<rect y="${(i * 40) / 13}" width="40" height="${40 / 13 + 0.2}" fill="${farben[i % 2]}"/>`).join("") +
+      `<rect width="18" height="${(7 * 40) / 13}" fill="${farben[2]}"/>` +
+      Array.from({ length: 12 }, (_, i) => `<circle cx="${2.5 + (i % 4) * 4.3 + (Math.floor(i / 4) % 2) * 2}" cy="${3 + Math.floor(i / 4) * 6.5}" r="0.9" fill="#fff"/>`).join("");
     if (art === "nord") return `<rect width="40" height="40" fill="${farben[0]}"/><rect x="11" width="7" height="40" fill="${farben[1]}"/><rect y="16.5" width="40" height="7" fill="${farben[1]}"/>`;
     if (art === "eu") return `<rect width="40" height="40" fill="${farben[0]}"/>` +
       Array.from({ length: 12 }, (_, i) => `<circle cx="${20 + 13 * Math.cos((i * Math.PI) / 6)}" cy="${20 + 13 * Math.sin((i * Math.PI) / 6)}" r="1.7" fill="${farben[1]}"/>`).join("");
@@ -311,6 +316,7 @@
   const KENNZEICHEN = [
     [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france|franz|french/i, "F"], [/holland|niederland|netherlands/i, "NL"],
     [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"], [/brit|großbritannien|united kingdom|\buk\b/i, "GB"],
+    [/\bus\b|\busa\b|amerika|america|united states/i, "USA"],
   ];
   // internationale Decks (kein Land, keine Region wie Nord-/Mitteleuropa) tragen „WORLD“ statt eines Länderkennzeichens
   const international = (name) => !/europa|europe|nordic/i.test(name);

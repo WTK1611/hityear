@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Ничья – решили более быстрые ответы.",
   "Britische Hits": "Британские хиты",
   "Französische Hits": "Французские хиты",
+  "US-Hits": "Американские хиты",
   "Latino Hits": "Латиноамериканские хиты",
   "Wie nutzt du dieses Gerät?": "Как ты используешь это устройство?",
   "Nur Musik und Spieler zeigen": "Только музыка и игроки",

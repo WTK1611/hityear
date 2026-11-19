@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Égalité – les réponses les plus rapides ont départagé.",
   "Britische Hits": "Tubes britanniques",
   "Französische Hits": "Tubes français",
+  "US-Hits": "Tubes américains",
   "Latino Hits": "Tubes latinos",
   "Wie nutzt du dieses Gerät?": "Comment utilises-tu cet appareil ?",
   "Nur Musik und Spieler zeigen": "Seulement musique et joueurs",

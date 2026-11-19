@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Döntetlen – a gyorsabb válaszok döntöttek.",
   "Britische Hits": "Brit slágerek",
   "Französische Hits": "Francia slágerek",
+  "US-Hits": "Amerikai slágerek",
   "Latino Hits": "Latin slágerek",
   "Wie nutzt du dieses Gerät?": "Hogyan használod ezt az eszközt?",
   "Nur Musik und Spieler zeigen": "Csak zene és játékosok",

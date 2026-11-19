@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Egalitate – au decis răspunsurile mai rapide.",
   "Britische Hits": "Hituri britanice",
   "Französische Hits": "Hituri franțuzești",
+  "US-Hits": "Hituri americane",
   "Latino Hits": "Hituri latino",
   "Wie nutzt du dieses Gerät?": "Cum folosești acest dispozitiv?",
   "Nur Musik und Spieler zeigen": "Doar muzică și jucători",

@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Gelijkspel – de snellere antwoorden gaven de doorslag.",
   "Britische Hits": "Britse hits",
   "Französische Hits": "Franse hits",
+  "US-Hits": "Amerikaanse hits",
   "Latino Hits": "Latin hits",
   "Wie nutzt du dieses Gerät?": "Hoe gebruik je dit apparaat?",
   "Nur Musik und Spieler zeigen": "Alleen muziek en spelers",

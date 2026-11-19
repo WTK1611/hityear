@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Tasapeli – nopeammat vastaukset ratkaisivat.",
   "Britische Hits": "Brittihitit",
   "Französische Hits": "Ranskalaiset hitit",
+  "US-Hits": "Amerikkalaiset hitit",
   "Latino Hits": "Latinohitit",
   "Wie nutzt du dieses Gerät?": "Miten käytät tätä laitetta?",
   "Nur Musik und Spieler zeigen": "Vain musiikki ja pelaajat",

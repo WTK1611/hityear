@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Beraberlik – daha hızlı cevaplar belirledi.",
   "Britische Hits": "İngiliz Hitleri",
   "Französische Hits": "Fransız Hitleri",
+  "US-Hits": "ABD Hitleri",
   "Latino Hits": "Latin Hitleri",
   "Wie nutzt du dieses Gerät?": "Bu cihazı nasıl kullanıyorsun?",
   "Nur Musik und Spieler zeigen": "Sadece müzik ve oyuncular",

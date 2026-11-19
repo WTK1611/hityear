@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Ισοπαλία – αποφάσισαν οι πιο γρήγορες απαντήσεις.",
   "Britische Hits": "Βρετανικές επιτυχίες",
   "Französische Hits": "Γαλλικές επιτυχίες",
+  "US-Hits": "Αμερικανικές επιτυχίες",
   "Latino Hits": "Λάτιν επιτυχίες",
   "Wie nutzt du dieses Gerät?": "Πώς χρησιμοποιείς αυτή τη συσκευή;",
   "Nur Musik und Spieler zeigen": "Μόνο μουσική και παίκτες",

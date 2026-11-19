@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Uavgjort – de raskeste svarene avgjorde.",
   "Britische Hits": "Britiske hits",
   "Französische Hits": "Franske hits",
+  "US-Hits": "Amerikanske hits",
   "Latino Hits": "Latino-hits",
   "Wie nutzt du dieses Gerät?": "Hvordan bruker du denne enheten?",
   "Nur Musik und Spieler zeigen": "Bare musikk og spillere",

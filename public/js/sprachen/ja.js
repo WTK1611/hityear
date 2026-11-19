@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "同点 – 回答の速さで決着しました。",
   "Britische Hits": "UKヒット",
   "Französische Hits": "フレンチ・ヒット",
+  "US-Hits": "USヒット",
   "Latino Hits": "ラテン・ヒット",
   "Wie nutzt du dieses Gerät?": "この端末の使い方は？",
   "Nur Musik und Spieler zeigen": "音楽とプレイヤーだけ表示",

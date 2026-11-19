@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Barazim – vendosën përgjigjet më të shpejta.",
   "Britische Hits": "Hite britanike",
   "Französische Hits": "Hite franceze",
+  "US-Hits": "Hite amerikane",
   "Latino Hits": "Hite latine",
   "Wie nutzt du dieses Gerät?": "Si e përdor këtë pajisje?",
   "Nur Musik und Spieler zeigen": "Vetëm muzikë dhe lojtarë",

@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Empat: han decidit les respostes més ràpides.",
   "Britische Hits": "Èxits britànics",
   "Französische Hits": "Èxits francesos",
+  "US-Hits": "Èxits dels EUA",
   "Latino Hits": "Èxits llatins",
   "Wie nutzt du dieses Gerät?": "Com fas servir aquest dispositiu?",
   "Nur Musik und Spieler zeigen": "Només música i jugadors",

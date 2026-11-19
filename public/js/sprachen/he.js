@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "תיקו – התשובות המהירות יותר הכריעו.",
   "Britische Hits": "להיטים בריטיים",
   "Französische Hits": "להיטים צרפתיים",
+  "US-Hits": "להיטים אמריקאיים",
   "Latino Hits": "להיטים לטיניים",
   "Wie nutzt du dieses Gerät?": "איך אתה משתמש במכשיר הזה?",
   "Nur Musik und Spieler zeigen": "רק מוזיקה ושחקנים",

@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Remíza – rozhodli rýchlejšie odpovede.",
   "Britische Hits": "Britské hity",
   "Französische Hits": "Francúzske hity",
+  "US-Hits": "Americké hity",
   "Latino Hits": "Latino hity",
   "Wie nutzt du dieses Gerät?": "Ako používaš toto zariadenie?",
   "Nur Musik und Spieler zeigen": "Len hudba a hráči",

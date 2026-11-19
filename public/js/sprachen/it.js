@@ -517,6 +517,7 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Parità – hanno deciso le risposte più veloci.",
   "Britische Hits": "Hit britanniche",
   "Französische Hits": "Hit francesi",
+  "US-Hits": "Hit americane",
   "Latino Hits": "Hit latine",
   "Wie nutzt du dieses Gerät?": "Come usi questo dispositivo?",
   "Nur Musik und Spieler zeigen": "Solo musica e giocatori",
