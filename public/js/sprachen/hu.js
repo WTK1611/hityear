@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kártya · {1} % találat · ⭐ {2} pont · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Döntetlen – a gyorsabb válaszok döntöttek.",
   "Britische Hits": "Brit slágerek",
+  "Französische Hits": "Francia slágerek",
   "Latino Hits": "Latin slágerek",
   "Wie nutzt du dieses Gerät?": "Hogyan használod ezt az eszközt?",
   "Nur Musik und Spieler zeigen": "Csak zene és játékosok",

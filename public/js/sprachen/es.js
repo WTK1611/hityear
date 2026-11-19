@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cartas · {1} % de aciertos · ⭐ {2} puntos · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Empate: han decidido las respuestas más rápidas.",
   "Britische Hits": "Éxitos británicos",
+  "Französische Hits": "Éxitos franceses",
   "Latino Hits": "Éxitos latinos",
   "Wie nutzt du dieses Gerät?": "¿Cómo usas este dispositivo?",
   "Nur Musik und Spieler zeigen": "Solo música y jugadores",

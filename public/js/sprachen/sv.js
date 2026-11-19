@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kort · {1} % träffar · ⭐ {2} poäng · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Oavgjort – de snabbare svaren avgjorde.",
   "Britische Hits": "Brittiska hits",
+  "Französische Hits": "Franska hits",
   "Latino Hits": "Latinohits",
   "Wie nutzt du dieses Gerät?": "Hur använder du den här enheten?",
   "Nur Musik und Spieler zeigen": "Bara musik och spelare",

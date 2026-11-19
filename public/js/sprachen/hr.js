@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} karata · {1} % pogodaka · ⭐ {2} bodova · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Neriješeno – odlučili su brži odgovori.",
   "Britische Hits": "Britanski hitovi",
+  "Französische Hits": "Francuski hitovi",
   "Latino Hits": "Latino hitovi",
   "Wie nutzt du dieses Gerät?": "Kako koristiš ovaj uređaj?",
   "Nur Musik und Spieler zeigen": "Samo glazba i igrači",

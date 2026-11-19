@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kaarten · {1} % raak · ⭐ {2} punten · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Gelijkspel – de snellere antwoorden gaven de doorslag.",
   "Britische Hits": "Britse hits",
+  "Französische Hits": "Franse hits",
   "Latino Hits": "Latin hits",
   "Wie nutzt du dieses Gerät?": "Hoe gebruik je dit apparaat?",
   "Nur Musik und Spieler zeigen": "Alleen muziek en spelers",

@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} κάρτες · {1} % επιτυχίες · ⭐ {2} πόντοι · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Ισοπαλία – αποφάσισαν οι πιο γρήγορες απαντήσεις.",
   "Britische Hits": "Βρετανικές επιτυχίες",
+  "Französische Hits": "Γαλλικές επιτυχίες",
   "Latino Hits": "Λάτιν επιτυχίες",
   "Wie nutzt du dieses Gerät?": "Πώς χρησιμοποιείς αυτή τη συσκευή;",
   "Nur Musik und Spieler zeigen": "Μόνο μουσική και παίκτες",

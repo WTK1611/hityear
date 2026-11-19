@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} קלפים · {1} % פגיעות · ⭐ {2} נקודות · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "תיקו – התשובות המהירות יותר הכריעו.",
   "Britische Hits": "להיטים בריטיים",
+  "Französische Hits": "להיטים צרפתיים",
   "Latino Hits": "להיטים לטיניים",
   "Wie nutzt du dieses Gerät?": "איך אתה משתמש במכשיר הזה?",
   "Nur Musik und Spieler zeigen": "רק מוזיקה ושחקנים",

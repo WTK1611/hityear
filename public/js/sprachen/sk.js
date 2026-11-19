@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "Karty: {0} · zásahy: {1} % · ⭐ body: {2} · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Remíza – rozhodli rýchlejšie odpovede.",
   "Britische Hits": "Britské hity",
+  "Französische Hits": "Francúzske hity",
   "Latino Hits": "Latino hity",
   "Wie nutzt du dieses Gerät?": "Ako používaš toto zariadenie?",
   "Nur Musik und Spieler zeigen": "Len hudba a hráči",

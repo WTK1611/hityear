@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cartes · {1} % de réussite · ⭐ {2} points · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Égalité – les réponses les plus rapides ont départagé.",
   "Britische Hits": "Tubes britanniques",
+  "Französische Hits": "Tubes français",
   "Latino Hits": "Tubes latinos",
   "Wie nutzt du dieses Gerät?": "Comment utilises-tu cet appareil ?",
   "Nur Musik und Spieler zeigen": "Seulement musique et joueurs",

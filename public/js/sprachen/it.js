@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} carte · {1} % di centri · ⭐ {2} punti · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Parità – hanno deciso le risposte più veloci.",
   "Britische Hits": "Hit britanniche",
+  "Französische Hits": "Hit francesi",
   "Latino Hits": "Hit latine",
   "Wie nutzt du dieses Gerät?": "Come usi questo dispositivo?",
   "Nur Musik und Spieler zeigen": "Solo musica e giocatori",

@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} cărți · {1} % reușite · ⭐ {2} puncte · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Egalitate – au decis răspunsurile mai rapide.",
   "Britische Hits": "Hituri britanice",
+  "Französische Hits": "Hituri franțuzești",
   "Latino Hits": "Hituri latino",
   "Wie nutzt du dieses Gerät?": "Cum folosești acest dispozitiv?",
   "Nur Musik und Spieler zeigen": "Doar muzică și jucători",

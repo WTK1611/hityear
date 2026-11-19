@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} korttia · {1} % osumia · ⭐ {2} pistettä · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Tasapeli – nopeammat vastaukset ratkaisivat.",
   "Britische Hits": "Brittihitit",
+  "Französische Hits": "Ranskalaiset hitit",
   "Latino Hits": "Latinohitit",
   "Wie nutzt du dieses Gerät?": "Miten käytät tätä laitetta?",
   "Nur Musik und Spieler zeigen": "Vain musiikki ja pelaajat",

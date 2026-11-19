@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0}枚 · 的中率{1}% · ⭐ {2}点 · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "同点 – 回答の速さで決着しました。",
   "Britische Hits": "UKヒット",
+  "Französische Hits": "フレンチ・ヒット",
   "Latino Hits": "ラテン・ヒット",
   "Wie nutzt du dieses Gerät?": "この端末の使い方は？",
   "Nur Musik und Spieler zeigen": "音楽とプレイヤーだけ表示",

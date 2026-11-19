@@ -229,7 +229,7 @@
     `<circle cx="${cx}" cy="${cy}" r="${r * 0.34}" fill="${etikett}"/><circle cx="${cx}" cy="${cy}" r="1.3" fill="#160c26"/></g>`;
   // Flaggen im 40×40-Feld der Hülle (Streifen quer „q“ oder längs „l“)
   const FLAGGEN = [
-    [/deutsch|german/i, "q", ["#000", "#dd0000", "#ffce00"]], [/frankreich|france/i, "l", ["#0055a4", "#fff", "#ef4135"]],
+    [/deutsch|german/i, "q", ["#000", "#dd0000", "#ffce00"]], [/frankreich|france|franz|french/i, "l", ["#0055a4", "#fff", "#ef4135"]],
     [/holland|niederland|netherlands/i, "q", ["#ae1c28", "#fff", "#21468b"]], [/ungarn|hungar/i, "q", ["#ce2939", "#fff", "#477050"]],
     [/kanada|canada/i, "l", ["#d52b1e", "#fff", "#fff", "#d52b1e"]], [/nordeuropa|northern europe|nordic/i, "nord", ["#006aa7", "#fecc00"]], [/mitteleuropa|central europe/i, "eu", ["#003399", "#ffcc00"]],
     [/brasil|brazil|mpb/i, "br", ["#009c3b", "#ffdf00", "#002776"]],
@@ -309,7 +309,7 @@
   };
   // Länderkennzeichen je Deck (Schlager und Jahrescharts sind deutsch); Mittel-/Nordeuropa ohne
   const KENNZEICHEN = [
-    [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france/i, "F"], [/holland|niederland|netherlands/i, "NL"],
+    [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france|franz|french/i, "F"], [/holland|niederland|netherlands/i, "NL"],
     [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"], [/brit|großbritannien|united kingdom|\buk\b/i, "GB"],
   ];
   // internationale Decks (kein Land, keine Region wie Nord-/Mitteleuropa) tragen „WORLD“ statt eines Länderkennzeichens

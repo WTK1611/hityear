@@ -516,6 +516,7 @@ uebersetzungLaden({
   "{0} Karten · {1} % Treffer · ⭐ {2} Punkte · ⏱ Ø {3} s": "{0} kart · %{1} isabet · ⭐ {2} puan · ⏱ Ø {3} s",
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Beraberlik – daha hızlı cevaplar belirledi.",
   "Britische Hits": "İngiliz Hitleri",
+  "Französische Hits": "Fransız Hitleri",
   "Latino Hits": "Latin Hitleri",
   "Wie nutzt du dieses Gerät?": "Bu cihazı nasıl kullanıyorsun?",
   "Nur Musik und Spieler zeigen": "Sadece müzik ve oyuncular",
