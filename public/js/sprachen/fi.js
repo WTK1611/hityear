@@ -519,6 +519,8 @@ uebersetzungLaden({
   "Französische Hits": "Ranskalaiset hitit",
   "US-Hits": "Amerikkalaiset hitit",
   "Latino Hits": "Latinohitit",
+  "Deutsche Jahrescharts 70er bis heute": "Saksan vuoden listat 70-luvulta tähän päivään",
+  "HitYear - Schlager 50er bis heute": "HitYear - Schlager 50-luvulta tähän päivään",
   "Wie nutzt du dieses Gerät?": "Miten käytät tätä laitetta?",
   "Nur Musik und Spieler zeigen": "Vain musiikki ja pelaajat",
   "TV, Bildschirm im Auto": "Televisio, auton näyttö",

@@ -519,6 +519,8 @@ uebersetzungLaden({
   "Französische Hits": "French Hits",
   "US-Hits": "US Hits",
   "Latino Hits": "Latino Hits",
+  "Deutsche Jahrescharts 70er bis heute": "German Year-End Charts 70s to Today",
+  "HitYear - Schlager 50er bis heute": "HitYear - Schlager 50s to Today",
   "Wie nutzt du dieses Gerät?": "How are you using this device?",
   "Nur Musik und Spieler zeigen": "Show music and players only",
   "TV, Bildschirm im Auto": "TV, screen in the car",

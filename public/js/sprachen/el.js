@@ -519,6 +519,8 @@ uebersetzungLaden({
   "Französische Hits": "Γαλλικές επιτυχίες",
   "US-Hits": "Αμερικανικές επιτυχίες",
   "Latino Hits": "Λάτιν επιτυχίες",
+  "Deutsche Jahrescharts 70er bis heute": "Γερμανικά ετήσια charts από τα 70s ως σήμερα",
+  "HitYear - Schlager 50er bis heute": "HitYear - Schlager από τα 50s ως σήμερα",
   "Wie nutzt du dieses Gerät?": "Πώς χρησιμοποιείς αυτή τη συσκευή;",
   "Nur Musik und Spieler zeigen": "Μόνο μουσική και παίκτες",
   "TV, Bildschirm im Auto": "Τηλεόραση, οθόνη στο αυτοκίνητο",

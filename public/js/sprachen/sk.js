@@ -519,6 +519,8 @@ uebersetzungLaden({
   "Französische Hits": "Francúzske hity",
   "US-Hits": "Americké hity",
   "Latino Hits": "Latino hity",
+  "Deutsche Jahrescharts 70er bis heute": "Nemecké ročné rebríčky od 70. rokov po dnešok",
+  "HitYear - Schlager 50er bis heute": "HitYear - Schlager od 50. rokov po dnešok",
   "Wie nutzt du dieses Gerät?": "Ako používaš toto zariadenie?",
   "Nur Musik und Spieler zeigen": "Len hudba a hráči",
   "TV, Bildschirm im Auto": "Televízor, obrazovka v aute",

@@ -519,6 +519,8 @@ uebersetzungLaden({
   "Französische Hits": "Fransız Hitleri",
   "US-Hits": "ABD Hitleri",
   "Latino Hits": "Latin Hitleri",
+  "Deutsche Jahrescharts 70er bis heute": "70'lerden Bugüne Alman Yıl Sonu Listeleri",
+  "HitYear - Schlager 50er bis heute": "HitYear - 50'lerden Bugüne Schlager",
   "Wie nutzt du dieses Gerät?": "Bu cihazı nasıl kullanıyorsun?",
   "Nur Musik und Spieler zeigen": "Sadece müzik ve oyuncular",
   "TV, Bildschirm im Auto": "TV, araç ekranı",

@@ -519,6 +519,8 @@ uebersetzungLaden({
   "Französische Hits": "Hite franceze",
   "US-Hits": "Hite amerikane",
   "Latino Hits": "Hite latine",
+  "Deutsche Jahrescharts 70er bis heute": "Listat vjetore gjermane nga vitet '70 deri sot",
+  "HitYear - Schlager 50er bis heute": "HitYear - Schlager nga vitet '50 deri sot",
   "Wie nutzt du dieses Gerät?": "Si e përdor këtë pajisje?",
   "Nur Musik und Spieler zeigen": "Vetëm muzikë dhe lojtarë",
   "TV, Bildschirm im Auto": "Televizor, ekrani në makinë",

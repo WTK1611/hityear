@@ -388,19 +388,28 @@
   };
   // Titel in Zeilen zu höchstens 12 Zeichen, höchstens vier Zeilen (schon übersetzt, damit der Umbruch passt)
   function titelZeilen(text) {
-    const zeilen = [];
-    for (const wort of t(text).split(/\s+/)) {
-      const letzte = zeilen.at(-1);
-      if (letzte && (letzte + " " + wort).length <= 12) zeilen[zeilen.length - 1] = letzte + " " + wort;
-      else zeilen.push(wort);
-    }
+    const umbrechen = (breite) => {
+      const zeilen = [];
+      for (const wort of t(text).split(/\s+/)) {
+        const letzte = zeilen.at(-1);
+        if (letzte && (letzte + " " + wort).length <= breite) zeilen[zeilen.length - 1] = letzte + " " + wort;
+        else zeilen.push(wort);
+      }
+      return zeilen;
+    };
+    // bis drei Zeilen in voller Größe; längere Namen („Deutsche Jahrescharts 70er bis heute“, in manchen Sprachen
+    // noch länger) kleiner und enger, damit sie im selben Raum bleiben und nicht in die Plattenhülle laufen
+    let zeilen = umbrechen(12);
+    const klein = zeilen.length > 3;
+    if (klein) zeilen = umbrechen(16);
     if (zeilen.length > 4) zeilen.splice(3, zeilen.length, zeilen[3] + " …");
     const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
     titel.setAttribute("class", "deck-titel");
+    if (klein) titel.style.fontSize = "8.4px";
     zeilen.forEach((z, i) => {
       const zeile = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
       zeile.setAttribute("x", "8");
-      zeile.setAttribute("y", String(22 + i * 12));
+      zeile.setAttribute("y", String(klein ? 19 + i * 9.4 : 22 + i * 12));
       zeile.textContent = z;
       titel.append(zeile);
     });

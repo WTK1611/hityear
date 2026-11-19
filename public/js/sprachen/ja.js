@@ -519,6 +519,8 @@ uebersetzungLaden({
   "Französische Hits": "フレンチ・ヒット",
   "US-Hits": "USヒット",
   "Latino Hits": "ラテン・ヒット",
+  "Deutsche Jahrescharts 70er bis heute": "ドイツ年間チャート 70年代から現在まで",
+  "HitYear - Schlager 50er bis heute": "HitYear - シュラーガー 50年代から現在まで",
   "Wie nutzt du dieses Gerät?": "この端末の使い方は？",
   "Nur Musik und Spieler zeigen": "音楽とプレイヤーだけ表示",
   "TV, Bildschirm im Auto": "テレビ、車の画面",

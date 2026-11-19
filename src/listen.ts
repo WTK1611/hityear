@@ -254,7 +254,7 @@ export function listenLaden(): number {
   }
   const jahresHits = jahresHitsLesen();
   if (jahresHits.eintraege.length) {
-    const name = "Jahrescharts 70er bis heute";
+    const name = "Deutsche Jahrescharts 70er bis heute";
     listen.set(JAHRES_HITS_ID, { id: JAHRES_HITS_ID, name, quelle: "datei", eintraege: jahresHits.eintraege });
   }
   dbListenLaden();
