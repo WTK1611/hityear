@@ -229,11 +229,12 @@
     `<circle cx="${cx}" cy="${cy}" r="${r * 0.34}" fill="${etikett}"/><circle cx="${cx}" cy="${cy}" r="1.3" fill="#160c26"/></g>`;
   // Flaggen im 40×40-Feld der Hülle (Streifen quer „q“ oder längs „l“)
   const FLAGGEN = [
-    [/deutsch|german/i, "q", ["#000", "#dd0000", "#ffce00"]], [/frankreich|france/i, "l", ["#0055a4", "#fff", "#ef4135"]],
+    [/deutsch|german/i, "q", ["#000", "#dd0000", "#ffce00"]], [/frankreich|france|franz|french/i, "l", ["#0055a4", "#fff", "#ef4135"]],
     [/holland|niederland|netherlands/i, "q", ["#ae1c28", "#fff", "#21468b"]], [/ungarn|hungar/i, "q", ["#ce2939", "#fff", "#477050"]],
     [/kanada|canada/i, "l", ["#d52b1e", "#fff", "#fff", "#d52b1e"]], [/nordeuropa|northern europe|nordic/i, "nord", ["#006aa7", "#fecc00"]], [/mitteleuropa|central europe/i, "eu", ["#003399", "#ffcc00"]],
     [/brasil|brazil|mpb/i, "br", ["#009c3b", "#ffdf00", "#002776"]],
     [/brit|großbritannien|united kingdom|\buk\b/i, "uk", ["#012169", "#fff", "#c8102e"]],
+    [/\bus\b|\busa\b|amerika|america|united states/i, "us", ["#b22234", "#fff", "#3c3b6e"]],
   ];
   // Latino ohne Land: schräge Streifen in Pink, Orange, Gelb und Türkis wie ein Sommerplakat
   const latino = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
@@ -256,6 +257,10 @@
       `<path d="M20 0V40M0 20H40" stroke="${farben[2]}" stroke-width="7"/>`;
     if (art === "br") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M20 4L37 20L20 36L3 20z" fill="${farben[1]}"/>` +
       `<circle cx="20" cy="20" r="9.5" fill="${farben[2]}"/><path d="M10.8 18.2q9-3 18.6 2.4" fill="none" stroke="#fff" stroke-width="1.6"/>`;
+    // USA: 13 Streifen, blaues Feld mit Sternenpunkten
+    if (art === "us") return Array.from({ length: 13 }, (_, i) => `<rect y="${(i * 40) / 13}" width="40" height="${40 / 13 + 0.2}" fill="${farben[i % 2]}"/>`).join("") +
+      `<rect width="18" height="${(7 * 40) / 13}" fill="${farben[2]}"/>` +
+      Array.from({ length: 12 }, (_, i) => `<circle cx="${2.5 + (i % 4) * 4.3 + (Math.floor(i / 4) % 2) * 2}" cy="${3 + Math.floor(i / 4) * 6.5}" r="0.9" fill="#fff"/>`).join("");
     if (art === "nord") return `<rect width="40" height="40" fill="${farben[0]}"/><rect x="11" width="7" height="40" fill="${farben[1]}"/><rect y="16.5" width="40" height="7" fill="${farben[1]}"/>`;
     if (art === "eu") return `<rect width="40" height="40" fill="${farben[0]}"/>` +
       Array.from({ length: 12 }, (_, i) => `<circle cx="${20 + 13 * Math.cos((i * Math.PI) / 6)}" cy="${20 + 13 * Math.sin((i * Math.PI) / 6)}" r="1.7" fill="${farben[1]}"/>`).join("");
@@ -309,8 +314,9 @@
   };
   // Länderkennzeichen je Deck (Schlager und Jahrescharts sind deutsch); Mittel-/Nordeuropa ohne
   const KENNZEICHEN = [
-    [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france/i, "F"], [/holland|niederland|netherlands/i, "NL"],
+    [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france|franz|french/i, "F"], [/holland|niederland|netherlands/i, "NL"],
     [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"], [/brit|großbritannien|united kingdom|\buk\b/i, "GB"],
+    [/\bus\b|\busa\b|amerika|america|united states/i, "USA"],
   ];
   // internationale Decks (kein Land, keine Region wie Nord-/Mitteleuropa) tragen „WORLD“ statt eines Länderkennzeichens
   const international = (name) => !/europa|europe|nordic/i.test(name);
@@ -382,19 +388,28 @@
   };
   // Titel in Zeilen zu höchstens 12 Zeichen, höchstens vier Zeilen (schon übersetzt, damit der Umbruch passt)
   function titelZeilen(text) {
-    const zeilen = [];
-    for (const wort of t(text).split(/\s+/)) {
-      const letzte = zeilen.at(-1);
-      if (letzte && (letzte + " " + wort).length <= 12) zeilen[zeilen.length - 1] = letzte + " " + wort;
-      else zeilen.push(wort);
-    }
+    const umbrechen = (breite) => {
+      const zeilen = [];
+      for (const wort of t(text).split(/\s+/)) {
+        const letzte = zeilen.at(-1);
+        if (letzte && (letzte + " " + wort).length <= breite) zeilen[zeilen.length - 1] = letzte + " " + wort;
+        else zeilen.push(wort);
+      }
+      return zeilen;
+    };
+    // bis drei Zeilen in voller Größe; längere Namen („Deutsche Jahrescharts 70er bis heute“, in manchen Sprachen
+    // noch länger) kleiner und enger, damit sie im selben Raum bleiben und nicht in die Plattenhülle laufen
+    let zeilen = umbrechen(12);
+    const klein = zeilen.length > 3;
+    if (klein) zeilen = umbrechen(16);
     if (zeilen.length > 4) zeilen.splice(3, zeilen.length, zeilen[3] + " …");
     const titel = document.createElementNS("http://www.w3.org/2000/svg", "text");
     titel.setAttribute("class", "deck-titel");
+    if (klein) titel.style.fontSize = "8.4px";
     zeilen.forEach((z, i) => {
       const zeile = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
       zeile.setAttribute("x", "8");
-      zeile.setAttribute("y", String(22 + i * 12));
+      zeile.setAttribute("y", String(klein ? 19 + i * 9.4 : 22 + i * 12));
       zeile.textContent = z;
       titel.append(zeile);
     });
