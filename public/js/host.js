@@ -299,20 +299,26 @@
       // Schlager: etwas Glitzer um die Hülle
       (/schlager|r&b|rnb|soul/i.test(name) ? glitzer(38, 52, 0.9) + glitzer(92, 42, 0.7) : "") +
       // Länder-Decks: oben rechts das Länderkennzeichen wie am Auto
-      kennzeichen(KENNZEICHEN.find(([muster]) => muster.test(name))?.[1]);
+      kennzeichen(KENNZEICHEN.find(([muster]) => muster.test(name))?.[1] ?? (international(name) ? "WORLD" : null));
   };
   // Länderkennzeichen je Deck (Schlager und Jahrescharts sind deutsch); Mittel-/Nordeuropa ohne
   const KENNZEICHEN = [
     [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france/i, "F"], [/holland|niederland|netherlands/i, "NL"],
     [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"], [/brit|großbritannien|united kingdom|\buk\b/i, "GB"],
   ];
+  // internationale Decks (kein Land, keine Region wie Nord-/Mitteleuropa) tragen „WORLD“ statt eines Länderkennzeichens
+  const international = (name) => !/europa|europe|nordic/i.test(name);
   // klein in der Ecke, damit es auch neben langen Titelzeilen („Deutschlands“) frei steht; längere Kennzeichen
   // werden nach links breiter, der rechte Rand bleibt
   const kennzeichen = (land) => {
     if (!land) return "";
-    const rx = 5.5 + 3 * land.length, cx = 95.5 - rx, gross = land.length > 2 ? 7 : 8;
-    return `<g transform="rotate(-8 ${cx} 11)"><ellipse cx="${cx}" cy="11" rx="${rx}" ry="5.8" fill="#fff" stroke="#160c26" stroke-width="1.4"/>` +
-      `<text x="${cx}" y="${11 + gross * 0.36}" font-size="${gross}" font-weight="900" text-anchor="middle" fill="#160c26" font-family="Nunito, system-ui, sans-serif">${land}</text></g>`;
+    // lange Kennzeichen („WORLD“) etwas kleiner geschrieben, damit sie den Titel nicht verdecken
+    const lang = land.length > 3;
+    const rx = lang ? 4 + 2.6 * land.length : 5.5 + 3 * land.length, cx = 95.5 - rx, gross = lang ? 6 : land.length > 2 ? 7 : 8;
+    // lange sitzen höher und flacher, damit auch ein langer Titel („Weihnachtslieder“) frei bleibt
+    const cy = lang ? 7.5 : 11, ry = lang ? 4.8 : 5.8;
+    return `<g transform="rotate(-${lang ? 5 : 8} ${cx} ${cy})"><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#fff" stroke="#160c26" stroke-width="1.4"/>` +
+      `<text x="${cx}" y="${cy + gross * 0.36}" font-size="${gross}" font-weight="900" text-anchor="middle" fill="#160c26" font-family="Nunito, system-ui, sans-serif">${land}</text></g>`;
   };
   // „Alle Songs“: ein ganzer Stapel Schallplatten in Regenbogenfarben statt einer Hülle
   const plattenStapel = () => platteSvg(52, 72, 15, "#3dd8ff") + platteSvg(64, 60, 16, "#ffd93d") + platteSvg(77, 68, 19, "#ff3d9a", "platte im-stapel");
@@ -410,7 +416,8 @@
       blatt(60, 46, -20) + blatt(80, 44, 30) +
       `<circle cx="69" cy="45" r="1.9" fill="#ef3b4f" stroke="#160c26" stroke-width=".6"/><circle cx="73" cy="44" r="1.9" fill="#ef3b4f" stroke="#160c26" stroke-width=".6"/>` +
       // Stern oben rechts
-      `<path transform="translate(88 30) scale(.55)" d="M0-12l3.2 8.8 8.8 3.2-8.8 3.2L0 12l-3.2-8.8L-12 0l8.8-3.2z" fill="#ffd93d"/>`;
+      `<path transform="translate(88 30) scale(.55)" d="M0-12l3.2 8.8 8.8 3.2-8.8 3.2L0 12l-3.2-8.8L-12 0l8.8-3.2z" fill="#ffd93d"/>` +
+      kennzeichen("WORLD");
   }
   function deckCover(wert, name, nr) {
     const h = farbe(nr);
