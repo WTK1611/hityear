@@ -227,7 +227,11 @@
     [/holland|niederland|netherlands/i, "q", ["#ae1c28", "#fff", "#21468b"]], [/ungarn|hungar/i, "q", ["#ce2939", "#fff", "#477050"]],
     [/kanada|canada/i, "l", ["#d52b1e", "#fff", "#fff", "#d52b1e"]], [/nordeuropa|northern europe|nordic/i, "nord", ["#006aa7", "#fecc00"]], [/mitteleuropa|central europe/i, "eu", ["#003399", "#ffcc00"]],
     [/brasil|brazil|mpb/i, "br", ["#009c3b", "#ffdf00", "#002776"]],
+    [/brit|großbritannien|united kingdom|\buk\b/i, "uk", ["#012169", "#fff", "#c8102e"]],
   ];
+  // Latino ohne Land: schräge Streifen in Pink, Orange, Gelb und Türkis wie ein Sommerplakat
+  const latino = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
+    ["#ff8a3d", "#ffd93d", "#2ec4b6", "#ff3d9a", "#ff8a3d"].map((c, i) => `<path d="M${i * 16 - 24} 40L${i * 16 - 4} 0h8L${i * 16 - 16} 40z" fill="${c}"/>`).join("");
   // Schlager ohne Land: Strahlenkranz in Pink und Gold wie in den Hitparaden der 70er
   const strahlenkranz = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
     Array.from({ length: 12 }, (_, i) => {
@@ -239,8 +243,11 @@
     [19, 14.5, 10].map((r, i) => `<circle cx="20" cy="20" r="${r}" fill="none" stroke="${i % 2 ? "#ff3d9a" : "#b04bd6"}" stroke-width="2.2"/>`).join("");
   function flagge(name) {
     const f = FLAGGEN.find(([muster]) => muster.test(name));
-    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : "";
+    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : /latin/i.test(name) ? latino() : "";
     const [, art, farben] = f;
+    if (art === "uk") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M0 0L40 40M40 0L0 40" stroke="${farben[1]}" stroke-width="8"/>` +
+      `<path d="M0 0L40 40M40 0L0 40" stroke="${farben[2]}" stroke-width="2.6"/><path d="M20 0V40M0 20H40" stroke="${farben[1]}" stroke-width="12"/>` +
+      `<path d="M20 0V40M0 20H40" stroke="${farben[2]}" stroke-width="7"/>`;
     if (art === "br") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M20 4L37 20L20 36L3 20z" fill="${farben[1]}"/>` +
       `<circle cx="20" cy="20" r="9.5" fill="${farben[2]}"/><path d="M10.8 18.2q9-3 18.6 2.4" fill="none" stroke="#fff" stroke-width="1.6"/>`;
     if (art === "nord") return `<rect width="40" height="40" fill="${farben[0]}"/><rect x="11" width="7" height="40" fill="${farben[1]}"/><rect y="16.5" width="40" height="7" fill="${farben[1]}"/>`;
@@ -267,6 +274,10 @@
     [/mpb|bossa|brasil|brazil/i, ((teile) => `<g transform="rotate(38 12 12)"><g stroke-width="2.6" fill="#160c26">${teile}</g><g stroke="none">${teile}</g>` +
       `<g fill="#160c26" stroke="none"><circle cx="12" cy="13.4" r="1.9"/><rect x="10" y="18.4" width="4" height="1.3" rx=".5"/></g></g>`)(
       `<circle cx="12" cy="17.4" r="6"/><circle cx="12" cy="10.8" r="4.4"/><rect x="10.9" y="-0.5" width="2.2" height="10" rx=".8"/><rect x="10" y="-2" width="4" height="3.4" rx="1"/>`)],
+    // Latino: zwei Rasseln (Maracas) über Kreuz
+    [/latin/i, `<g transform="rotate(-28 12 12)"><ellipse cx="8" cy="7" rx="4.6" ry="5.6"/><rect x="7" y="12" width="2" height="10" rx="1"/></g>` +
+      `<g transform="rotate(28 12 12)"><ellipse cx="16" cy="7" rx="4.6" ry="5.6"/><rect x="15" y="12" width="2" height="10" rx="1"/></g>` +
+      `<g fill="#ff3d9a" stroke="none"><circle cx="5.4" cy="8.8" r="1.1"/><circle cx="18.6" cy="8.8" r="1.1"/></g>`],
     // Weihnachten: Tannenbaum mit gelbem Stern
     [/weihnacht|christmas|xmas/i, `<path d="M12 3.5l5.5 6.5h-3l5 6h-3.5l4 5.5H4l4-5.5H4.5l5-6h-3z"/><rect x="10.4" y="21.5" width="3.2" height="2.5"/>` +
       `<path d="M12 .2l1 2.1 2.3.3-1.7 1.6.4 2.3L12 5.4l-2 1.1.4-2.3-1.7-1.6 2.3-.3z" fill="#ffd93d"/>`],
@@ -293,7 +304,7 @@
   // Länderkennzeichen je Deck (Schlager und Jahrescharts sind deutsch); Mittel-/Nordeuropa ohne
   const KENNZEICHEN = [
     [/deutsch|german|schlager|jahrescharts/i, "D"], [/frankreich|france/i, "F"], [/holland|niederland|netherlands/i, "NL"],
-    [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"],
+    [/ungarn|hungar/i, "H"], [/kanada|canada/i, "CDN"], [/brasil|brazil|mpb/i, "BR"], [/brit|großbritannien|united kingdom|\buk\b/i, "GB"],
   ];
   // klein in der Ecke, damit es auch neben langen Titelzeilen („Deutschlands“) frei steht; längere Kennzeichen
   // werden nach links breiter, der rechte Rand bleibt
