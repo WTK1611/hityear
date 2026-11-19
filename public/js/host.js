@@ -239,6 +239,10 @@
   // Latino ohne Land: schräge Streifen in Pink, Orange, Gelb und Türkis wie ein Sommerplakat
   const latino = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
     ["#ff8a3d", "#ffd93d", "#2ec4b6", "#ff3d9a", "#ff8a3d"].map((c, i) => `<path d="M${i * 16 - 24} 40L${i * 16 - 4} 0h8L${i * 16 - 16} 40z" fill="${c}"/>`).join("");
+  // Sommer: Sonnenuntergang über dem Meer – Himmel in Pink und Orange, gelbe Sonne, türkise Wellen
+  const sommer = () => `<rect width="40" height="40" fill="#ff8a3d"/><rect width="40" height="14" fill="#ff3d9a"/><rect y="14" width="40" height="8" fill="#ff6a5c"/>` +
+    `<circle cx="20" cy="27" r="9" fill="#ffd93d"/><rect y="27" width="40" height="13" fill="#2ec4b6"/>` +
+    `<path d="M0 31q5-2.5 10 0t10 0 10 0 10 0M0 36q5-2.5 10 0t10 0 10 0 10 0" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.4"/>`;
   // Schlager ohne Land: Strahlenkranz in Pink und Gold wie in den Hitparaden der 70er
   const strahlenkranz = () => `<rect width="40" height="40" fill="#ff3d9a"/>` +
     Array.from({ length: 12 }, (_, i) => {
@@ -250,7 +254,7 @@
     [19, 14.5, 10].map((r, i) => `<circle cx="20" cy="20" r="${r}" fill="none" stroke="${i % 2 ? "#ff3d9a" : "#b04bd6"}" stroke-width="2.2"/>`).join("");
   function flagge(name) {
     const f = FLAGGEN.find(([muster]) => muster.test(name));
-    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : /latin/i.test(name) ? latino() : "";
+    if (!f) return /schlager/i.test(name) ? strahlenkranz() : /r&b|rnb|soul/i.test(name) ? samt() : /latin/i.test(name) ? latino() : /sommer|summer/i.test(name) ? sommer() : "";
     const [, art, farben] = f;
     if (art === "uk") return `<rect width="40" height="40" fill="${farben[0]}"/><path d="M0 0L40 40M40 0L0 40" stroke="${farben[1]}" stroke-width="8"/>` +
       `<path d="M0 0L40 40M40 0L0 40" stroke="${farben[2]}" stroke-width="2.6"/><path d="M20 0V40M0 20H40" stroke="${farben[1]}" stroke-width="12"/>` +
