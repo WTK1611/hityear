@@ -109,13 +109,15 @@
   // Frage „Wann endet eine Runde?“ in der Einrichtung: ausgeblendet, Standard „30 s nach ganzer Hörprobe“.
   // Zum Wiedereinblenden auf true setzen – Kacheln, Texte und Bilder sind unverändert vorhanden.
   const RUNDENENDE_FRAGE = false;
+  // Frage „Wer ist dran?“: ausgeblendet, es spielen immer alle gleichzeitig (Modus „alle“). Zum Wiedereinblenden auf true.
+  const MODUS_FRAGE = false;
   function einstellungenLesen() {
     return {
       zielKarten: Number($("#ziel").value),
       wiedergabe: $("#wiedergabe").value,
       zeitlimit: true,
       nichtErraten: "offen", // keine Frage mehr im Setup: Lösung zeigen, Song kommt später nochmal
-      modus: $("#modus").value,
+      modus: MODUS_FRAGE ? $("#modus").value : "alle",
       // ohne die Frage „Wann endet eine Runde?“ immer 30 s (ganze Hörprobe), auch wenn ein altes Spiel anders stand
       warten: RUNDENENDE_FRAGE ? $("#warten").value : "alle",
       raten: Boolean($("#raten-was").value),
@@ -556,8 +558,8 @@
       },
     },
     {
-      // „Allein üben“ ohne Bots: niemand, mit dem man sich abwechseln könnte
-      nur: () => !allein(),
+      // ausgeblendet (MODUS_FRAGE); sonst nur mit Mitspielern – allein kann man sich nicht abwechseln
+      nur: () => MODUS_FRAGE && !allein(),
       frage: "Wer ist dran?", feld: "#modus", symbole: { einzeln: "👤", alle: "👥" }, bilder: BILDER_MODUS,
       koepfe: { alle: ["Alle", "gleichzeitig", "Für viele"], einzeln: ["Reihum", "einer ist dran", "Zum Mitfiebern"] },
       texte: {
@@ -887,7 +889,7 @@
       const r = await socket.anfrage("host:verbinden", alt).catch(() => null);
       if (r) return;
     }
-    const r = await tun("host:erstellen", { einstellungen: einstellungenLesen() });
+    const r = await tun("host:erstellen", { einstellungen: einstellungenLesen(), neu: istNeuling() });
     if (r) speicher("zs_host", JSON.stringify({ code: r.code, hostSitzung: r.hostSitzung }));
   }
 

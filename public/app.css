@@ -1245,6 +1245,37 @@ div.startsong-cover { display: grid; place-items: center; font-size: 5rem; color
 .startsong-titel { font-size: clamp(1.1rem, min(5vw, 4.4vh), 2.2rem); font-weight: 800; }
 .startsong-interpret { font-size: clamp(1rem, min(4vw, 3.4vh), 1.5rem); opacity: 0.85; }
 .startsong .quelle { margin-top: 0; }
+/* Erklärung für Neulinge: drei Sprechblasen erscheinen nacheinander unter dem Song */
+.startsong-tipps { list-style: none; margin: min(10px, 1.2vh) 0 0; padding: 0; display: grid; gap: min(8px, 1vh); justify-items: center; }
+.startsong-blase {
+  position: relative; display: flex; align-items: center; gap: 10px; max-width: 460px; padding: 8px 16px 8px 8px; border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94); color: #160c26; font-weight: 800; font-size: clamp(0.85rem, min(3.6vw, 2.4vh), 1.05rem); line-height: 1.3; text-align: left;
+  box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.6); opacity: 0; animation: blase-rein 0.45s var(--feder) forwards;
+}
+.startsong-blase::after { content: ""; position: absolute; left: 24px; top: -7px; border: 7px solid transparent; border-top: 0; border-bottom-color: rgba(255, 255, 255, 0.94); }
+/* Startkarte steht 14 s (src/raeume.ts VORSPIEL_MS): je Blase rund 3 s zum Lesen, die letzte bleibt gut 6 s stehen */
+.startsong-blase:nth-child(1) { animation-delay: 1.5s; }
+.startsong-blase:nth-child(2) { animation-delay: 4.5s; }
+.startsong-blase:nth-child(3) { animation-delay: 7.5s; }
+.blase-nr { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--gelb); color: #160c26; font-weight: 900; }
+.startsong-kurz { font-weight: 800; font-size: clamp(0.95rem, min(3.8vw, 2.6vh), 1.15rem); }
+@keyframes blase-rein { from { opacity: 0; transform: translateY(8px) scale(0.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .startsong-blase { opacity: 1; animation: none; } }
+/* Handy, erste Runde für Neulinge: Hinweis über dem eigenen Zeitstrahl */
+.hilfe-blase {
+  position: relative; margin: 6px 0 14px; padding: 10px 14px; border-radius: 16px; background: var(--gelb); color: #160c26;
+  font-weight: 800; line-height: 1.3; box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.6); animation: hilfe-wippen 1.6s ease-in-out infinite alternate;
+}
+.hilfe-blase::after { content: ""; position: absolute; left: 28px; bottom: -8px; border: 8px solid transparent; border-bottom: 0; border-top-color: var(--gelb); }
+ol.hilfe-blase { list-style: none; display: grid; gap: 8px; }
+ol.hilfe-blase li { display: flex; align-items: center; gap: 10px; opacity: 0.55; }
+ol.hilfe-blase li.aktiv { opacity: 1; }
+ol.hilfe-blase li.erledigt { opacity: 0.7; text-decoration: line-through; text-decoration-thickness: 2px; }
+ol.hilfe-blase .blase-nr { background: #160c26; color: var(--gelb); }
+.knopf-hilfe { text-align: center; margin: 0 0 12px; }
+.knopf-hilfe::after { left: calc(50% - 8px); }
+@keyframes hilfe-wippen { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .hilfe-blase { animation: none; } }
 .startsong p { margin: 0; }
 @keyframes startsong-rein { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
 @keyframes startsong-wippen { from { transform: rotate(-2deg) scale(1); } to { transform: rotate(2deg) scale(1.03); } }

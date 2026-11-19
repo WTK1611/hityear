@@ -810,6 +810,18 @@ async function countdownAbspielen(audio, nochAktuell, startUm) {
  * (Serveruhr) kurz angespielt – Ton nur, wenn `v.url` da ist. Danach kommt der Countdown zum ersten Song.
  */
 let startsongFuer = null;
+/**
+ * Erklärung für Neulinge: beim ersten Spiel auf diesem Gerät zeigt die Startkarte drei Sprechblasen und das Handy in der
+ * ersten Runde eine Hinweisblase am Zeitstrahl; danach nur noch eine kurze Zeile. Neue Geräte melden sich beim
+ * Beitreten mit `neu`, damit der Server die Startkarte dann länger stehen lässt.
+ */
+const ERKLAERT_SPIELE = 1; // nur beim allerersten Spiel auf diesem Gerät
+const ERKLAERT_SCHLUESSEL = "zs_startkarte_gesehen";
+const erklaertBisher = () => Number(speicher(ERKLAERT_SCHLUESSEL)) || 0;
+/** Gilt für das laufende Spiel: Neuling auf diesem Gerät? (beim ersten Blick auf die Startkarte festgelegt) */
+let neulingImSpiel = null;
+const istNeuling = () => neulingImSpiel ?? erklaertBisher() < ERKLAERT_SPIELE;
+
 function startsongZeigen(v, spieler) {
   if (!v || startsongFuer === v.ab) return;
   const ab = lokal(v.ab);
@@ -817,6 +829,16 @@ function startsongZeigen(v, spieler) {
   if (bis - Date.now() < 1500) return;
   startsongFuer = v.ab;
   const k = v.karte;
+  neulingImSpiel = erklaertBisher() < ERKLAERT_SPIELE;
+  speicher(ERKLAERT_SCHLUESSEL, String(erklaertBisher() + 1));
+  // Sprechblasen nacheinander (Neulinge): was die Karte ist, was gleich zu tun ist, was beim Treffer passiert
+  const blase = (nr, text) => el("li", { class: "startsong-blase" }, el("b", { class: "blase-nr", "aria-hidden": "true", text: String(nr) }), el("span", { text }));
+  const tipps = neulingImSpiel
+    ? el("ol", { class: "startsong-tipps" },
+      blase(1, `Das ist deine erste Karte: „${k.titel}“ erschien ${k.jahr}.`),
+      blase(2, `Gleich läuft ein neuer Song. Kam er vor oder nach ${k.jahr} raus?`),
+      blase(3, "Richtig geschätzt? Dann wandert die Karte in deinen Zeitstrahl."))
+    : el("p", { class: "startsong-kurz", text: `Nächster Song: vor oder nach ${k.jahr}?` });
   const jahr = el("div", { class: "startsong-jahr", text: "…" });
   const cover = el("img", { class: "startsong-cover", alt: `Cover: ${k.titel}`, src: `/api/cover/${k.songId}` });
   cover.addEventListener("error", () => cover.replaceWith(faerben(el("div", { class: "startsong-cover platzhalter-gross", text: "♪" }), k.jahr)));
@@ -840,7 +862,7 @@ function startsongZeigen(v, spieler) {
       jahr,
       el("div", { class: "startsong-titel", text: k.titel }),
       el("div", { class: "startsong-interpret", text: k.interpret }),
-      el("p", { class: "leise klein", text: "Alle beginnen ihren Zeitstrahl mit diesem Song." }),
+      tipps,
       quelle,
     ),
   );

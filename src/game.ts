@@ -119,6 +119,8 @@ export interface Spieler {
   bot?: BotStufe;
   /** Lobby: „Ich bin fertig“ getippt (Hauptbildschirm zeigt grünen Rahmen) */
   bereit?: boolean;
+  /** Gerät spielt zum ersten Mal (Erklärung zur Startkarte noch nie gesehen) – die Startkarte steht dann länger. */
+  neu?: boolean;
 }
 
 // ---------- Bots ----------
@@ -241,6 +243,8 @@ export interface Spiel {
   hostSitzung: string;
   /** Vom Admin eröffnet (Admin-Passwort): darf gespeicherte Hörproben nutzen, sonst immer Streaming */
   privat?: boolean;
+  /** Hauptbildschirm hat die Erklärung zur Startkarte noch nie gesehen (längere Startkarte, siehe raeume.ts). */
+  hostNeu?: boolean;
   /** Geheimer Einladungs-Token für QR-Code/Link (ersetzt die Passworteingabe). */
   einladung: string;
   einstellungen: Einstellungen;

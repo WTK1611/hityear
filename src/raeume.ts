@@ -393,8 +393,10 @@ const VORLAUF_MS = VORLAUF_TEST_MS || 3000;
 const schonGespielt = new WeakSet<Spiel>();
 
 // ---------- Startsong: alle haben dieselbe Startkarte, sie wird zu Beginn kurz angespielt ----------
-// Laden (0,3 s) → Startsong mit Jahr (7 s) → Countdown 3-2-1 → erster Song.
-const VORSPIEL_MS = 7_000;
+// Laden (0,3 s) → Startsong mit Jahr (7 s) → Countdown 3-2-1 → erster Song. Spielt ein Gerät zum ersten Mal, zeigt
+// es drei Sprechblasen mit der Erklärung – dann steht die Startkarte 14 s (Zeit zum Lesen), sonst die gewohnten 7 s.
+const VORSPIEL_MS = Number(process.env.ZEITSTRAHL_VORSPIEL_MS) || 7_000; // Tests: kürzer
+const VORSPIEL_NEU_MS = Number(process.env.ZEITSTRAHL_VORSPIEL_MS) || 14_000;
 // Startsong: die Musik setzt fast gleichzeitig mit dem Cover ein; die kurze Spanne reicht zum Laden, Nachzügler springen an die laufende Stelle
 const VORSPIEL_VORLAUF_MS = 300;
 const vorspiele = new Map<string, { karte: Karte; token: string; ab: number; bis: number }>();
@@ -408,10 +410,14 @@ function vorspielPlanen(s: Spiel): void {
   vorspielWeg(s);
   const karte = s.spieler[0]?.zeitstrahl[0];
   if (!karte) return;
+  // jemand zum ersten Mal dabei → länger, damit die Erklärung zu lesen ist; danach gilt sie als gesehen (auch für Revanchen)
+  const dauer = s.hostNeu || s.spieler.some((p) => !p.bot && p.neu) ? VORSPIEL_NEU_MS : VORSPIEL_MS;
+  s.hostNeu = false;
+  for (const p of s.spieler) p.neu = false;
   try {
-    const token = ausschnittFreigeben(karte.songId, VORSPIEL_MS / 1000);
+    const token = ausschnittFreigeben(karte.songId, dauer / 1000);
     const ab = Date.now() + VORSPIEL_VORLAUF_MS;
-    vorspiele.set(s.code, { karte, token, ab, bis: ab + VORSPIEL_MS });
+    vorspiele.set(s.code, { karte, token, ab, bis: ab + dauer });
   } catch (err) {
     console.warn(`[raum ${s.code}] Startsong: ${(err as Error).message}`);
   }
@@ -695,7 +701,7 @@ export function socketsEinrichten(server: Server): void {
 
     socket.on(
       "host:erstellen",
-      sicher<{ einstellungen?: Partial<Einstellungen> }>((x) => {
+      sicher<{ einstellungen?: Partial<Einstellungen>; neu?: boolean }>((x) => {
         if (raeume.size >= MAX_RAEUME) throw new SpielFehler("Gerade sind zu viele Spiele offen. Bitte gleich nochmal versuchen.");
         if (!erlaubt("raum-erstellen", ip, 10, 10 * 60_000)) throw new SpielFehler("Zu viele neue Spiele. Bitte in ein paar Minuten nochmal.");
         const code = zufallsCode();
@@ -704,6 +710,7 @@ export function socketsEinrichten(server: Server): void {
           hostSitzung: token(),
           privat: (rolleAusAppSitzung(socket.handshake.auth.sitzung) ?? rolleAusAnfrage(socket.request)) === "admin",
           einladung: einladungToken(),
+          hostNeu: x.neu === true,
           einstellungen: ((e) => (e.liste && !deckImSpiel(e.liste) ? { ...e, liste: null } : e))(grenzen({ ...STANDARD_EINSTELLUNGEN, ...(x.einstellungen ?? {}) })),
           spieler: [],
           stapel: [],
@@ -861,7 +868,7 @@ export function socketsEinrichten(server: Server): void {
 
     socket.on(
       "spieler:beitreten",
-      sicher<{ code: string; name?: string; sitzung?: string; avatar?: string }>((x) => {
+      sicher<{ code: string; name?: string; sitzung?: string; avatar?: string; neu?: boolean }>((x) => {
         // falsche Codes zählen: so lassen sich fremde Räume nicht durchprobieren
         const s = raumFinden(x.code);
         if (!s) {
@@ -887,6 +894,8 @@ export function socketsEinrichten(server: Server): void {
           else rundeWiederOeffnen(s);
         }
         p.verbunden = true;
+        // erstes Spiel auf diesem Gerät: Startkarte länger zeigen (gilt bis zum nächsten Spielstart)
+        if (x.neu === true && s.phase === "lobby") p.neu = true;
         raumVerbinden(s);
         d.spielerId = p.id;
         senden(s);
