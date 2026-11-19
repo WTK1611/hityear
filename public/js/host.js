@@ -173,10 +173,8 @@
     `<rect width="116" height="74" rx="10" fill="${W}"/><rect x="6" y="6" width="104" height="62" rx="6" fill="${D}"/>` +
     `<rect x="48" y="76" width="20" height="9" fill="${W}"/><rect x="33" y="85" width="50" height="7" rx="3.5" fill="${W}"/>` + note(44, 14, 0.75));
   const BILDER_WIEDERGABE = {
-    host: tv(32, 2, 0.95) + bogen(146, 20, 0.9) + g(28, 20, 0.9, `<path d="M9 6q-8 12 0 24M0 0q-14 18 0 36" fill="none" stroke="${W}" stroke-width="4" stroke-linecap="round"/>`) +
-      handy(52, 100, 0.5) + handy(90, 100, 0.5) + handy(128, 100, 0.5),
-    // jedes Handy spielt die Musik selbst: Schallwellen an allen drei
-    alle: handy(16, 44, 1.1, true) + bogen(62, 46, 0.55) + handy(78, 20, 1.3, true) + bogen(130, 22, 0.6) + handy(142, 44, 1.1, true) + bogen(188, 46, 0.55),
+    // zusammen: Fernseher und jedes Handy spielen die Musik – Schallwellen überall
+    alle: tv(6, 4, 0.82) + bogen(104, 18, 0.7) + handy(122, 46, 0.95, true) + bogen(161, 50, 0.5) + handy(170, 70, 0.7, true),
     // allein üben: ein Mensch mit seinem Handy, daneben (wer mag) ein Bot
     solo: person(22, 40, 1.3) + handy(88, 24, 1.3, true) + bogen(140, 26, 0.6) + roboter(150, 70, 0.75),
   };
@@ -269,6 +267,9 @@
     [/mpb|bossa|brasil|brazil/i, ((teile) => `<g transform="rotate(38 12 12)"><g stroke-width="2.6" fill="#160c26">${teile}</g><g stroke="none">${teile}</g>` +
       `<g fill="#160c26" stroke="none"><circle cx="12" cy="13.4" r="1.9"/><rect x="10" y="18.4" width="4" height="1.3" rx=".5"/></g></g>`)(
       `<circle cx="12" cy="17.4" r="6"/><circle cx="12" cy="10.8" r="4.4"/><rect x="10.9" y="-0.5" width="2.2" height="10" rx=".8"/><rect x="10" y="-2" width="4" height="3.4" rx="1"/>`)],
+    // Weihnachten: Tannenbaum mit gelbem Stern
+    [/weihnacht|christmas|xmas/i, `<path d="M12 3.5l5.5 6.5h-3l5 6h-3.5l4 5.5H4l4-5.5H4.5l5-6h-3z"/><rect x="10.4" y="21.5" width="3.2" height="2.5"/>` +
+      `<path d="M12 .2l1 2.1 2.3.3-1.7 1.6.4 2.3L12 5.4l-2 1.1.4-2.3-1.7-1.6 2.3-.3z" fill="#ffd93d"/>`],
     [/hits/i, `<path d="M12 1l3.4 7 7.6 1-5.5 5.3 1.4 7.6L12 18.3l-6.9 3.6 1.4-7.6L1 9l7.6-1z"/>`],
   ];
   function symbol(name) {
@@ -492,14 +493,13 @@
   }
   const SCHRITTE = [
     {
-      frage: "Wo läuft die Musik?", feld: "#wiedergabe", symbole: { host: "📺", alle: "📱", solo: "🎧" }, bilder: BILDER_WIEDERGABE,
+      frage: "Wie wollt ihr spielen?", feld: "#wiedergabe", symbole: { alle: "🎉", solo: "🎧" }, bilder: BILDER_WIEDERGABE,
       koepfe: {
-        host: ["Party", "vor Ort", "Ton vom TV", "Nur Hauptscreen spielt Musik"], alle: ["Online", "spielen", "Ton am Handy", "Alle Geräte spielen Musik"],
+        alle: ["Zusammen", "spielen", "Vor Ort & online", "Alle Geräte spielen Musik"],
         solo: ["Allein", "spielen", "Zum Üben", "Mit oder ohne Bots"],
       },
       texte: {
-        host: "Ein Fernseher oder Monitor ist der Hauptbildschirm, der Ton kommt aus seinen Lautsprechern. Die Handys dienen nur zum Tippen.",
-        alle: "Ein Gerät richtet das Spiel ein, jedes Handy spielt die Musik selbst ab – auch wenn ihr nicht im selben Raum seid.",
+        alle: "Der Hauptbildschirm und jedes Handy spielen die Musik – egal, ob ihr im selben Raum seid oder an verschiedenen Orten.",
         solo: "Du spielst allein auf diesem Gerät – zum Üben, gegen Bots oder ganz für dich.",
       },
     },
@@ -728,7 +728,7 @@
             el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: zurueck ? "Bot dazu" : "frei" })),
             zurueck ? () => botsAendern(weg.slice(0, -1)) : null);
         })),
-        // „Online spielen“ ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit (bei „Party vor Ort“ ist es der Hauptscreen)
+        // „Zusammen spielen“ ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit
         messen || spieler.length >= 6 || $("#wiedergabe").value !== "alle" ? null
           : el("button", { type: "button", class: "zweit hier-mitspielen", text: "🎮 Auf diesem Gerät mitspielen", onclick: mitspielen }),
       );
@@ -997,23 +997,22 @@
     if (hoeren) {
       aufgedeckt = null;
       startsongZeigen(z.vorspiel, startsongAudio);
-      const hierAudio = z.einstellungen.wiedergabe === "host";
+      // „Zusammen spielen“: auch der Hauptbildschirm spielt die Musik (zeitgleich mit den Handys)
+      const hierAudio = z.einstellungen.wiedergabe === "alle";
       audio.laden(hierAudio ? z.ausschnitt : null);
       // neuer Ausschnitt → Countdown 3 · 2 · 1, dann spielt er von selbst
       if (hierAudio && audio.url && autoGestartet !== audio.url) {
         const url = (autoGestartet = audio.url);
         countdownAbspielen(audio, () => zustand?.phase === "hoeren" && audio.url === url, z.startUm);
       }
-      // Musik läuft auf den Handys → trotzdem 3 · 2 · 1 am Hauptbildschirm
+      // Musik läuft nur auf dem Handy („Allein“, quer gedreht) → trotzdem 3 · 2 · 1 am Spielfeld
       if (!hierAudio && z.startUm && countdownFuer !== z.startUm) {
         const startUm = (countdownFuer = z.startUm);
         countdownZeigen(startUm, () => zustand?.phase === "hoeren" && zustand.startUm === startUm);
       }
       $("#kicker").textContent = z.einstellungen.modus === "alle" ? `${runde} · alle sind dran` : `${runde} · ${aktiv?.name ?? "?"} ist dran`;
       $("#titel-gross").textContent = "Welches Jahr?";
-      $("#interpret-gross").textContent = hierAudio ? "Hör genau hin …"
-        : z.einstellungen.wiedergabe === "alle" ? "Die Musik läuft auf euren Handys."
-        : `Die Musik läuft auf dem Handy von ${aktiv?.name ?? "?"}.`;
+      $("#interpret-gross").textContent = hierAudio ? "Hör genau hin …" : "Die Musik läuft auf euren Handys.";
       $("#urteil").textContent = "";
       // wer schon getippt hat, steht unten in den Spielerkarten (zeitstrahleZeichnen)
       $("#eingaben").replaceChildren();
@@ -1154,7 +1153,7 @@
   // Stand je Spieler vom letzten Zeichnen – wächst Karten- oder ⭐-Zahl, hüpft sie mit „+1“
   const standVorher = new Map();
   function zahlEl(p, z) {
-    const karten = p.zeitstrahl.length;
+    const karten = gesammelt(p);
     const sterne = p.punkte ?? 0;
     const vorher = standVorher.get(p.id);
     standVorher.set(p.id, { karten, sterne });
@@ -1256,7 +1255,7 @@
           banner(p),
           (() => {
             const balken = el("i");
-            balken.style.width = `${Math.min(100, (100 * p.zeitstrahl.length) / z.einstellungen.zielKarten)}%`;
+            balken.style.width = `${Math.min(100, (100 * gesammelt(p)) / z.einstellungen.zielKarten)}%`;
             return el("div", { class: "fortschritt" }, balken);
           })(),
           strahlOl(p),

@@ -173,7 +173,8 @@ try {
   const z1 = await bis(() => host.letzter?.phase === "hoeren" && host.letzter, 15_000);
   assert.ok(z1.ausschnitt, "Host bekommt Ausschnitt-URL");
   const annaSicht = await bis(() => anna.letzter?.phase === "hoeren" && anna.letzter);
-  assert.equal(annaSicht.ausschnitt, null, "Spieler bekommt im Host-Modus keine URL");
+  // „Zusammen spielen“: Hauptbildschirm und jedes Handy spielen dieselbe Hörprobe
+  assert.equal(annaSicht.ausschnitt, z1.ausschnitt, "Spieler bekommt beim Zusammen-Spielen dieselbe URL wie der Host");
   assert.ok(!JSON.stringify(annaSicht).includes("sitzung"), "keine Sitzungstoken an Clients");
 
   // Audio: echtes MP3 ohne ID3-Tag, Range funktioniert, ohne Cookie verboten

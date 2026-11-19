@@ -878,7 +878,7 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
 #decks-box .reihe > button, .deck-editor .reihe > button { flex: 0 0 auto; }
 #decks-box .reihe > select, #decks-box .reihe > input, .deck-editor .reihe > input { flex: 1 1 260px; }
 
-/* ---------- Startseite: zwei Rahmen – mitspielen / Spiel erstellen ---------- */
+/* ---------- Startseite: zwei Rahmen – Party erstellen / mitspielen ---------- */
 .start-wahl { display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); justify-content: center; gap: 24px; align-items: stretch; }
 .start-wahl > .box { margin: 0; }
 /* genau wie die Einrichtungs-Kacheln: quadratisch, Farbverlauf, großes Wort, Bild unten rechts, Plakette unten links.
@@ -893,7 +893,7 @@ button.klein-knopf { min-height: 34px; padding: 6px 12px; font-size: 0.85rem; ma
   box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.7), 0 4px 10px -4px rgba(0, 0, 0, 0.35);
   transition: transform 0.3s var(--feder), filter 0.2s, box-shadow 0.3s;
 }
-.start-wahl > .box.start-karte + .start-karte { --farbton: 190; }
+.start-wahl > a.box.start-karte { --farbton: 190; } /* Party erstellen: blau, Mitspielen: pink */
 .start-wahl > .start-karte:hover, .start-wahl > .start-karte:focus-within { transform: translateY(-3px); }
 .start-wahl > a.start-karte:focus-visible, body.tasten-aktiv .start-wahl > a.start-karte:focus { outline: 4px solid var(--gelb); outline-offset: 4px; transform: scale(1.05); filter: brightness(1.12); box-shadow: 0 0 0 10px rgba(255, 217, 61, 0.18), 0 16px 34px -10px rgba(0, 0, 0, 0.75); }
 .start-karte h2 { margin: 0; font-weight: 900; letter-spacing: 0; }

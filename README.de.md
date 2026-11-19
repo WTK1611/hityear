@@ -4,7 +4,7 @@
 
 Android- und iOS-App in Entwicklung: [Einrichtung, Builds und Tests](docs/APP.md).
 
-![Startseite von HitYear: „Wann kam der Song raus?“ mit den Kacheln „Spielen mit Code“ und „Party starten“](docs/bilder/startseite.jpg)
+![Startseite von HitYear: „Wann kam der Song raus?“ mit den Kacheln „Party erstellen“ und „Mitspielen“](docs/bilder/startseite.jpg)
 
 **Wann kam der Song raus?** Ein Ausschnitt läuft, alle hören rein und sortieren den Song am Handy nach seinem Erscheinungsjahr in den eigenen Zeitstrahl. Wer zuerst genug Karten richtig liegen hat, gewinnt.
 
@@ -17,9 +17,9 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 
 ## Bilder
 
-| Einrichtung: Wo läuft die Musik? | Deck wählen |
+| Einrichtung: Wie wollt ihr spielen? | Deck wählen |
 |---|---|
-| ![Einrichtungsschritt mit den Kacheln Party vor Ort, Online und Allein](docs/bilder/host-modus.jpg) | ![Deck-Auswahl mit Plattenhüllen als Cover](docs/bilder/host-decks.jpg) |
+| ![Einrichtungsschritt mit den Kacheln Zusammen und Allein](docs/bilder/host-modus.jpg) | ![Deck-Auswahl mit Plattenhüllen als Cover](docs/bilder/host-decks.jpg) |
 | **Lobby: Mitspieler und KI-Bots** | **Runde am Hauptbildschirm** |
 | ![Lobby mit einer Spielerin am Handy und fünf Bots](docs/bilder/host-lobby.jpg) | ![Hauptbildschirm in der Runde: Schallplatte, Equalizer, alle Zeitstrahle](docs/bilder/host-runde.jpg) |
 
@@ -31,7 +31,7 @@ Spielen: <https://hityear.app> · Repo: <https://github.com/WTK1611/hityear> · 
 
 ## Spielregeln
 
-1. **Start:** Jede Person bekommt eine aufgedeckte Startkarte (Song mit Jahr) in ihren Zeitstrahl.
+1. **Start:** Jede Person bekommt eine aufgedeckte Startkarte (Song mit Jahr) in ihren Zeitstrahl. Sie ist geschenkt und zählt nicht: Alle starten mit 0 Punkten.
 2. **Hören:** Nach einem Countdown (3 · 2 · 1) läuft auf allen Geräten gleichzeitig ein Ausschnitt.
 3. **Einordnen:** Im eigenen Zeitstrahl die Lücke antippen, in die der Song gehört, und bestätigen. Gleiches Jahr wie eine Nachbarkarte zählt als richtig.
 4. **Auflösung:** Titel, Interpret, Jahr und Cover erscheinen. Wer richtig lag, bekommt die Karte in den Zeitstrahl.
@@ -45,7 +45,7 @@ Der Hauptbildschirm stellt pro Schritt eine Frage, die Antworten sind große Kac
 
 | Schritt | Optionen |
 |---|---|
-| Wo läuft die Musik? | **Party vor Ort** (Ton vom TV, Handys nur zum Tippen) · **Online** (jedes Handy spielt die Musik, auch an verschiedenen Orten; der Gastgeber kann auf demselben Gerät mitspielen) · **Allein** (zum Üben, mit oder ohne Bots) |
+| Wie wollt ihr spielen? | **Zusammen** (der Hauptbildschirm und jedes Handy spielen die Musik, im selben Raum oder an verschiedenen Orten; der Gastgeber kann auf demselben Gerät mitspielen) · **Allein** (zum Üben, mit oder ohne Bots) |
 | Wer ist dran? | alle gleichzeitig · reihum einer |
 | Wann endet eine Runde? (alle gleichzeitig) | nach ganzer Hörprobe (30 s) · 5 s nach allen Antworten · 5 s ab der ersten Antwort |
 | Was wird geraten? | nur das Jahr · Jahr + Songtitel & Interpret (Bonus-Sterne) |
@@ -66,7 +66,7 @@ Der Hauptbildschirm stellt pro Schritt eine Frage, die Antworten sind große Kac
 | **Fehlersuche** | Geräte melden Hänger der Seite, Trennungen und ausbleibende Antworten ins Server-Log (`[diagnose]`, `[verbindung]`, `[bereit]`); die Fußzeile zeigt Live-Spiele, App-Version (1.<Anzahl Commits>) und das erkannte Gerät (tv/tb/sp/pc) |
 | **Rechtliches** | Impressum, Datenschutz, Nutzungsbedingungen (AGB), Links in der Fußzeile; anonyme Statistik (Matomo auf eigenem Server) nur mit Einwilligung, auf der Cookie-Seite widerrufbar |
 | **Suchmaschinen** | Startseite und „So geht's“ sind indexierbar (`robots.txt`, `sitemap.xml`, `llms.txt`); API, Räume, Hauptbildschirm, Handy und Bibliothek senden `noindex` |
-| **Startseite** | Zwei quadratische Kacheln: *Spielen mit Code* (Code-Feld direkt auf der Kachel, eigene Fehlermeldung) und *Party starten*; am Handy nebeneinander |
+| **Startseite** | Zwei quadratische Kacheln: links *Party erstellen*, rechts *Mitspielen* (Code-Feld direkt auf der Kachel, eigene Fehlermeldung); am Handy nebeneinander |
 | **Einrichtung** | Geführte Einrichtung mit Kacheln (Verlauf, Aufkleber-Bild, Schatten), Partikel bei jedem Tipp, Decks als Plattenhüllen, die aus dem Namen gestaltet sind (Flagge, Symbol), Startkarte wird vor dem ersten Song aufgedeckt |
 | **Hauptbildschirm** | QR-Code, drehende Schallplatte, die im Bass vibriert, Equalizer in 20 Stilen (Klick oder ←/→ schaltet um), Fortschrittsleiste, Mitspieler-Raster mit Live-Status (überlegt, getippt, rät), Auflösung mit Genre und Quellenlink, Ergebnis-Banner mit Sternen, „+1“-Animationen, Konfetti, Bestenliste |
 | **Handy** | Eigener Zeitstrahl zum Antippen, Stand im Kopf, wer schon getippt hat, Countdown, geführtes Raten (Jahr → Interpret → Titel), Vibration, Bildschirm bleibt wach (Wake Lock); der Gastgeber dreht das Handy quer und sieht das Spielfeld wie am Fernseher |

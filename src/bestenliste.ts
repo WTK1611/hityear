@@ -1,7 +1,7 @@
 // Bestenliste über alle Spiele: je Name (ohne Groß-/Kleinschreibung) werden die Punkte aufsummiert.
-// Punkte eines Spiels = Karten im Zeitstrahl + ⭐-Zusatzpunkte.
+// Punkte eines Spiels = gesammelte Karten (ohne die Startkarte) + ⭐-Zusatzpunkte.
 import { db } from "./db.ts";
-import type { Spiel } from "./game.ts";
+import { gesammelt, type Spiel } from "./game.ts";
 
 db.exec(`CREATE TABLE IF NOT EXISTS bestenliste (
   schluessel TEXT PRIMARY KEY,
@@ -20,7 +20,7 @@ export interface BestenEintrag {
 }
 
 export const schluessel = (name: string) => name.trim().replace(/\s+/g, " ").toLocaleLowerCase("de");
-export const spielPunkte = (p: Spiel["spieler"][number]) => p.zeitstrahl.length + (p.punkte ?? 0);
+export const spielPunkte = (p: Spiel["spieler"][number]) => gesammelt(p) + (p.punkte ?? 0);
 
 /** Ein beendetes Spiel einmalig eintragen (der Merker steckt im Spiel und übersteht Neustarts). */
 export function spielEintragen(s: Spiel): void {

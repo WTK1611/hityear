@@ -6,11 +6,15 @@
 // gehörten Song nach Erscheinungsjahr ein. Liegt er richtig, bleibt die Karte.
 // Gewonnen hat, wer am Ende einer vollen Runde die Zielzahl erreicht; bei
 // Gleichstand entscheiden die ⭐-Punkte, sonst gewinnen alle Führenden gemeinsam.
+// Die aufgedeckte Startkarte liegt im Zeitstrahl, zählt aber nicht: Alle starten mit 0 Punkten.
 import { geraten, interpretVarianten, titelVarianten } from "./normalisieren.ts";
 
 export type Phase = "lobby" | "hoeren" | "aufloesung" | "ende";
-/** host = Fernseher/Laptop, spieler = Handy von dem, der dran ist, alle = jedes Handy */
-export type Wiedergabe = "host" | "spieler" | "alle" | "solo";
+/**
+ * alle = „Zusammen spielen“: Hauptbildschirm und jedes Handy spielen die Musik (vor Ort wie online);
+ * solo = „Allein spielen“ auf einem Gerät. Frühere Werte („host“, „spieler“) werden zu „alle“ (siehe grenzen).
+ */
+export type Wiedergabe = "alle" | "solo";
 /** einzeln = reihum ist einer dran; alle = alle ordnen denselben Song gleichzeitig in ihren Zeitstrahl ein */
 export type Modus = "einzeln" | "alle";
 /** Musik-Avatare zur Auswahl beim Beitreten (gleiche Liste in public/js/gemeinsam.js). */
@@ -72,7 +76,7 @@ const fragtTitel = (e: Einstellungen) => e.raten && e.ratenWas !== "interpret";
 export const STANDARD_EINSTELLUNGEN: Einstellungen = {
   zielKarten: 10,
   ausschnittSek: 30,
-  wiedergabe: "host",
+  wiedergabe: "alle",
   jahrzehnte: [],
   genres: [],
   nurChartHits: false,
@@ -292,8 +296,9 @@ export function grenzen(e: Partial<Einstellungen>): Einstellungen {
   return {
     zielKarten: [10, 15, 20].includes(Math.round(z.zielKarten)) ? Math.round(z.zielKarten) : 10,
     ausschnittSek: 30,
-    // „vor Ort“ (host), „online“ (alle Handys) oder „allein“ (solo: Gastgeber spielt auf seinem Gerät); altes „spieler“ wird zu „alle“
-    wiedergabe: z.wiedergabe === "solo" ? "solo" : z.wiedergabe === "spieler" || z.wiedergabe === "alle" ? "alle" : "host",
+    // „zusammen“ (alle Geräte spielen die Musik) oder „allein“ (solo: Gastgeber spielt auf seinem Gerät);
+    // die früheren Varianten „vor Ort“ (host) und „Handy, wer dran ist“ (spieler) werden zu „zusammen“
+    wiedergabe: z.wiedergabe === "solo" ? "solo" : "alle",
     jahrzehnte: Array.isArray(z.jahrzehnte)
       ? [...new Set(z.jahrzehnte.map(Number).filter((j) => Number.isInteger(j) && j >= 1900 && j <= 2100 && j % 10 === 0))].sort()
       : [],
@@ -359,6 +364,11 @@ function einsortieren(zeitstrahl: Karte[], karte: Karte): void {
   let i = zeitstrahl.findIndex((k) => k.jahr > karte.jahr);
   if (i === -1) i = zeitstrahl.length;
   zeitstrahl.splice(i, 0, karte);
+}
+
+/** Gesammelte Karten = Punkte: alle Karten im Zeitstrahl außer der geschenkten Startkarte. */
+export function gesammelt(p: Pick<Spieler, "zeitstrahl">): number {
+  return Math.max(0, p.zeitstrahl.length - 1);
 }
 
 export function spielerHinzufuegen(s: Spiel, p: Omit<Spieler, "zeitstrahl" | "richtig" | "falsch" | "verbunden" | "toleranz">): Spieler {
@@ -642,7 +652,7 @@ export function spielEntschieden(s: Spiel): boolean {
   const rundenende = alleGleichzeitig(s) || s.zugIndex + 1 >= s.reihenfolge.length;
   if (!rundenende) return false;
   if (s.stechen) return true;
-  return Math.max(0, ...s.spieler.map((p) => p.zeitstrahl.length)) >= s.einstellungen.zielKarten;
+  return Math.max(0, ...s.spieler.map(gesammelt)) >= s.einstellungen.zielKarten;
 }
 
 export function naechsterZug(s: Spiel): void {
@@ -654,7 +664,7 @@ export function naechsterZug(s: Spiel): void {
     // Runde vorbei → Sieg prüfen
     const kandidaten = s.spieler.filter((p) => !s.stechen || s.stechen.includes(p.id));
     const ziel = s.einstellungen.zielKarten;
-    const max = Math.max(0, ...kandidaten.map((p) => p.zeitstrahl.length));
+    const max = Math.max(0, ...kandidaten.map(gesammelt));
     if (max >= ziel || s.stechen) {
       // kein Stechen mehr: Ziel erreicht = Spiel vorbei
       beenden(s);
@@ -670,8 +680,8 @@ export function naechsterZug(s: Spiel): void {
 /** Spiel beenden: meiste Karten gewinnt, bei Gleichstand mehr ⭐, sonst gemeinsamer Sieg. */
 function beenden(s: Spiel): void {
   const kandidaten = s.spieler.filter((p) => !s.stechen || s.stechen.includes(p.id));
-  const max = Math.max(0, ...kandidaten.map((p) => p.zeitstrahl.length));
-  const fuehrende = kandidaten.filter((p) => p.zeitstrahl.length === max);
+  const max = Math.max(0, ...kandidaten.map(gesammelt));
+  const fuehrende = kandidaten.filter((p) => gesammelt(p) === max);
   const sterne = Math.max(0, ...fuehrende.map((p) => p.punkte ?? 0));
   s.gewinner = fuehrende.filter((p) => (p.punkte ?? 0) === sterne).map((p) => p.id);
   s.stechen = null;

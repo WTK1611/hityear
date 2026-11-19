@@ -155,6 +155,11 @@ interface SocketDaten {
   hostSitzung?: string;
 }
 
+/** Spielt dieses Gerät die Musik? Jedes Handy immer, der Hauptbildschirm beim „Zusammen spielen“ auch. */
+function musikHier(s: Spiel, d: SocketDaten): boolean {
+  return Boolean(d.spielerId) || (s.einstellungen.wiedergabe === "alle" && istHost(s, d));
+}
+
 /** Host-Rechte gelten nur mit der bestätigten Sitzung des aktuellen Raums. */
 function istHost(s: Spiel, d: SocketDaten): boolean {
   return d.code === s.code && d.hostSitzung === s.hostSitzung;
@@ -164,12 +169,7 @@ function ausschnittUrlFuer(s: Spiel, d: SocketDaten): string | null {
   if (s.phase !== "hoeren") return null;
   const t = ausschnitte.get(s.code);
   if (!t) return null;
-  const w = s.einstellungen.wiedergabe;
-  if (w === "host" && istHost(s, d)) return `/api/audio/${t}`;
-  if ((w === "alle" || w === "solo") && d.spielerId) return `/api/audio/${t}`;
-  // Modus „alle“: „Handy, wer dran ist“ heißt jedes Handy
-  if (w === "spieler" && d.spielerId && (alleGleichzeitig(s) || d.spielerId === aktiverSpieler(s)?.id)) return `/api/audio/${t}`;
-  return null;
+  return musikHier(s, d) ? `/api/audio/${t}` : null;
 }
 
 /** Nach der Auflösung geht es nach 10 s von selbst weiter (kein Überspringen – alle sehen die Auflösung gleich lang). */
@@ -303,7 +303,7 @@ function demoStarten(s: Spiel): void {
   for (const p of s.spieler.filter((q) => q.bot)) spielerEntfernen(s, p.id);
   s.einstellungen = grenzen({
     ...s.einstellungen, liste: deck, jahrzehnte: [], genres: [], nurChartHits: false, modus: "alle", warten: "alle",
-    zeitlimit: true, raten: false, auffuellen: true, ohneBots: [], wiedergabe: "host", zielKarten: 10,
+    zeitlimit: true, raten: false, auffuellen: true, ohneBots: [], wiedergabe: "alle", zielKarten: 10,
   });
   s.botPlan = undefined;
   s.geaendert = Date.now();
@@ -420,9 +420,7 @@ function vorspielPlanen(s: Spiel): void {
 function vorspielFuer(s: Spiel, d: SocketDaten) {
   const v = vorspiele.get(s.code);
   if (!v || s.phase !== "hoeren" || Date.now() > v.bis) return null;
-  const w = s.einstellungen.wiedergabe;
-  const hier = w === "host" ? istHost(s, d) : Boolean(d.spielerId);
-  return { karte: v.karte, ab: v.ab, bis: v.bis, url: hier ? `/api/audio/${v.token}` : null };
+  return { karte: v.karte, ab: v.ab, bis: v.bis, url: musikHier(s, d) ? `/api/audio/${v.token}` : null };
 }
 
 /** Wann der Ausschnitt endet (Apple-Vorschauen sind teils kürzer als die eingestellte Länge). */

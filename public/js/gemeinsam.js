@@ -876,10 +876,13 @@ function hochzaehlen(element, ziel, dauer = 900) {
   requestAnimationFrame(schritt);
 }
 
+/** Gesammelte Karten = Punkte: die geschenkte Startkarte zählt nicht mit (wie gesammelt() in src/game.ts). */
+const gesammelt = (p) => Math.max(0, (p.zeitstrahl?.length ?? 0) - 1);
+
 /** Bestenliste über alle Spiele (Top 5) in `box` zeichnen; `hervor` = Namen dieses Spiels. */
 /** Rangliste der gerade beendeten Runde: nach Karten, dann Treffern; `ich` wird hervorgehoben (Handy). */
 function ranglisteZeichnen(box, z, ich = null) {
-  const sortiert = [...z.spieler].sort((a, b) => b.zeitstrahl.length - a.zeitstrahl.length || b.richtig - a.richtig);
+  const sortiert = [...z.spieler].sort((a, b) => gesammelt(b) - gesammelt(a) || b.richtig - a.richtig);
   box.replaceChildren(
     ...sortiert.map((p, i) => {
       const quote = p.richtig + p.falsch ? Math.round((100 * p.richtig) / (p.richtig + p.falsch)) : 0;
@@ -889,7 +892,7 @@ function ranglisteZeichnen(box, z, ich = null) {
         el("strong", { text: `${i + 1}.` }),
         avatarEl(p),
         el("span", { text: p.name }),
-        el("span", { class: "leise klein", text: `${p.zeitstrahl.length} Karten · ${quote} % Treffer${z.einstellungen.raten ? ` · ⭐ ${p.punkte ?? 0} Punkte` : ""}` }),
+        el("span", { class: "leise klein", text: `${gesammelt(p)} Karten · ${quote} % Treffer${z.einstellungen.raten ? ` · ⭐ ${p.punkte ?? 0} Punkte` : ""}` }),
       );
     }),
   );
@@ -1493,7 +1496,7 @@ function taktSimulieren(eq, balken) {
   // Ziffern an den Kacheln (1–9) und am Hauptknopf (0) – dieselbe Auswahl wie die Zifferntasten unten. Sichtbar nur am
   // Fernseher (auch mit Touchscreen); am PC wirkten Marken und Hinweiszeilen unaufgeräumt, die Zifferntasten gehen dort
   // trotzdem. In der Galerie zählen nur die Kacheln im Bild, nach dem Blättern wird neu nummeriert.
-  // Startseite: 1 = Spielen mit Code, 2 = Party starten, 3 = Sprache.
+  // Startseite: 1 = Party erstellen, 2 = Mitspielen (Code), 3 = Sprache.
   const marken = fernseher;
   document.documentElement.classList.toggle("tasten-hinweise", marken);
   const imBild = (e) => {
@@ -1507,7 +1510,7 @@ function taktSimulieren(eq, balken) {
   const taste = (text) => el("b", { text });
   // Ziffernbelegung – mit „1“ allein kommt man vom Setup bis zum Spielstart:
   //   Setup: 1 = Empfehlung (die vorgewählte Kachel) bzw. „Weiter (mit allen)“ / „Spiel starten“, die übrigen Kacheln 2, 3 …,
-  //          0 = Zurück. Siegerseite: 1 Revanche · 2 Neues Spiel · 3 Beenden. Startseite: 1 Spielen mit Code · 2 Party starten.
+  //          0 = Zurück. Siegerseite: 1 Revanche · 2 Neues Spiel · 3 Beenden. Startseite: 1 Party erstellen · 2 Mitspielen.
   const belegung = () => {
     const m = new Map();
     const reihe = (liste, ab) => liste.slice(0, 10 - ab).forEach((e, i) => m.set(e, String(ab + i)));
@@ -1571,7 +1574,7 @@ function taktSimulieren(eq, balken) {
       taste("1"), " Empfehlung / Weiter / Start · ", taste("2"), taste("3"), " … wählen · ", taste("0"), " Zurück · ", taste("◀"), taste("▶"), " blättern");
     hinweis(spiel, "spiel-hinweis", taste("◀"), taste("▶"), " Equalizer wechseln");
     hinweis(endeBox, "ende-hinweis", taste("1"), " Revanche · ", taste("2"), " Neues Spiel · ", taste("3"), " Beenden");
-    hinweis(start, "start-hinweis", taste("1"), " Spielen mit Code · ", taste("2"), " Party starten · ", taste("3"), " Sprache");
+    hinweis(start, "start-hinweis", taste("1"), " Party erstellen · ", taste("2"), " Mitspielen · ", taste("3"), " Sprache");
   };
   // nach dem Blättern in der Galerie neu nummerieren
   document.addEventListener("scroll", () => planen(), { capture: true, passive: true });
@@ -1602,7 +1605,7 @@ function taktSimulieren(eq, balken) {
     if (!ziel) return;
     ev.preventDefault();
     tastenModus(true);
-    // Startseite „Spielen mit Code“: ins Codefeld springen statt das Formular abzuschicken
+    // Startseite „Mitspielen“: ins Codefeld springen statt das Formular abzuschicken
     const feld = ziel.matches("form") ? ziel.querySelector("input") : null;
     if (feld) return void feld.focus({ focusVisible: true });
     if (ziel.matches(".galerie-pfeil, .sprache-mehr")) return void ziel.click();
