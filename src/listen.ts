@@ -135,9 +135,14 @@ function dateiLesen(datei: string): Liste | null {
     return { interpret: (f[iA] ?? "").trim(), titel: (f[iT] ?? "").trim(), jahr: Number.isInteger(jahr) ? jahr : null };
   }).filter((e) => e.interpret && e.titel);
   const id = path.basename(datei, path.extname(datei)).toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 60);
-  const name = path.basename(datei, path.extname(datei)).replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const name = DATEI_NAMEN[id] ?? path.basename(datei, path.extname(datei)).replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   return { id, name, quelle: "datei", eintraege };
 }
+/** Anzeigenamen mitgelieferter Listen, die sich nicht aus dem Dateinamen ergeben (Umlaute, Abkürzungen). */
+const DATEI_NAMEN: Record<string, string> = {
+  "franzoesische-hits": "Französische Hits",
+  "us-hits": "US-Hits",
+};
 
 /** CSV-Text (Interpret/Titel/Jahr in beliebiger Spaltenfolge) → Einträge. */
 export function csvEintraege(text: string): ListenEintrag[] {
