@@ -106,6 +106,9 @@
     const liste = $("#liste");
     return !liste.value || /^Jahres/i.test(liste.selectedOptions[0]?.text ?? "");
   }
+  // Frage „Wann endet eine Runde?“ in der Einrichtung: ausgeblendet, Standard „30 s nach ganzer Hörprobe“.
+  // Zum Wiedereinblenden auf true setzen – Kacheln, Texte und Bilder sind unverändert vorhanden.
+  const RUNDENENDE_FRAGE = false;
   function einstellungenLesen() {
     return {
       zielKarten: Number($("#ziel").value),
@@ -113,7 +116,8 @@
       zeitlimit: true,
       nichtErraten: "offen", // keine Frage mehr im Setup: Lösung zeigen, Song kommt später nochmal
       modus: $("#modus").value,
-      warten: $("#warten").value,
+      // ohne die Frage „Wann endet eine Runde?“ immer 30 s (ganze Hörprobe), auch wenn ein altes Spiel anders stand
+      warten: RUNDENENDE_FRAGE ? $("#warten").value : "alle",
       raten: Boolean($("#raten-was").value),
       ratenWas: $("#raten-was").value || "beide",
       auffuellen: $("#auffuellen").checked,
@@ -559,7 +563,8 @@
     {
       frage: "Wann endet eine Runde?", feld: "#warten", symbole: { alle: "✋", alle5: "⏱️", erster: "⚡" }, bilder: BILDER_WARTEN,
       koepfe: { alle: ["30 s", "nach ganzer Hörprobe", "Zum Mitsingen"], alle5: ["5 s", "nach allen Antworten", "Ausgewogen"], erster: ["5 s", "ab 1. Antwort", "Schnelle Runden"] },
-      nur: () => $("#modus").value === "alle",
+      // ausgeblendet (RUNDENENDE_FRAGE): es gilt immer „30 s nach ganzer Hörprobe“
+      nur: () => RUNDENENDE_FRAGE && $("#modus").value === "alle",
       // allein ohne Bots: „ab 1. Antwort“ wäre dasselbe wie „nach allen Antworten“
       allein: { ohne: { erster: "alle5" }, koepfe: { alle5: ["5 s", "nach deiner Antwort", "Schnelle Runden"] }, texte: { alle5: "Hast du geantwortet, geht es nach 5 Sekunden weiter. Sonst endet die Runde, wenn die Zeit um ist." } },
       texte: {
