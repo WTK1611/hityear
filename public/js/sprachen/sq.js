@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Impressum",
   "Ganze Bibliothek": "E gjithë biblioteka",
   "Spiel starten ✨": "Nis lojën ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Luaj në këtë pajisje",
   "Neues Spiel erstellen": "Krijo lojë të re",
   "📺 Zum Spielfeld": "📺 Te fusha e lojës",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Po pres lojtarët – të paktën 1 duhet të skanojë kodin QR.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Barazim – vendosën përgjigjet më të shpejta.",
   "Britische Hits": "Hite britanike",
   "Latino Hits": "Hite latine",
+  "Wie nutzt du dieses Gerät?": "Si e përdor këtë pajisje?",
+  "Nur Musik und Spieler zeigen": "Vetëm muzikë dhe lojtarë",
+  "TV, Bildschirm im Auto": "Televizor, ekrani në makinë",
+  "Tablet, Smartphone": "Tablet, smartfon",
+  "Alle sechs Plätze sind belegt.": "Të gjashtë vendet janë të zëna.",
+  "Auf diesem Gerät mitspielen": "Luaj në këtë pajisje",
 });

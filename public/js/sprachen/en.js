@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Imprint",
   "Ganze Bibliothek": "Whole library",
   "Spiel starten ✨": "Start game ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Play on this device",
   "Neues Spiel erstellen": "Create new game",
   "📺 Zum Spielfeld": "📺 To the game board",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Waiting for players – at least 1 must scan the QR code.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Tie – the faster answers decided it.",
   "Britische Hits": "British Hits",
   "Latino Hits": "Latino Hits",
+  "Wie nutzt du dieses Gerät?": "How are you using this device?",
+  "Nur Musik und Spieler zeigen": "Show music and players only",
+  "TV, Bildschirm im Auto": "TV, screen in the car",
+  "Tablet, Smartphone": "Tablet, smartphone",
+  "Alle sechs Plätze sind belegt.": "All six seats are taken.",
+  "Auf diesem Gerät mitspielen": "Play on this device",
 });

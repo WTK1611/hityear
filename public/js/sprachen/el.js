@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Impressum",
   "Ganze Bibliothek": "Όλη η βιβλιοθήκη",
   "Spiel starten ✨": "Έναρξη παιχνιδιού ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Παίξε σε αυτή τη συσκευή",
   "Neues Spiel erstellen": "Νέο παιχνίδι",
   "📺 Zum Spielfeld": "📺 Στο ταμπλό",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Περιμένουμε παίκτες – τουλάχιστον 1 πρέπει να σκανάρει το QR.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Ισοπαλία – αποφάσισαν οι πιο γρήγορες απαντήσεις.",
   "Britische Hits": "Βρετανικές επιτυχίες",
   "Latino Hits": "Λάτιν επιτυχίες",
+  "Wie nutzt du dieses Gerät?": "Πώς χρησιμοποιείς αυτή τη συσκευή;",
+  "Nur Musik und Spieler zeigen": "Μόνο μουσική και παίκτες",
+  "TV, Bildschirm im Auto": "Τηλεόραση, οθόνη στο αυτοκίνητο",
+  "Tablet, Smartphone": "Tablet, κινητό",
+  "Alle sechs Plätze sind belegt.": "Και οι έξι θέσεις είναι πιασμένες.",
+  "Auf diesem Gerät mitspielen": "Παίξε σε αυτή τη συσκευή",
 });

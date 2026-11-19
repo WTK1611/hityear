@@ -106,6 +106,9 @@
     const liste = $("#liste");
     return !liste.value || /^Jahres/i.test(liste.selectedOptions[0]?.text ?? "");
   }
+  // Frage „Wann endet eine Runde?“ in der Einrichtung: ausgeblendet, Standard „30 s nach ganzer Hörprobe“.
+  // Zum Wiedereinblenden auf true setzen – Kacheln, Texte und Bilder sind unverändert vorhanden.
+  const RUNDENENDE_FRAGE = false;
   function einstellungenLesen() {
     return {
       zielKarten: Number($("#ziel").value),
@@ -113,7 +116,8 @@
       zeitlimit: true,
       nichtErraten: "offen", // keine Frage mehr im Setup: Lösung zeigen, Song kommt später nochmal
       modus: $("#modus").value,
-      warten: $("#warten").value,
+      // ohne die Frage „Wann endet eine Runde?“ immer 30 s (ganze Hörprobe), auch wenn ein altes Spiel anders stand
+      warten: RUNDENENDE_FRAGE ? $("#warten").value : "alle",
       raten: Boolean($("#raten-was").value),
       ratenWas: $("#raten-was").value || "beide",
       auffuellen: $("#auffuellen").checked,
@@ -448,19 +452,24 @@
   }
   // Galerie: eine Reihe großer Cover, wischen per Touch oder blättern mit den Pfeilen; merkt sich je Schritt die Position
   const galerieStand = {};
+  const galeriePfeile = {}; // je Galerie: welche Pfeile zuletzt ausgeblendet waren (gegen Flackern beim Neuaufbau)
   function galerie(schluessel, messen, karten) {
     const reihe = el("div", { class: "deck-raster", "data-anzahl": String(Math.min(karten.length, 6)) }, karten);
     const blaettern = (richtung) => reihe.scrollBy({ left: richtung * reihe.clientWidth * 0.8, behavior: "smooth" });
-    const links = el("button", { type: "button", class: "galerie-pfeil links", "aria-label": "Zurück blättern", text: "‹", onclick: () => blaettern(-1) });
-    const rechts = el("button", { type: "button", class: "galerie-pfeil rechts", "aria-label": "Weiter blättern", text: "›", onclick: () => blaettern(1) });
+    // Pfeile und Hinweis übernehmen den zuletzt gemessenen Zustand dieser Galerie (beim ersten Mal unsichtbar) –
+    // die Lobby baut den Schritt bei jeder Änderung neu auf (z. B. Fortschritt der Hörproben-Prüfung), sonst flackern sie
+    const vorher = galeriePfeile[schluessel] ?? { links: true, rechts: true };
+    const links = el("button", { type: "button", class: "galerie-pfeil links", "aria-label": "Zurück blättern", text: "‹", disabled: vorher.links, onclick: () => blaettern(-1) });
+    const rechts = el("button", { type: "button", class: "galerie-pfeil rechts", "aria-label": "Weiter blättern", text: "›", disabled: vorher.rechts, onclick: () => blaettern(1) });
     // Hinweis, solange es mehr zu sehen gibt – auf breiten Bildschirmen in der Zeile mit Zurück/Weiter (kein eigener Platz)
     const touch = matchMedia("(pointer: coarse)").matches;
-    const hinweis = el("p", { class: "galerie-hinweis", "aria-hidden": "true" },
+    const hinweis = el("p", { class: `galerie-hinweis ${vorher.links && vorher.rechts ? "aus" : ""}`, "aria-hidden": "true" },
       el("span", { class: "galerie-hand", text: touch ? "👆" : "↔" }), touch ? "Wischen für mehr" : "Scrollen oder Pfeile für mehr");
     const pfeile = () => {
       links.disabled = reihe.scrollLeft < 4;
       rechts.disabled = reihe.scrollLeft + reihe.clientWidth > reihe.scrollWidth - 4;
       hinweis.classList.toggle("aus", links.disabled && rechts.disabled);
+      if (!messen) galeriePfeile[schluessel] = { links: links.disabled, rechts: rechts.disabled };
     };
     const groesseSetzen = () => {
       if (matchMedia("(max-width: 700px)").matches) { reihe.classList.remove("vermessen"); return; }
@@ -559,7 +568,8 @@
     {
       frage: "Wann endet eine Runde?", feld: "#warten", symbole: { alle: "✋", alle5: "⏱️", erster: "⚡" }, bilder: BILDER_WARTEN,
       koepfe: { alle: ["30 s", "nach ganzer Hörprobe", "Zum Mitsingen"], alle5: ["5 s", "nach allen Antworten", "Ausgewogen"], erster: ["5 s", "ab 1. Antwort", "Schnelle Runden"] },
-      nur: () => $("#modus").value === "alle",
+      // ausgeblendet (RUNDENENDE_FRAGE): es gilt immer „30 s nach ganzer Hörprobe“
+      nur: () => RUNDENENDE_FRAGE && $("#modus").value === "alle",
       // allein ohne Bots: „ab 1. Antwort“ wäre dasselbe wie „nach allen Antworten“
       allein: { ohne: { erster: "alle5" }, koepfe: { alle5: ["5 s", "nach deiner Antwort", "Schnelle Runden"] }, texte: { alle5: "Hast du geantwortet, geht es nach 5 Sekunden weiter. Sonst endet die Runde, wenn die Zeit um ist." } },
       texte: {
@@ -771,14 +781,36 @@
             el("span", { class: "platz-symbol", "aria-hidden": "true", text: "+" }), el("span", { class: "platz-name leise", text: zurueck ? "Bot dazu" : "frei" })),
             zurueck ? () => botsAendern(weg.slice(0, -1)) : null);
         })),
-        // „Zusammen spielen“ ohne eigenes Handy: der Gastgeber spielt auf diesem Gerät mit
-        messen || spieler.length >= 6 || $("#wiedergabe").value !== "alle" ? null
-          : el("button", { type: "button", class: "zweit hier-mitspielen", text: "🎮 Auf diesem Gerät mitspielen", onclick: mitspielen }),
+        // unten: wofür ist dieses Gerät da? Nur Bühne (Musik und Spieler, z. B. TV oder Bildschirm im Auto) oder
+        // selbst mitspielen (Tablet, Smartphone) – „Spiel starten“ wechselt dann zur Spielerseite (Name, Avatar)
+        $("#wiedergabe").value !== "alle" ? null : el("div", { class: "geraet-wahl-reihe", role: "group", "aria-label": "Wie nutzt du dieses Gerät?" },
+          geraetWahl(false, "Nur Musik und Spieler zeigen", "TV, Bildschirm im Auto", BILD_BUEHNE, messen),
+          geraetWahl(true, "Auf diesem Gerät mitspielen", "Tablet, Smartphone", BILD_MITSPIELEN, messen, spieler.length >= 6 && !bots)),
       );
     }
     return inhalt;
   }
   let bereitVorher = new Set(); // wer beim letzten Aufbau schon „fertig“ war (nur Neue wackeln)
+  // Letzte Seite: spielt der Gastgeber auf diesem Gerät mit? Standard: nein – das Gerät zeigt nur Musik und Spieler.
+  let hierMitspielen = false;
+  const BILD_BUEHNE = tv(10, 14, 0.82) + bogen(110, 26, 0.75) + handy(140, 46, 0.7) + handy(170, 58, 0.55);
+  const BILD_MITSPIELEN = handy(62, 4, 1.55, true) + bogen(124, 26, 0.75) + person(10, 58, 0.95);
+  function geraetWahl(wert, titel, unter, bild, messen, gesperrt = false) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 200 134");
+    svg.setAttribute("class", "geraet-bild");
+    svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML = bild;
+    return el("button", {
+      type: "button", class: "geraet-wahl", "aria-pressed": String(hierMitspielen === wert), disabled: gesperrt,
+      title: gesperrt ? "Alle sechs Plätze sind belegt." : "",
+      onclick: messen ? null : (ev) => {
+        hierMitspielen = wert;
+        for (const b of ev.currentTarget.parentElement.children) b.setAttribute("aria-pressed", String(b === ev.currentTarget));
+        if (zustand) startPruefen(zustand);
+      },
+    }, svg, el("span", { class: "geraet-text" }, el("strong", { text: titel }), el("small", { text: unter })));
+  }
   function schrittZeigen() {
     const liste = sichtbareSchritte();
     schritt = Math.min(schritt, liste.length - 1);
@@ -973,6 +1005,21 @@
     tun("host:einstellungen", { ...einstellungenLesen(), ohneBots });
   }
   // ---------- Lobby ----------
+  // Darf das Spiel starten? Setzt Start-Knopf und Songzahl-Hinweis; wer auf diesem Gerät mitspielt, zählt als Mitspieler.
+  function startPruefen(z) {
+    const e = z.einstellungen;
+    const v = z.verfuegbar ?? 0;
+    const hier = e.wiedergabe === "solo" || (e.wiedergabe === "alle" && hierMitspielen);
+    const menschen = z.spieler.length + (hier && !z.spieler.length ? 1 : 0);
+    const noetig = Math.max(e.auffuellen ? 6 : menschen, 1) + 5;
+    const fehlt = !menschen && !e.auffuellen ? "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen."
+      : v < noetig ? `Für ${z.spieler.length} Mitspieler braucht es mindestens ${noetig} Songs – wähle ein größeres Deck oder mehr Jahrzehnte/Genres.`
+      : "";
+    verfuegbarText.textContent = `${v} Songs passen zur Auswahl.${fehlt ? " " + fehlt : ""}`;
+    startKnopf.disabled = Boolean(fehlt);
+    startKnopf.title = fehlt;
+    return fehlt;
+  }
   let qrFuer = null;
   function lobby(z) {
     audio.laden(null);
@@ -989,12 +1036,7 @@
     for (const i of jzBox.querySelectorAll("input")) i.checked = (e.jahrzehnte ?? []).includes(Number(i.value));
     for (const i of genreBox.querySelectorAll("input")) i.checked = (e.genres ?? []).includes(i.value);
 
-    const v = z.verfuegbar ?? 0;
-    const noetig = Math.max(e.auffuellen ? 6 : z.spieler.length, 1) + 5;
-    const fehlt = !z.spieler.length && !e.auffuellen && e.wiedergabe !== "solo" ? "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen."
-      : v < noetig ? `Für ${z.spieler.length} Mitspieler braucht es mindestens ${noetig} Songs – wähle ein größeres Deck oder mehr Jahrzehnte/Genres.`
-      : "";
-    verfuegbarText.textContent = `${v} Songs passen zur Auswahl.${fehlt ? " " + fehlt : ""}`;
+    const fehlt = startPruefen(z);
     const pruefung = z.deckPruefung;
     const pruefText = $("#deck-pruefung");
     pruefText.classList.toggle("versteckt", !pruefung);
@@ -1003,8 +1045,6 @@
         t(`Erreichbar: ${pruefung.bereit}. Nicht verfügbar: ${pruefung.fehlt}. Unklar: ${pruefung.unklar}.`),
         t(pruefung.laeuft ? "Links werden im Hintergrund geprüft und bei Bedarf erneuert." : "Prüfung abgeschlossen. Links werden beim Abspielen weiterhin erneuert.")].join(" ")
       : "";
-    startKnopf.disabled = Boolean(fehlt);
-    startKnopf.title = fehlt;
     if (!wechsel) schrittZeigen(); // nicht mitten in die Wechsel-Animation hinein neu aufbauen
     if (!gemessen) gemessen = hoeheMessen();
   }
@@ -1341,7 +1381,8 @@
   // ---------- Knöpfe ----------
   // „Allein üben“: erst auf der Spieler-Seite Name und Avatar wählen, dort startet das Spiel dann von selbst
   startKnopf.addEventListener("click", () => {
-    if (zustand?.einstellungen.wiedergabe !== "solo") return void tun("host:starten");
+    const hier = zustand?.einstellungen.wiedergabe === "solo" || (hierMitspielen && zustand?.einstellungen.wiedergabe === "alle");
+    if (!hier) return void tun("host:starten");
     speicher(`zs_solo_start_${zustand.code}`, "1");
     mitspielen();
   });

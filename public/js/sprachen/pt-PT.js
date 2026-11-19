@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Informações legais",
   "Ganze Bibliothek": "Biblioteca inteira",
   "Spiel starten ✨": "Começar jogo ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Jogar neste aparelho",
   "Neues Spiel erstellen": "Criar novo jogo",
   "📺 Zum Spielfeld": "📺 Para o tabuleiro",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "À espera de jogadores – pelo menos 1 tem de ler o código QR.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Empate – as respostas mais rápidas decidiram.",
   "Britische Hits": "Êxitos britânicos",
   "Latino Hits": "Êxitos latinos",
+  "Wie nutzt du dieses Gerät?": "Como usas este dispositivo?",
+  "Nur Musik und Spieler zeigen": "Só música e jogadores",
+  "TV, Bildschirm im Auto": "TV, ecrã do carro",
+  "Tablet, Smartphone": "Tablet, telemóvel",
+  "Alle sechs Plätze sind belegt.": "Os seis lugares estão ocupados.",
+  "Auf diesem Gerät mitspielen": "Jogar neste aparelho",
 });

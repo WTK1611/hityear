@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Impressum",
   "Ganze Bibliothek": "Celá knižnica",
   "Spiel starten ✨": "Spustiť hru ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Hrať na tomto zariadení",
   "Neues Spiel erstellen": "Vytvoriť novú hru",
   "📺 Zum Spielfeld": "📺 K hracej ploche",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Čakáme na hráčov – aspoň 1 musí naskenovať QR kód.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Remíza – rozhodli rýchlejšie odpovede.",
   "Britische Hits": "Britské hity",
   "Latino Hits": "Latino hity",
+  "Wie nutzt du dieses Gerät?": "Ako používaš toto zariadenie?",
+  "Nur Musik und Spieler zeigen": "Len hudba a hráči",
+  "TV, Bildschirm im Auto": "Televízor, obrazovka v aute",
+  "Tablet, Smartphone": "Tablet, smartfón",
+  "Alle sechs Plätze sind belegt.": "Všetkých šesť miest je obsadených.",
+  "Auf diesem Gerät mitspielen": "Hrať na tomto zariadení",
 });

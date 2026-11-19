@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "運営者情報",
   "Ganze Bibliothek": "ライブラリ全部",
   "Spiel starten ✨": "ゲーム開始 ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 この端末で遊ぶ",
   "Neues Spiel erstellen": "新しいゲームを作る",
   "📺 Zum Spielfeld": "📺 ゲーム画面へ",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "参加者を待っています。最低1人がQRコードを読み取ってね。",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "同点 – 回答の速さで決着しました。",
   "Britische Hits": "UKヒット",
   "Latino Hits": "ラテン・ヒット",
+  "Wie nutzt du dieses Gerät?": "この端末の使い方は？",
+  "Nur Musik und Spieler zeigen": "音楽とプレイヤーだけ表示",
+  "TV, Bildschirm im Auto": "テレビ、車の画面",
+  "Tablet, Smartphone": "タブレット、スマホ",
+  "Alle sechs Plätze sind belegt.": "6席すべて埋まっています。",
+  "Auf diesem Gerät mitspielen": "この端末で遊ぶ",
 });

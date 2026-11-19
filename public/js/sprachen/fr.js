@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Mentions légales",
   "Ganze Bibliothek": "Toute la bibliothèque",
   "Spiel starten ✨": "Lancer la partie ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Jouer sur cet appareil",
   "Neues Spiel erstellen": "Créer une nouvelle partie",
   "📺 Zum Spielfeld": "📺 Vers le plateau",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "En attente de joueurs – au moins 1 doit scanner le QR code.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Égalité – les réponses les plus rapides ont départagé.",
   "Britische Hits": "Tubes britanniques",
   "Latino Hits": "Tubes latinos",
+  "Wie nutzt du dieses Gerät?": "Comment utilises-tu cet appareil ?",
+  "Nur Musik und Spieler zeigen": "Seulement musique et joueurs",
+  "TV, Bildschirm im Auto": "Télé, écran dans la voiture",
+  "Tablet, Smartphone": "Tablette, smartphone",
+  "Alle sechs Plätze sind belegt.": "Les six places sont prises.",
+  "Auf diesem Gerät mitspielen": "Jouer sur cet appareil",
 });

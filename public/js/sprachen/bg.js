@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Импресум",
   "Ganze Bibliothek": "Цялата библиотека",
   "Spiel starten ✨": "Старт на играта ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Играй на това устройство",
   "Neues Spiel erstellen": "Нова игра",
   "📺 Zum Spielfeld": "📺 Към игралното поле",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Чакаме играчи – поне един трябва да сканира QR кода.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Равенство – решиха по-бързите отговори.",
   "Britische Hits": "Британски хитове",
   "Latino Hits": "Латино хитове",
+  "Wie nutzt du dieses Gerät?": "Как използваш това устройство?",
+  "Nur Musik und Spieler zeigen": "Само музика и играчи",
+  "TV, Bildschirm im Auto": "Телевизор, екран в колата",
+  "Tablet, Smartphone": "Таблет, смартфон",
+  "Alle sechs Plätze sind belegt.": "И шестте места са заети.",
+  "Auf diesem Gerät mitspielen": "Играй на това устройство",
 });

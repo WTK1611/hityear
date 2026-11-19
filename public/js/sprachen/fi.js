@@ -98,7 +98,6 @@ uebersetzungLaden({
   "Impressum": "Yhteystiedot",
   "Ganze Bibliothek": "Koko kirjasto",
   "Spiel starten ✨": "Aloita peli ✨",
-  "🎮 Auf diesem Gerät mitspielen": "🎮 Pelaa tällä laitteella",
   "Neues Spiel erstellen": "Luo uusi peli",
   "📺 Zum Spielfeld": "📺 Pelikentälle",
   "Warte auf Mitspieler – mindestens 1 muss den QR-Code scannen.": "Odotetaan pelaajia – vähintään yhden pitää skannata QR-koodi.",
@@ -519,4 +518,10 @@ uebersetzungLaden({
   "Gleichstand – die schnelleren Antworten haben entschieden.": "Tasapeli – nopeammat vastaukset ratkaisivat.",
   "Britische Hits": "Brittihitit",
   "Latino Hits": "Latinohitit",
+  "Wie nutzt du dieses Gerät?": "Miten käytät tätä laitetta?",
+  "Nur Musik und Spieler zeigen": "Vain musiikki ja pelaajat",
+  "TV, Bildschirm im Auto": "Televisio, auton näyttö",
+  "Tablet, Smartphone": "Tabletti, älypuhelin",
+  "Alle sechs Plätze sind belegt.": "Kaikki kuusi paikkaa on varattu.",
+  "Auf diesem Gerät mitspielen": "Pelaa tällä laitteella",
 });
