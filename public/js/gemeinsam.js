@@ -226,10 +226,12 @@ function weiterCountdown(anzeige, z) {
     if (rest === zuletzt) return;
     zuletzt = rest;
     const wartet = !rest && z.wartetAuf?.length ? `Warte auf ${z.wartetAuf.join(" & ")} …` : null;
-    if (!gross) anzeige.textContent = wartet ?? (rest ? `Nächster Song in ${rest} s` : "Nächster Song kommt …");
+    // letzte Auflösung: statt des nächsten Songs kommt die Siegerehrung
+    const ende = Boolean(z.entschieden);
+    if (!gross) anzeige.textContent = wartet ?? (rest ? (ende ? `Siegerehrung in ${rest} s` : `Nächster Song in ${rest} s`) : ende ? "Siegerehrung kommt …" : "Nächster Song kommt …");
     else if (wartet) anzeige.replaceChildren(el("span", { class: "weiter-label", text: wartet }));
     else anzeige.replaceChildren(
-      el("span", { class: "weiter-label", text: "Nächster Song" }),
+      el("span", { class: "weiter-label", text: ende ? "Siegerehrung" : "Nächster Song" }),
       el("span", { class: `weiter-zahl ${rest > 5 ? "klein" : "knapp"}`, text: String(rest) }),
     );
     if (!rest) clearInterval(anzeige._uhr);
@@ -445,12 +447,12 @@ function tonweg(element) {
 }
 
 // ---------- UI-Töne (mit ElevenLabs Sound Effects erzeugt, liegen in public/toene) ----------
-// klick = Bestätigung beim Tippen, richtig/falsch = eigene Auflösung, countdown = 3 · 2 · 1 vor dem Song
-// (vierter, hoher Ton zum Songstart), party = Siegerehrung mit Bestenliste. Wert = Lautstärke (die Töne sind
-// auf -1 dB Spitze normalisiert). Über den gemeinsamen Web-Audio-Kontext, sobald er läuft (iOS spielt dann auch
-// ohne neuen Tipp), sonst über ein eigenes Audio-Element.
-// Lautstärke je Ton (0–1); der Countdown ist als Datei deutlich lauter abgemischt und läuft deshalb leise
-const UI_TOENE = { klick: 0.45, richtig: 0.55, falsch: 0.5, countdown: 0.12, party: 0.55 };
+// klick = Bestätigung beim Tippen, richtig/falsch = eigene Auflösung, laden = „wooom“ beim Laden des Songs
+// (schwillt zum Songstart an), party = Siegerehrung mit Bestenliste. Wert = Lautstärke 0–1. Über den gemeinsamen
+// Web-Audio-Kontext, sobald er läuft (iOS spielt dann auch ohne neuen Tipp), sonst über ein eigenes Audio-Element.
+const UI_TOENE = { klick: 0.45, richtig: 0.55, falsch: 0.5, laden: 0.5, party: 0.55 };
+// Ladesound („wooom“): schwillt an und endet genau mit dem Songstart
+const LADEN_SEK = 1.49;
 const uiPuffer = new Map();
 function uiTonPuffer(name) {
   if (!tonKontext) return Promise.resolve(null);
@@ -765,10 +767,10 @@ async function countdownZeigen(startUm, nochAktuell) {
 async function countdownAbspielen(audio, nochAktuell, startUm) {
   const start = startUm ? lokal(startUm) : Date.now() + 3000;
   if (!(await nachStartsong(start, nochAktuell))) return;
-  // Countdown-Ton: drei Pieptöne zu 3 · 2 · 1, der vierte (hohe) zum Songstart; verspätet ab der passenden Stelle
-  const tonAb = start - 3000 - Date.now();
-  if (tonAb > 0) setTimeout(() => nochAktuell() && audio.element.paused && uiTon("countdown"), tonAb);
-  else if (start - Date.now() > 250) uiTon("countdown", -tonAb / 1000);
+  // Ladesound: ein „wooom“, das zum Songstart hin anschwillt; verspätet ab der passenden Stelle
+  const tonAb = start - LADEN_SEK * 1000 - Date.now();
+  if (tonAb > 0) setTimeout(() => nochAktuell() && audio.element.paused && uiTon("laden"), tonAb);
+  else if (start - Date.now() > 250) uiTon("laden", -tonAb / 1000);
   const { ov, zeige } = countdownFlaeche();
   let weg = false;
   const entfernen = () => {

@@ -200,12 +200,14 @@ try {
 
   // Spiel durchspielen (Modus „alle“): beide legen jede Karte an Position 0; falsche Karten gehen weg, also endet es spätestens mit leerem Stapel
   let runden = 0;
+  let direktZumEnde = false; // jede Runde – auch die letzte – zeigt ihre Auflösung (Jahr), bevor die Bestenliste kommt
   while (host.letzter.phase !== "ende" && runden < 60) {
     const z = await bis(() => (host.letzter.phase === "hoeren" || host.letzter.phase === "ende") && host.letzter, 15_000);
     if (z.phase === "ende") break;
     for (const s of [anna, ben]) await s.frag("spieler:legen", { position: 0 });
     await assert.rejects(anna.frag("spieler:legen", { position: 0 }), /schon/);
     const r = await bis(() => (host.letzter.phase === "aufloesung" || host.letzter.phase === "ende") && host.letzter, 15_000);
+    if (r.phase === "ende") direktZumEnde = true;
     if (r.phase === "aufloesung") {
       assert.ok(r.ergebnis && typeof r.ergebnis.karte.jahr === "number");
       assert.equal(r.ergebnisse?.length, 2, "ein Ergebnis je Spieler");
@@ -218,6 +220,7 @@ try {
     runden++;
   }
   assert.equal(host.letzter.phase, "ende", "Spiel endet");
+  assert.ok(!direktZumEnde, "letzte Runde: erst Auflösung mit Jahr, dann Siegerehrung");
   assert.ok(host.letzter.gewinner.length >= 1);
   console.log(`  Spiel nach ${runden} Runden beendet, Gewinner: ${host.letzter.gewinner.length}`);
 

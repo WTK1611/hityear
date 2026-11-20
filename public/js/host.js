@@ -849,7 +849,8 @@
     // Die Lobby meldet sich oft (z. B. jede Sekunde der Fortschritt der Hörproben-Prüfung). Hat sich am Schritt nichts
     // geändert, bleibt er stehen – ein Neuaufbau setzt Hover-Zustände zurück, Pfeile und ✕-Knöpfe würden flackern.
     // Verglichen wird ein Mess-Aufbau (Kopien, ohne Klick-Handler), damit einmalige Elemente an ihrem Platz bleiben.
-    const abdruck = `${nr}|${liste.length}|${el("div", {}, schrittInhalt(s, liste, true)).innerHTML}`;
+    // (zufällige Verlaufs-IDs der Kacheln zählen nicht – sonst wäre jeder Aufbau „neu“ und die Kacheln zitterten)
+    const abdruck = `${nr}|${liste.length}|${el("div", {}, schrittInhalt(s, liste, true)).innerHTML.replace(/kachel-verlauf-[\w-]+/g, "")}`;
     const stehtSchon = gezeigt === nr && abdruck === letzterAbdruck && $("#schritt-inhalt .schritt:not(.raus)");
     letzterAbdruck = abdruck;
     if (!stehtSchon) {
@@ -1110,7 +1111,7 @@
     // Abschnitte der Sanduhr: Zeit zum Einordnen (alle haben getippt → bis zur Auflösung), nächster Song; vor dem Songstart keine Uhr
     sanduhr($("#sanduhr"), hoeren
       ? [{ ab: z.startUm, bis: z.frist ?? z.aufloesungUm, label: z.frist ? "Zeit zum Einordnen" : "Auflösung kommt" }]
-      : [{ bis: z.weiterUm, label: "Nächster Song" }, ...(z.wartenBis && z.wartetAuf ? [{ bis: z.wartenBis, label: `Warte auf ${z.wartetAuf.join(" & ")} …` }] : [])],
+      : [{ bis: z.weiterUm, label: z.entschieden ? "Siegerehrung" : "Nächster Song" }, ...(z.wartenBis && z.wartetAuf ? [{ bis: z.wartenBis, label: `Warte auf ${z.wartetAuf.join(" & ")} …` }] : [])],
       hoeren ? null : z.wartetAuf ?? pauseWegen(z));
     $("#jahr-gross").classList.toggle("versteckt", hoeren);
     leisteAufladen($("#t-leiste").parentElement, hoeren ? z.startUm : null);

@@ -758,6 +758,7 @@ export interface Sicht {
   verdeckt: boolean;
   /** Auflösung: Zeitpunkt (Serveruhr), zu dem es automatisch weitergeht. */
   weiterUm: number | null;
+  entschieden: boolean;
   /** Hören: Start des Ausschnitts auf allen Geräten (Serveruhr). */
   startUm: number | null;
   /** Hören: alle Eingaben da, Auflösung kommt zu diesem Zeitpunkt (Ende des Ausschnitts). */
@@ -791,6 +792,8 @@ export function sicht(s: Spiel): Sicht {
     ergebnisse: s.phase === "aufloesung" && s.zug?.ergebnisse ? (s.zug.zurueck ? s.zug.ergebnisse.map(verdecken) : s.zug.ergebnisse) : null,
     verdeckt: s.phase === "aufloesung" && Boolean(s.zug?.zurueck),
     weiterUm: s.phase === "aufloesung" ? s.zug?.weiterUm ?? null : null,
+    // letzte Auflösung: danach kommt die Siegerehrung statt eines neuen Songs
+    entschieden: spielEntschieden(s),
     startUm: s.phase === "hoeren" ? s.zug?.startUm ?? null : null,
     aufloesungUm: s.phase === "hoeren" ? s.zug?.aufloesungUm ?? null : null,
   };

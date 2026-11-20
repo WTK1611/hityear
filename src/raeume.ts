@@ -178,8 +178,6 @@ const AUTO_WEITER_MS = Number(process.env.ZEITSTRAHL_WEITER_MS) || 10_000; // Te
 const weiterTimer = new Map<string, { zug: unknown; t: ReturnType<typeof setTimeout> }>();
 
 function autoWeiter(s: Spiel): void {
-  // Sieg steht fest → gleich Siegerehrung und Bestenliste statt Countdown zum nächsten Song
-  if (spielEntschieden(s)) naechsterZug(s);
   const lauf = weiterTimer.get(s.code);
   if (s.phase !== "aufloesung" || !s.zug) {
     if (lauf) clearTimeout(lauf.t);
@@ -190,6 +188,19 @@ function autoWeiter(s: Spiel): void {
   if (lauf) clearTimeout(lauf.t);
   s.zug.weiterUm ??= Date.now() + AUTO_WEITER_MS;
   const zug = s.zug;
+  // Sieg steht fest: die Auflösung der letzten Karte (Jahr!) bleibt genauso lange stehen wie sonst,
+  // dann Siegerehrung und Bestenliste – ohne Handshake, es kommt kein Song mehr
+  if (spielEntschieden(s)) {
+    const t = setTimeout(() => {
+      weiterTimer.delete(s.code);
+      if (raeume.get(s.code) !== s || s.zug !== zug || s.phase !== "aufloesung") return;
+      naechsterZug(s);
+      senden(s);
+    }, Math.max(0, s.zug.weiterUm - Date.now()));
+    t.unref();
+    weiterTimer.set(s.code, { zug, t });
+    return;
+  }
   const t = setTimeout(async () => {
     const aktuell = () => raeume.get(s.code) === s && s.zug === zug && s.phase === "aufloesung";
     if (!aktuell()) return void weiterTimer.delete(s.code);
