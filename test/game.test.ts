@@ -53,6 +53,9 @@ test("kompletter Ablauf mit Sieg am Rundenende", () => {
   const e2 = karteLegen(s, "b", 1); // 1960 nach 2000 → falsch
   assert.equal(e2.richtig, false);
   assert.equal(e2.abstand, 40);
+  // Ziel erreicht: die Auflösung der letzten Karte wird noch gezeigt (mit Hinweis „Siegerehrung“), erst dann ist Schluss
+  assert.equal(s.phase, "aufloesung");
+  assert.equal(sicht(s).entschieden, true);
   naechsterZug(s); // Runde vorbei: Anna hat 1 gesammelte Karte = Ziel → Sieg
   assert.equal(s.phase, "ende");
   assert.deepEqual(s.gewinner, ["a"]);
