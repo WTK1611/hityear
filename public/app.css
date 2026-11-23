@@ -100,6 +100,8 @@ html.schlicht .box { background: rgba(40, 20, 70, 0.72); }
 @keyframes schweben2 { to { transform: translate(-20vw, -25vh) scale(1.15); } }
 @keyframes schweben3 { to { transform: translate(-25vw, 15vh) rotate(60deg) scale(0.85); } }
 
+/* kein Gummiband-Ziehen der ganzen Seite (iOS): der Kopf soll stehen bleiben, nicht mitwandern und dabei verwischen */
+html, body { overscroll-behavior-y: none; }
 main { max-width: 760px; margin: 0 auto; padding: max(22px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(64px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); position: relative; }
 main.breit { max-width: 1440px; }
 /* Fernseher schneiden oft 2–5 % am Rand ab (Overscan): auf großen Bildschirmen Sicherheitsrand */
@@ -1710,8 +1712,11 @@ section#ende.box .rangliste .platz { text-align: left; }
 /* Handy im Spiel: Runde und „Alle sind dran!“ in einer Zeile */
 .kopfzeile { font-weight: 700; }
 /* … und das Logo bleibt darüber stehen (nur Handy-Seite, nicht der Hauptbildschirm main.breit) */
+/* Der Sicherheitsabstand oben (Notch/Dynamic Island) steckt schon im Kopf selbst, damit er beim Scrollen unter der Statusleiste
+   bleibt – main darf ihn nicht noch einmal oben dazugeben, sonst ist über dem Logo ein riesiger leerer Streifen. */
+main:not(.breit):has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) { padding-top: 0; }
 main:not(.breit):has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke {
-  position: sticky; top: 0; z-index: 16; margin-top: -12px; margin-bottom: 14px; padding: max(12px, env(safe-area-inset-top)) 0 10px;
+  position: sticky; top: 0; z-index: 16; margin-top: 0; margin-bottom: 14px; padding: max(12px, env(safe-area-inset-top)) 0 10px;
 }
 main:not(.breit):has(> #spiel:not(.versteckt), > #ende:not(.versteckt)) > .marke::before {
   content: ""; position: absolute; inset: 0 -16px -12px; z-index: -1; pointer-events: none;
